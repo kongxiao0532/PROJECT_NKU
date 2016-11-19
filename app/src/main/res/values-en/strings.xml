@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NKU Assistant</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_sign_in">Log in</string>
+    <string name="action_sign_in_short">Log in</string>
+    <string name="dummy_button"></string>
+    <string name="dummy_content"></string>
+    <string name="error_incorrect_password">Invalid student ID or password</string>
+    <string name="error_invalid_studentID">Invalid student ID</string>
+    <string name="error_password_required">Please enter your student ID</string>
+    <string name="error_studentID_required">Please enter your student ID</string>
+    <string name="hello_blank_fragment"></string>
+    <string name="navigation_drawer_close"></string>
+    <string name="prompt_email">Student ID</string>
+    <string name="prompt_password">Password</string>
+    <string name="title_activity_edu_login">Log in</string>
+</resources>

@@ -7,6 +7,9 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.Calendar;
 
 
 /**
@@ -26,7 +29,7 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    View myView = null;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -63,7 +66,72 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        myView = inflater.inflate(R.layout.fragment_home, container, false);
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        TextView textView = (TextView)(myView.findViewById(R.id.textView_date));
+        textView.setText(calendar.getTime().toString());
+        if(year == 2017){
+            if(weekOfYear == 1){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("16周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017年第二学期");
+            }
+            if(weekOfYear == 2 || weekOfYear == 3){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("考试周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 第一学期");
+
+            }
+            if(weekOfYear > 3 || weekOfYear <= 7){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("第"+(weekOfYear-3)+"周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("寒假");
+            }
+            if(weekOfYear > 7 || weekOfYear <= 23){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("第"+(weekOfYear-7)+"周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 第二学期");
+            }
+            if(weekOfYear > 23 || weekOfYear <= 25){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("考试周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 第二学期");
+            }
+            if(weekOfYear > 25 || weekOfYear <= 29){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("第"+(weekOfYear-25)+"周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 夏季学期");
+            }
+            if(weekOfYear > 29 || weekOfYear <= 37){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("第"+(weekOfYear-29)+"周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("暑假");
+            }
+        }
+        else if(year == 2016){
+            if(weekOfYear >= 38 || weekOfYear <= 53){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("第"+(weekOfYear-37)+"周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 第一学期");
+            }
+            if(weekOfYear == 54){
+                textView = (TextView)(myView.findViewById(R.id.textView_week));
+                textView.setText("考试周");
+                textView = (TextView)(myView.findViewById(R.id.textView_period));
+                textView.setText("2016-2017 第一学期");
+            }
+        }
+        return myView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -94,5 +162,9 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public View getMyView(){
+        return myView;
     }
 }

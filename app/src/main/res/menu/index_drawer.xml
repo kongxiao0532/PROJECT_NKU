@@ -34,10 +34,15 @@
         <item android:title="关于">
             <menu>
                 <item
-                    android:id="@+id/nav_about"
-                    android:icon="@drawable/ic_menu_about"
-                    android:title="关于 NKU Assistant" />
+                    android:id="@+id/nav_share"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="分享" />
+                <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_menu_about"
+                android:title="关于 NKU Assistant" />
             </menu>
+
         </item>
         <!--<item android:title="Communicate">
             <menu>

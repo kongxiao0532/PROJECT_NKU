@@ -17,15 +17,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import java.util.*;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
 
     public void onClick(View view){
-//        if(view.getId() == R.id.fab){
-//            Intent intent = new Intent(this,EduLoginActivity.class);
-//            startActivity(intent);
-//        }
+
     }
     public void headerClicked(View view){
             Intent intent = new Intent(this,PersonalPage.class);
@@ -47,9 +46,10 @@ public class IndexActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-//        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-//        fragmentTransaction.replace(R.id.fragment_container,HomeFragment.newInstance("",""));
-//        fragmentTransaction.commit();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        HomeFragment homeFragment = new HomeFragment();
+        fragmentTransaction.replace(R.id.fragment_container,homeFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class IndexActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
         }
 
@@ -91,32 +91,26 @@ public class IndexActivity extends AppCompatActivity
         int id = item.getItemId();
         item.setCheckable(true);
         item.setChecked(true);
-
         removeOldFragment();
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         if (id == R.id.nav_home) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.fragment_container,new HomeFragment());
-            fragmentTransaction.commit();
-
         } else if (id == R.id.nav_curriculum) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.fragment_container,new CurriculumFragment());
-            fragmentTransaction.commit();
         } else if (id == R.id.nav_exam) {
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.fragment_container,new ExamFragment());
-            fragmentTransaction.commit();
-
         } else if (id == R.id.nav_schedule) {
-
+            fragmentTransaction.add(R.id.fragment_container,new ScheduleFragment());
         } else if (id == R.id.nav_score) {
-
+            fragmentTransaction.add(R.id.fragment_container,new ScoreFragment());
         } else if (id == R.id.nav_select) {
-
-        } else if (id == R.id.nav_about) {
-
+            fragmentTransaction.add(R.id.fragment_container,new SelectFragment());
+        } else if (id == R.id.nav_share) {
+            fragmentTransaction.add(R.id.fragment_container,new ShareFragment());
+        }else if (id == R.id.nav_about) {
+            fragmentTransaction.add(R.id.fragment_container,new AboutFragment());
         }
-
+        fragmentTransaction.commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
