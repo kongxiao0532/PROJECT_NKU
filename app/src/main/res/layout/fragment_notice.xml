@@ -7,4 +7,15 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <Button
+        android:text="Button"
+        android:layout_width="169dp"
+        android:layout_height="283dp"
+        android:id="@+id/button" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar" />
 </FrameLayout>

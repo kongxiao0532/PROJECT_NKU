@@ -6,10 +6,10 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Switch
-        android:text="Switch"
+
+    <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/switch1" />
+        android:id="@+id/datePicker" />
 
 </FrameLayout>
