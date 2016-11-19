@@ -1,5 +1,6 @@
 package com.kongx.nkuassistant;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 public class IndexActivity extends AppCompatActivity
@@ -45,9 +47,9 @@ public class IndexActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.fragment_container,new HomeFragment());
-        fragmentTransaction.commit();
+//        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.fragment_container,HomeFragment.newInstance("",""));
+//        fragmentTransaction.commit();
     }
 
     @Override
@@ -87,20 +89,22 @@ public class IndexActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        item.setCheckable(true);
         item.setChecked(true);
 
+        removeOldFragment();
         if (id == R.id.nav_home) {
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container,new HomeFragment());
+            fragmentTransaction.add(R.id.fragment_container,new HomeFragment());
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_curriculum) {
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container,new CurriculumFragment());
+            fragmentTransaction.add(R.id.fragment_container,new CurriculumFragment());
             fragmentTransaction.commit();
         } else if (id == R.id.nav_exam) {
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container,new ExamFragment());
+            fragmentTransaction.add(R.id.fragment_container,new ExamFragment());
             fragmentTransaction.commit();
 
         } else if (id == R.id.nav_schedule) {
@@ -116,5 +120,10 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void removeOldFragment(){
+        FrameLayout layout = (FrameLayout)findViewById(R.id.fragment_container);
+        layout.removeAllViewsInLayout();
     }
 }

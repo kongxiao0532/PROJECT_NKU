@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NoticeFragment.OnFragmentInteractionListener} interface
+ * {@link CurriculumFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NoticeFragment#newInstance} factory method to
+ * Use the {@link CurriculumFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class CurriculumFragment extends Fragment {
@@ -38,11 +38,11 @@ public class CurriculumFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NoticeFragment.
+     * @return A new instance of fragment CurriculumFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NoticeFragment newInstance(String param1, String param2) {
-        NoticeFragment fragment = new NoticeFragment();
+    public static CurriculumFragment newInstance(String param1, String param2) {
+        CurriculumFragment fragment = new CurriculumFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -63,7 +63,7 @@ public class CurriculumFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notice, container, false);
+        return inflater.inflate(R.layout.fragment_curriculum, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

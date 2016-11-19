@@ -13,16 +13,14 @@
     tools:context="com.kongx.nkuassistant.IndexActivity"
     tools:showIn="@layout/app_bar_index">
 
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.kongx.nkuassistant.AboutFragment" />
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-
-        <ToggleButton
-            android:text="ToggleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/toggleButton" />
     </FrameLayout>
 </RelativeLayout>
