@@ -104,29 +104,31 @@ public class IndexActivity extends AppCompatActivity
         int id = item.getItemId();
         item.setCheckable(true);
         item.setChecked(true);
-        if(getFragmentManager().getBackStackEntryCount() > 1){
+        if (getFragmentManager().getBackStackEntryCount() > 1) {
             getFragmentManager().popBackStack();
         }
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.hide(homeFragment);
         if (id == R.id.nav_home) {
             fragmentTransaction.show(homeFragment);
-        } else if (id == R.id.nav_curriculum) {
-            fragmentTransaction.add(R.id.fragment_container,new CurriculumFragment());
-        } else if (id == R.id.nav_exam) {
-            fragmentTransaction.add(R.id.fragment_container,new ExamFragment());
-        } else if (id == R.id.nav_schedule) {
-            fragmentTransaction.add(R.id.fragment_container,new ScheduleFragment());
-        } else if (id == R.id.nav_score) {
-            fragmentTransaction.add(R.id.fragment_container,new ScoreFragment());
-        } else if (id == R.id.nav_select) {
-            fragmentTransaction.add(R.id.fragment_container,new SelectFragment());
-        } else if (id == R.id.nav_share) {
-            fragmentTransaction.add(R.id.fragment_container,new ShareFragment());
-        }else if (id == R.id.nav_about) {
-            fragmentTransaction.add(R.id.fragment_container,new AboutFragment());
+        } else {
+            if (id == R.id.nav_curriculum) {
+                fragmentTransaction.add(R.id.fragment_container, new CurriculumFragment());
+            } else if (id == R.id.nav_exam) {
+                fragmentTransaction.add(R.id.fragment_container, new ExamFragment());
+            } else if (id == R.id.nav_schedule) {
+                fragmentTransaction.add(R.id.fragment_container, new ScheduleFragment());
+            } else if (id == R.id.nav_score) {
+                fragmentTransaction.add(R.id.fragment_container, new ScoreFragment());
+            } else if (id == R.id.nav_select) {
+                fragmentTransaction.add(R.id.fragment_container, new SelectFragment());
+            } else if (id == R.id.nav_share) {
+                fragmentTransaction.add(R.id.fragment_container, new ShareFragment());
+            } else if (id == R.id.nav_about) {
+                fragmentTransaction.add(R.id.fragment_container, new AboutFragment());
+            }
+            fragmentTransaction.addToBackStack(null);
         }
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
