@@ -8,9 +8,47 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:background="@drawable/week"
+            android:layout_width="100dp"
+            android:layout_height="100dp">
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_marginTop="25dp"
+                android:textSize="16dp"
+                android:textColor="#FFFFFF"
+                android:text="第"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_No."                />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_marginTop="25dp"
+                android:textSize="40dp"
+                android:textColor="#FFFFFF"
+                android:text="10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_week" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_marginTop="25dp"
+                android:textSize="16dp"
+                android:textColor="#FFFFFF"
+                android:text="周"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
         <TextView
             android:textAlignment="center"
@@ -19,12 +57,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView_date" />
 
-        <TextView
-            android:textAlignment="center"
-            android:text="TextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_week" />
         <TextView
             android:textAlignment="center"
             android:text="TextView"

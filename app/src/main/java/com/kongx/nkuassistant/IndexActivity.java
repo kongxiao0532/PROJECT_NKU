@@ -113,19 +113,19 @@ public class IndexActivity extends AppCompatActivity
             fragmentTransaction.show(homeFragment);
         } else {
             if (id == R.id.nav_curriculum) {
-                fragmentTransaction.add(R.id.fragment_container, new CurriculumFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new CurriculumFragment());
             } else if (id == R.id.nav_exam) {
-                fragmentTransaction.add(R.id.fragment_container, new ExamFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new ExamFragment());
             } else if (id == R.id.nav_schedule) {
-                fragmentTransaction.add(R.id.fragment_container, new ScheduleFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new ScheduleFragment());
             } else if (id == R.id.nav_score) {
-                fragmentTransaction.add(R.id.fragment_container, new ScoreFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new ScoreFragment());
             } else if (id == R.id.nav_select) {
-                fragmentTransaction.add(R.id.fragment_container, new SelectFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new SelectFragment());
             } else if (id == R.id.nav_share) {
-                fragmentTransaction.add(R.id.fragment_container, new ShareFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new ShareFragment());
             } else if (id == R.id.nav_about) {
-                fragmentTransaction.add(R.id.fragment_container, new AboutFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

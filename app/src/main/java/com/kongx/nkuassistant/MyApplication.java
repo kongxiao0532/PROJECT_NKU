@@ -13,5 +13,6 @@ public class MyApplication extends Application{
     public String studentID;
     public String faculty;
     public String grade;
-
+    public String password;
+    public String passwordEcypted;
 }

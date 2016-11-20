@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">NKU小助手</string>
-
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
-
     <string name="title_activity_edu_login">登录</string>
 
     <!-- Strings related to login -->
@@ -14,7 +12,7 @@
     <string name="error_invalid_studentID">学号无效</string>
     <string name="error_incorrect_password">学号或密码错误</string>
     <string name="error_studentID_required">请输入学号</string>
-    <string name="error_password_required">请输入学号</string>
+    <string name="error_password_required">请输入密码</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
@@ -26,5 +24,5 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="action_settings">设置</string>
-    <string name="press_back_again_to_exit">Press Back again to exit.</string>
+    <string name="press_back_again_to_exit">再按返回键退出</string>
 </resources>

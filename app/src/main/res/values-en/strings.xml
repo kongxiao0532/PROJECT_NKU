@@ -8,11 +8,12 @@
     <string name="dummy_content"></string>
     <string name="error_incorrect_password">Invalid student ID or password</string>
     <string name="error_invalid_studentID">Invalid student ID</string>
-    <string name="error_password_required">Please enter your student ID</string>
+    <string name="error_password_required">Please enter your password</string>
     <string name="error_studentID_required">Please enter your student ID</string>
     <string name="hello_blank_fragment"></string>
     <string name="navigation_drawer_close"></string>
     <string name="prompt_email">Student ID</string>
     <string name="prompt_password">Password</string>
     <string name="title_activity_edu_login">Log in</string>
+    <string name="press_back_again_to_exit">Press Back again to exit</string>
 </resources>
