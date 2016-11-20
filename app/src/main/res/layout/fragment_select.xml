@@ -29,8 +29,10 @@
                 android:layout_weight="1" />
 
             <ImageView
-                android:layout_width="45dp"
-                android:layout_height="43dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
                 app:srcCompat="@drawable/ic_add_circle_black_18dp"
                 android:id="@+id/imageView" />
 
