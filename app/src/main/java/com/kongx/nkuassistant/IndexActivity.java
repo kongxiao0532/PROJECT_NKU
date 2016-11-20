@@ -1,12 +1,8 @@
 package com.kongx.nkuassistant;
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,14 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
-import java.util.*;
+import android.widget.Toast;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
 
+    private Toast pressBackToast;
+    private long mLastBackPress;
+    private static final long mBackPressThreshold = 3500;
+    private HomeFragment homeFragment;
     public void onClick(View view){
 
     }
@@ -47,9 +46,12 @@ public class IndexActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        HomeFragment homeFragment = new HomeFragment();
-        fragmentTransaction.replace(R.id.fragment_container,homeFragment);
+        homeFragment = new HomeFragment();
+        fragmentTransaction.add(R.id.fragment_container,homeFragment,"HomeFragment");
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
+                Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -57,8 +59,19 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        }
+        else if(getFragmentManager().getBackStackEntryCount() > 1){
+            getFragmentManager().popBackStack();
+        }
+        else {
+            long currentTime = System.currentTimeMillis();
+            if (Math.abs(currentTime - mLastBackPress) > mBackPressThreshold) {
+                pressBackToast.show();
+                mLastBackPress = currentTime;
+            } else {
+                pressBackToast.cancel();
+                finish();
+            }
         }
     }
 
@@ -91,10 +104,13 @@ public class IndexActivity extends AppCompatActivity
         int id = item.getItemId();
         item.setCheckable(true);
         item.setChecked(true);
-        removeOldFragment();
+        if(getFragmentManager().getBackStackEntryCount() > 1){
+            getFragmentManager().popBackStack();
+        }
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.hide(homeFragment);
         if (id == R.id.nav_home) {
-            fragmentTransaction.add(R.id.fragment_container,new HomeFragment());
+            fragmentTransaction.show(homeFragment);
         } else if (id == R.id.nav_curriculum) {
             fragmentTransaction.add(R.id.fragment_container,new CurriculumFragment());
         } else if (id == R.id.nav_exam) {
@@ -110,6 +126,7 @@ public class IndexActivity extends AppCompatActivity
         }else if (id == R.id.nav_about) {
             fragmentTransaction.add(R.id.fragment_container,new AboutFragment());
         }
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -26,4 +26,5 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="action_settings">设置</string>
+    <string name="press_back_again_to_exit">Press Back again to exit.</string>
 </resources>
