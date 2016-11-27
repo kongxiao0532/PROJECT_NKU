@@ -25,4 +25,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
+
+    <string name="title_activity_welcome">WelcomeActivity</string>
 </resources>
