@@ -2,121 +2,31 @@
 <items version="2" >
 
     <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\design\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="e195bd694d5389acfba27ff4fdfa64c4c65b2c05">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-design-24.1.1_04734c599b63f66979e03381d907db9030be1f0d\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="1256c10604bb098490eab070d76754ac5ceab35c">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-appcompat-v7-24.1.1_ee9d42519b429e0a13591524cc8730bd9514a35f\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="f62e763609f65e47dc6c498760a4accf02776788">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-vector-drawable-24.1.1_8492c81bd932d0e83c6fdbac0be450ccfdc326d8\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="71e9640f89079337e754a9348ffb1a74e92cb89c">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_93f6dcd2e9ed3183cb665cd246dbd3072128c796\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\8.4.0\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-base-8.4.0_ecaf918bb85da72938bef6808ed33457f5f942a5\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.4.0\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-appindexing-8.4.0_151bd1496941d9665d915a601a4ffdd60c21afd5\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\kongx\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.1.1\support-annotations-24.1.1.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="3af19f153122737b372622fa6c81dd11a1c6b999">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-24.1.1_58a1cfed5ff47adc672ef98696bfd7670740c7ff\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.4.0\jars\classes.jar"
-        jumboMode="true"
+        is-multidex="false"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-basement\8.4.0\jars\classes.jar"
+        jumboMode="false"
         optimize="true"
         revision="24.0.1"
         sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.google.android.gms-play-services-basement-8.4.0_def198795c7f18b70227cfc7ff0283e9aa81e5b2\classes.dex" />
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-basement-8.4.0_b9f3a14ffcb6dbca37a42acde3a5b20ddeb7a023.jar" />
     </item>
     <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
-        jumboMode="true"
+        is-multidex="false"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-appindexing\8.4.0\jars\classes.jar"
+        jumboMode="false"
         optimize="true"
         revision="24.0.1"
-        sha1="8e9bbe1b698d838039a5d7e82c7758ea99f87ec8">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_2c64607c1bdc6f47bf5e6a17dfd82a83c53cbcf3\classes.dex" />
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-appindexing-8.4.0_b4752191692f3f1f2475fb9b57f960644aa36fbd.jar" />
     </item>
     <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\libs\internal_impl-24.1.1.jar"
-        jumboMode="true"
+        is-multidex="false"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.google.android.gms\play-services-base\8.4.0\jars\classes.jar"
+        jumboMode="false"
         optimize="true"
         revision="24.0.1"
-        sha1="f78c2f395cb096f9dc1dc07e729922b8fcd3c4f5">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.1.1_c1d4434c8ebe7da40c06c899ffe382a41cca5062\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="6d7d803871e3203465f71a163e7af104f807b446">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-24.1.1_3592ed54874a80a8963614b65c8744cab7c4f96f\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="c936c1bd42f0c018c18920c7bec619ef056b24f8">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-24.1.1_5abefd0515bb2139aaf7405b8edd4552fdf1ab6b\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\24.1.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.1"
-        sha1="787871951412550519b0222aba3c9df4cea49875">
-        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-24.1.1_2b751ad3698944bec8abf211cfcbdd57cd102563\classes.dex" />
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\pre-dexed\debug\com.google.android.gms-play-services-base-8.4.0_41cb15eff6e3257769c53978546ded712a2cd0cc.jar" />
     </item>
 
 </items>
