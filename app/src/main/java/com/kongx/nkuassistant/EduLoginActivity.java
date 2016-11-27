@@ -3,6 +3,8 @@ package com.kongx.nkuassistant;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -10,24 +12,40 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.Handler;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class EduLoginActivity extends AppCompatActivity {
+public class EduLoginActivity extends AppCompatActivity implements Connectable {
 
     // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
-    Thread loginThread;
-    Handler loginHandler;
+    private ImageView mValidateCode;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -42,6 +60,8 @@ public class EduLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
         // Set up the login form.
+        new Connect(this).execute("http://222.30.49.10/ValidateCode");
+        mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -55,18 +75,27 @@ public class EduLoginActivity extends AppCompatActivity {
             }
         });
         mProgressView = findViewById(R.id.login_progress);
-        loginThread = new Thread(new loginDealer());
-        loginHandler = new Handler() {
-            public void handleMessage(Message msg){
-
-            }
-        };
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
     }
-    class loginDealer implements Runnable{
-        @Override
-        public void run(){
-            
+    public void changeCode(View view){
+        new Connect(this).execute("http://222.30.49.10/ValidateCode");
+    }
+    @Override
+    public void updateConnect(InputStream inputStream) {
+        Bitmap pic = BitmapFactory.decodeStream(inputStream);
+        if(pic == null) {
+            new Connect(this).execute("http://222.30.49.10/ValidateCode");
+            return;
+//            Scanner s = new Scanner(inputStream,"GB2312").useDelimiter("\\A");
+//            String result =s.next();
+//            Log.e("APP","testtest"+result+"testtesst");
+//        try{inputStream.close();}catch (IOException e){Log.e("APP","????")}
         }
+        Bitmap resized = Bitmap.createBitmap(pic,0,0,pic.getWidth()/2, pic.getHeight());
+//        pic.setWidth(75);
+        mValidateCode.setImageBitmap(resized);
+        try{inputStream.close();}catch (IOException e){Log.e("APP","????");}
     }
 
     /**

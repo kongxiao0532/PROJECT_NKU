@@ -7,6 +7,7 @@
     <!-- Strings related to login -->
     <string name="prompt_email">学号</string>
     <string name="prompt_password">密码</string>
+    <string name="prompt_validate">验证码</string>
     <string name="action_sign_in">登录</string>
     <string name="action_sign_in_short">登录</string>
     <string name="error_invalid_studentID">学号无效</string>
@@ -25,6 +26,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
+    <string name="connection_error">服务器连接错误</string>
 
     <string name="title_activity_welcome">WelcomeActivity</string>
 </resources>

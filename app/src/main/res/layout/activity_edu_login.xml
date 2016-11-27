@@ -64,7 +64,8 @@
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
+
 
                     <EditText
                         android:id="@+id/password"
@@ -77,10 +78,46 @@
                         android:maxLines="1"
                         android:layout_centerVertical="true"
                         android:layout_alignStart="@+id/email"
-                        android:layout_width="match_parent" />
-
-
+                        android:layout_width="match_parent"
+                        android:layout_weight="1" />
                 </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <android.support.design.widget.TextInputLayout android:layout_height="match_parent"
+                        android:layout_width="100dp">
+
+                        <EditText
+                            android:id="@+id/editText3"
+                            android:layout_height="match_parent"
+                            android:hint="@string/prompt_validate"
+                            android:imeActionId="@+id/login"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:layout_centerVertical="true"
+                            android:layout_alignStart="@+id/email"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <ImageView
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/validatecode"
+                        android:id="@+id/imageView_ValidateCode"
+                        android:scaleType="fitCenter"
+                        android:layout_width="match_parent"
+                        android:cropToPadding="false"
+                        android:adjustViewBounds="false"
+                        android:onClick="changeCode"/>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

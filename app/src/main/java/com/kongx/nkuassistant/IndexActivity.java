@@ -1,7 +1,11 @@
 package com.kongx.nkuassistant;
 
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,19 +13,124 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
 
     private Toast pressBackToast;
+    private Toast connectionErrorToast;
     private long mLastBackPress;
     private static final long mBackPressThreshold = 3500;
     private HomeFragment homeFragment;
+    static final String DEBUG_TAG = "APP";
+
+    class NetworkTest {
+        NetworkTest() {
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if(networkInfo == null) {
+                IndexActivity.this.connectionErrorToast.show();
+                return;
+            }
+            Log.e("APP", networkInfo.getTypeName());
+            new DownloadTest().execute("http://222.30.49.10");
+        }
+    }
+
+    class DownloadTest extends AsyncTask<String, Integer, String> {
+        private String downloadUrl(String myurl) throws IOException {
+            InputStream is = null;
+            // Only display the first 500 characters of the retrieved
+            // web page content.
+            int len = 500;
+
+            try {
+                ProxySelector defaultProxySelector = ProxySelector.getDefault();
+                Proxy proxy = null;
+                List<Proxy> proxyList = defaultProxySelector.select(new URI(myurl));
+                if (proxyList.size() > 0) {
+                    proxy = proxyList.get(0);
+                    Log.e(DEBUG_TAG, "Current Proxy Configuration: " + proxy.toString());
+                }
+                URL url = new URL(myurl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
+                conn.setReadTimeout(1000 /* milliseconds */);
+                conn.setConnectTimeout(1500 /* milliseconds */);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                conn.setDoOutput(false);
+//                Log.e(DEBUG_TAG, "The response asadas: ");
+                // Starts the query
+                conn.connect();
+
+//                Log.e(DEBUG_TAG, "The response 123: ");
+                int response = conn.getResponseCode();
+                Log.e(DEBUG_TAG, "Response Code: " + response);
+                if (response != 200) return "Connection_Error";
+                is = conn.getInputStream();
+
+                // Convert the InputStream into a string
+                String contentAsString = readIt(is, len);
+                return contentAsString;
+
+                // Makes sure that the InputStream is closed after the app is
+                // finished using it.
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
+            return null;
+        }
+        public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
+            Reader reader = null;
+            reader = new InputStreamReader(stream, "UTF-8");
+            char[] buffer = new char[len];
+            reader.read(buffer);
+            return new String(buffer);
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String str;
+            try {
+                Log.e("APP", "Before");
+                str = downloadUrl(urls[0]);
+                Log.e("APP", "After");
+            } catch (Exception e) {
+                str = null;
+            }
+            return str;
+        }
+
+        @Override
+        protected void onPostExecute(String str) {
+            Log.e(DEBUG_TAG, str);
+            if(str.equals("Connection_Error"))  IndexActivity.this.connectionErrorToast.show();
+        }
+    }
+
     public void onClick(View view){
 
     }
@@ -52,6 +161,8 @@ public class IndexActivity extends AppCompatActivity
         fragmentTransaction.commit();
         pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
                 Toast.LENGTH_SHORT);
+        connectionErrorToast = Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT);
+        new NetworkTest();
     }
 
     @Override

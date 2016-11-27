@@ -13,20 +13,17 @@
             android:layout_width="match_parent"
             app:srcCompat="@drawable/startpic"
             android:id="@+id/imageView_start"
-            android:layout_weight="0.72"
+            android:layout_weight="0.8"
             android:scaleType="fitXY"
             android:layout_height="0dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.04" />
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:srcCompat="@drawable/icon"
+            app:srcCompat="@drawable/welcomepic"
             android:id="@+id/imageView5"
-            android:layout_weight="0.16" />
+            android:layout_weight="0.2"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false" />
 
     </LinearLayout>
