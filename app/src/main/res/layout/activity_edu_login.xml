@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,87 +13,71 @@
 
     <!-- Login progress -->
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="44dp" />
     <ProgressBar
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
-    <LinearLayout
-        android:id="@+id/email_login_form"
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
-
-        <Space
-            android:minHeight="100dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:weightSum="1"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:id="@+id/email_login_form"
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true">
+
+            <Space
+                android:minHeight="100dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
 
             <LinearLayout
-                android:layout_weight="0.15"
-                android:orientation="vertical"
+                android:weightSum="1"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <EditText
-                        android:id="@+id/email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_email"
-                        android:maxLines="1"
-                        android:maxLength="7"
-                        android:inputType="number"
-                        android:layout_alignBottom="@+id/password"
-                        android:layout_centerHorizontal="true"/>
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-
-                    <EditText
-                        android:id="@+id/password"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_password"
-                        android:imeActionId="@+id/login"
-                        android:imeActionLabel="@string/action_sign_in_short"
-                        android:imeOptions="actionUnspecified"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:layout_centerVertical="true"
-                        android:layout_alignStart="@+id/email"
-                        android:layout_width="match_parent"
-                        android:layout_weight="1" />
-                </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:orientation="horizontal"
+                    android:layout_weight="0.15"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <android.support.design.widget.TextInputLayout android:layout_height="match_parent"
-                        android:layout_width="100dp">
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
                         <EditText
-                            android:id="@+id/editText3"
-                            android:layout_height="match_parent"
-                            android:hint="@string/prompt_validate"
+                            android:id="@+id/email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_email"
+                            android:maxLines="1"
+                            android:maxLength="7"
+                            android:inputType="number"
+                            android:layout_alignBottom="@+id/password"
+                            android:layout_centerHorizontal="true"/>
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+                        <EditText
+                            android:id="@+id/password"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_password"
                             android:imeActionId="@+id/login"
                             android:imeActionLabel="@string/action_sign_in_short"
                             android:imeOptions="actionUnspecified"
@@ -103,84 +87,108 @@
                             android:layout_alignStart="@+id/email"
                             android:layout_width="match_parent"
                             android:layout_weight="1" />
-
                     </android.support.design.widget.TextInputLayout>
 
-                    <ImageView
-                        android:layout_height="match_parent"
-                        app:srcCompat="@drawable/validatecode"
-                        android:id="@+id/imageView_ValidateCode"
-                        android:scaleType="fitCenter"
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:cropToPadding="false"
-                        android:adjustViewBounds="false"
-                        android:onClick="changeCode"/>
+                        android:layout_height="match_parent">
+
+                        <android.support.design.widget.TextInputLayout android:layout_height="match_parent"
+                            android:layout_width="100dp">
+
+                            <EditText
+                                android:id="@+id/ValidateCode"
+                                android:layout_height="match_parent"
+                                android:hint="@string/prompt_validate"
+                                android:imeActionId="@+id/login"
+                                android:imeActionLabel="@string/action_sign_in_short"
+                                android:imeOptions="actionUnspecified"
+                                android:inputType="textPassword"
+                                android:maxLines="1"
+                                android:layout_centerVertical="true"
+                                android:layout_alignStart="@+id/email"
+                                android:layout_width="match_parent"
+                                android:layout_weight="1" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <ImageView
+                            android:layout_height="match_parent"
+                            app:srcCompat="@drawable/validatecode"
+                            android:id="@+id/imageView_ValidateCode"
+                            android:scaleType="fitCenter"
+                            android:layout_width="match_parent"
+                            android:cropToPadding="false"
+                            android:adjustViewBounds="false"
+                            android:onClick="changeCode"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/login_progress"
+                    android:layout_weight="0.85"
+                    android:weightSum="1">
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        app:srcCompat="@drawable/ic_send_black_48dp"
+                        android:id="@+id/imageView2"
+                        android:clickable="true"
+                        android:layout_marginLeft="10dp"
+                        android:onClick="onLoginClicked"
+                        android:layout_alignParentTop="true" />
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"/>
+
+                </LinearLayout>
             </LinearLayout>
 
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"/>
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/login_progress"
-                android:layout_weight="0.85"
-                android:weightSum="1">
+                android:weightSum="1"
+                android:layout_alignTop="@+id/linearLayout"
+                android:layout_toEndOf="@+id/login_progress">
 
-                <Space
-                    android:layout_width="match_parent"
+                <CheckBox
+                    android:text="记住密码"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"/>
+                    android:layout_weight="0.5"
+                    android:id="@+id/checkBox_RemPass" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="32dp"
-                    app:srcCompat="@drawable/ic_send_black_48dp"
-                    android:id="@+id/imageView2"
-                    android:clickable="true"
-                    android:layout_marginLeft="10dp"
-                    android:onClick="onLoginClicked"
-                    android:layout_alignParentTop="true" />
-
-                <Space
-                    android:layout_width="match_parent"
+                <CheckBox
+                    android:text="自动登录"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"/>
+                    android:layout_weight="0.5"
+                    android:id="@+id/checkBox_AutoLog" />
 
             </LinearLayout>
-        </LinearLayout>
 
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp"/>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1"
-            android:layout_alignTop="@+id/linearLayout"
-            android:layout_toEndOf="@+id/login_progress">
-
-            <CheckBox
-                android:text="记住密码"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:id="@+id/checkBox_RemPass" />
-
-            <CheckBox
-                android:text="自动登录"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:id="@+id/checkBox_AutoLog" />
 
         </LinearLayout>
+    </RelativeLayout>
 
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

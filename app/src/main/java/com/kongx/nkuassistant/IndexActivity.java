@@ -3,6 +3,7 @@ package com.kongx.nkuassistant;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class IndexActivity extends AppCompatActivity
@@ -28,6 +30,9 @@ public class IndexActivity extends AppCompatActivity
     private static final long mBackPressThreshold = 3500;
     private HomeFragment homeFragment;
     static final String DEBUG_TAG = "APP";
+    private TextView mNameDrawerView;
+    private TextView mFacultyDrawerView;
+    private TextView mIdDrawerView;
 
     class NetworkTest {
         NetworkTest() {
@@ -101,6 +106,12 @@ public class IndexActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.index, menu);
+        mNameDrawerView = (TextView) findViewById(R.id.drawer_Name);
+        mFacultyDrawerView = (TextView) findViewById(R.id.drawer_Faculty);
+        mIdDrawerView = (TextView) findViewById(R.id.drawer_ID);
+        mNameDrawerView.setText(Information.name);
+        mIdDrawerView.setText(Information.id);
+        mFacultyDrawerView.setText(Information.facultyName);
         return true;
     }
 
@@ -155,10 +166,5 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void removeOldFragment(){
-        FrameLayout layout = (FrameLayout)findViewById(R.id.fragment_container);
-        layout.removeAllViewsInLayout();
     }
 }

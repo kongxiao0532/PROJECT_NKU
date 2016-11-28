@@ -1,11 +1,13 @@
 package com.kongx.nkuassistant;
 
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -17,14 +19,15 @@ import java.util.List;
 /**
  * Created by kongx on 2016/11/27 0027.
  */
-
 class Connect extends AsyncTask<String, Integer, BufferedInputStream> {
     private Connectable parent;
     private static final String DEBUG_TAG = "APP";
     private int type;
-    public Connect(Connectable parent, int type) {
+    private String postMessage;
+    public Connect(Connectable parent, int type, @Nullable String post) {
         this.parent = parent;
         this.type = type;
+        this.postMessage = post;
     }
 
     @Override
@@ -42,9 +45,18 @@ class Connect extends AsyncTask<String, Integer, BufferedInputStream> {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
             conn.setReadTimeout(1000);
             conn.setConnectTimeout(1500);
-            conn.setRequestMethod("GET");
+            if(postMessage == null){
+                conn.setRequestMethod("GET");
+                conn.setDoOutput(false);
+            } else{
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                OutputStream os = conn.getOutputStream();
+                os.write(postMessage.getBytes());
+                os.flush();
+                os.close();
+            }
             conn.setDoInput(true);
-            conn.setDoOutput(false);
             conn.connect();
             int response = conn.getResponseCode();
             Log.e(DEBUG_TAG, "Response Code: " + response);

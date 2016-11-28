@@ -1,23 +1,44 @@
 package com.kongx.nkuassistant;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class PersonalPage extends AppCompatActivity {
+    private TextView mNameView;
+    private TextView mFacultyView;
+    private TextView mStudentIDView;
+    private TextView mGradeView;
+    private Button mLogoutButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_page);
-        Button logoutButton = (Button) findViewById(R.id.button_logOut);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
+        mLogoutButton = (Button) findViewById(R.id.button_logOut);
+        mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PersonalPage.this,EduLoginActivity.class);
+                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
+                SharedPreferences.Editor settingEditor = settings.edit();
+                settingEditor.putBoolean("ifRemPass",false);
+                settingEditor.commit();
+                Intent intent = new Intent(getApplicationContext(), EduLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });
+        mNameView = (TextView) findViewById(R.id.PP_Name);
+        mFacultyView = (TextView) findViewById(R.id.PP_Faculty);
+        mStudentIDView = (TextView) findViewById(R.id.PP_ID);
+        mGradeView = (TextView) findViewById(R.id.PP_Grade);
+        mNameView.setText(Information.name);
+        mFacultyView.setText(Information.facultyName);
+        mStudentIDView.setText(Information.id);
+        mGradeView.setText("20"+Information.id+"级本科生");
     }
 }
