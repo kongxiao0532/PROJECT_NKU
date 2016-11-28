@@ -5,12 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
-
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -19,16 +16,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.os.Handler;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.io.BufferedInputStream;
 
 /**
  * A login screen that offers login via email/password.
@@ -40,6 +31,11 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private EditText mPasswordView;
     private View mProgressView;
     private ImageView mValidateCode;
+
+    public static class RequestType{
+        static final int VALIDATECODE = 0;
+    };
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -60,7 +56,8 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
         // Set up the login form.
-        new Connect(this).execute("http://222.30.49.10/ValidateCode");
+        //new Connect(this).execute("http://222.30.49.10/ValidateCode");
+        changeCode(null);
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -79,23 +76,26 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
     }
     public void changeCode(View view){
-        new Connect(this).execute("http://222.30.49.10/ValidateCode");
+        new Connect(this,RequestType.VALIDATECODE).execute("http://222.30.49.10/ValidateCode");
     }
     @Override
-    public void updateConnect(InputStream inputStream) {
-        Bitmap pic = BitmapFactory.decodeStream(inputStream);
-        if(pic == null) {
-            new Connect(this).execute("http://222.30.49.10/ValidateCode");
-            return;
-//            Scanner s = new Scanner(inputStream,"GB2312").useDelimiter("\\A");
-//            String result =s.next();
-//            Log.e("APP","testtest"+result+"testtesst");
-//        try{inputStream.close();}catch (IOException e){Log.e("APP","????")}
+    public void onTaskComplete(Object o, int type) {
+        switch (type){
+            case RequestType.VALIDATECODE:
+                BufferedInputStream is = (BufferedInputStream)o ;
+                if(is == null) { Log.e("APP","Maybe network error."); break; }
+                Bitmap pic = BitmapFactory.decodeStream(is);
+                if(pic == null) {
+                    Log.e("APP","Decode is finished but picture is not valid.");
+                }else {
+                    Bitmap resized = Bitmap.createBitmap(pic, 0, 0, pic.getWidth() / 2, pic.getHeight());
+                    resized.setWidth(75);
+                    mValidateCode.setImageBitmap(resized);
+                }
+                break;
+            default:
+                break;
         }
-        Bitmap resized = Bitmap.createBitmap(pic,0,0,pic.getWidth()/2, pic.getHeight());
-//        pic.setWidth(75);
-        mValidateCode.setImageBitmap(resized);
-        try{inputStream.close();}catch (IOException e){Log.e("APP","????");}
     }
 
     /**
