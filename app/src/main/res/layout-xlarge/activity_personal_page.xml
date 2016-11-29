@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_personal_page"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.kongx.nkuassistant.PersonalPage">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="575dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:background="@drawable/top"
+            android:layout_gravity="bottom|left"
+            android:gravity="bottom|left"
+            android:layout_height="180dp">
+
+            <TextView
+                android:text="Name"
+                android:textColor="#FFFFFFFF"
+                android:textSize="40sp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_Name" />
+
+            <TextView
+                android:text="Student ID"
+                android:textColor="#D0FFFFFF"
+                android:textSize="20sp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginBottom="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_ID" />
+        </LinearLayout>
+
+        <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="50dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+            <TextView
+                android:text="南开大学"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_School" />
+
+            <TextView
+                android:text="Faculty"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_Faculty" />
+            <TextView
+                android:text="Major"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_Major" />
+            <TextView
+                android:text="Grade"
+                android:textSize="20dp"
+                android:layout_marginTop="20dp"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/PP_Grade" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+    android:text="退出登录"
+        android:layout_marginTop="50dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:id="@+id/button_logOut"
+        android:elevation="0dp"
+        android:background="#FF0000" />
+
+</RelativeLayout>

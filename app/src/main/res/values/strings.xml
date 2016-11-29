@@ -16,19 +16,24 @@
     <string name="error_password_required">请输入密码</string>
     <string name="error_validate_required">请输入验证码</string>
     <string name="error_invalid_validate">验证码无效</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--String related to Selection-->
+    <string name="error_number_required">"请输入选课序号"</string>
+    <string name="prompt_index">选课序号</string>
+    <string name="not_Open_Warning">选课系统关闭</string>
+
+    <!--String related to Score-->
+    <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$f分</string>
+    <string name="average_template">ABCD学分绩%1$f分\nABCDE学分绩%2$f分</string>
+    <string name="credits_template">总学分%1$f分</string>
 
     <string name="title_activity_personal_page">个人主页</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
     <string name="connection_error">服务器连接错误</string>
     <string name="Unlogged">未登录</string>
-    <string name="title_activity_welcome">WelcomeActivity</string>
+
+    <drawable name="red">#4CAF50</drawable>
+    <drawable name="yellow">#CDDC39</drawable>
+    <drawable name="green">#F44336</drawable>
 </resources>

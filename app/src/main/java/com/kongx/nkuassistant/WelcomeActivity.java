@@ -1,14 +1,10 @@
 package com.kongx.nkuassistant;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,12 +19,14 @@ public class WelcomeActivity extends AppCompatActivity {
         if(!Information.ifAutoLogin){
             Information.name = "Name";
             Information.facultyName = "Faculty";
+            Information.majorName = "Major";
             Information.id = "ID";
         }
         else {
-            Information.name = settings.getString("StudentName","");
-            Information.facultyName = settings.getString("FacultyName","");
-            Information.id = settings.getString("StudentID","");
+            Information.name = settings.getString("StudentName","Name");
+            Information.facultyName = settings.getString("FacultyName","Faculty");
+            Information.id = settings.getString("StudentID","id");
+            Information.majorName = settings.getString("MajorName","Major");
         }
         System.setProperty("java.net.useSystemProxies", "true");
         new Timer().schedule(new TimerTask() {

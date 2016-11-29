@@ -1,6 +1,19 @@
 package com.kongx.nkuassistant;
 
-import android.content.Context; import android.graphics.Bitmap; import android.graphics.Bitmap.Config; import android.graphics.Canvas; import android.graphics.Paint; import android.graphics.PorterDuff.Mode; import android.graphics.PorterDuffXfermode; import android.graphics.Rect; import android.graphics.drawable.BitmapDrawable; import android.graphics.drawable.Drawable; import android.util.AttributeSet; import android.widget.ImageView; /** * 自定义的圆形ImageView，可以直接当组件在布局中使用。
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.widget.ImageView;
+
+/** * 自定义的圆形ImageView，可以直接当组件在布局中使用。
  * @author caizhiming
  * */ public class XCRoundImageView extends ImageView{ private Paint paint ; public XCRoundImageView(Context context) { this(context,null);  
     } public XCRoundImageView(Context context, AttributeSet attrs) { this(context, attrs,0);  

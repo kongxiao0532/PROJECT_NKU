@@ -3,7 +3,6 @@ package com.kongx.nkuassistant;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,13 +16,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class IndexActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
-
+        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
     private Toast pressBackToast;
     private Toast connectionErrorToast;
     private long mLastBackPress;
@@ -33,6 +30,7 @@ public class IndexActivity extends AppCompatActivity
     private TextView mNameDrawerView;
     private TextView mFacultyDrawerView;
     private TextView mIdDrawerView;
+    public static IndexActivity thisIndexPtr = null;
 
     class NetworkTest {
         NetworkTest() {
@@ -58,6 +56,7 @@ public class IndexActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.index);
+        thisIndexPtr = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

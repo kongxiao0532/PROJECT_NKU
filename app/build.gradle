@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    compile(name:'jsevaluator-1.0', ext:'aar')
+    compile(name:'AndroidJSCore-3.0.1', ext:'aar')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@color/colorPrimary"
+    android:weightSum="1">
+
+    <TextView
+        android:text="A类课，共10学分"
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/score_list_divider_type"
+        android:layout_gravity="start|center_vertical"
+        android:gravity="start|bottom"
+        android:textColor="#FFFFFF"
+        android:textSize="23sp"
+        android:layout_weight="0.5" />
+
+    <TextView
+        android:text="学分绩90分"
+        android:layout_marginEnd="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/score_list_divider_average"
+        android:layout_gravity="end|center_vertical"
+        android:gravity="end|bottom"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_weight="0.5" />
+</LinearLayout>

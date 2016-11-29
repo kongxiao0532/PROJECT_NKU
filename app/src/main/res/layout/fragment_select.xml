@@ -1,41 +1,126 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.kongx.nkuassistant.SelectFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
+    <TextView
+        android:layout_alignParentStart="true"
+        android:text="@string/not_Open_Warning"
+        android:layout_width="match_parent"
+        android:id="@+id/textView_notOpenWarning"
+        android:visibility="visible"
+        android:gravity="center"
+        android:background="#F44336"
+        android:textColor="#FFFFFF"
+        android:layout_height="50dp" />
+
     <LinearLayout
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="21dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp">
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="220dp"
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/editText"
-                android:layout_weight="1" />
-
+                <EditText
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                    android:hint="@string/prompt_index"
+                  android:inputType="number"
+                   android:ems="10"
+                   android:id="@+id/editText_index_1"
+                   android:layout_weight="1" />
+            </android.support.design.widget.TextInputLayout>
             <ImageView
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="20dp"
                 android:layout_width="25dp"
                 android:layout_height="match_parent"
                 app:srcCompat="@drawable/ic_add_circle_black_18dp"
-                android:id="@+id/imageView" />
+                android:id="@+id/imageView_add_1" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="220dp"
+                android:layout_height="wrap_content">
 
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/prompt_index"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/editText_index_2"
+                    android:layout_weight="1" />
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_add_circle_black_18dp"
+                android:id="@+id/imageView_add_2" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="220dp"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/prompt_index"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/editText_index_3"
+                    android:layout_weight="1" />
+            </android.support.design.widget.TextInputLayout>
+            <ImageView
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="20dp"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_add_circle_black_18dp"
+                android:id="@+id/imageView_add_3" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/prompt_index"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/editText_index_4"
+                    android:layout_weight="1" />
+            </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -62,26 +147,33 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_marginTop="30dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:text="选课"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/button_select"
-                android:layout_weight="1" />
-
-            <Button
-                android:text="退课"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/button_Drop"
-                android:layout_weight="1" />
-        </LinearLayout>
 
     </LinearLayout>
-</FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:text="选课"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_select"
+            android:layout_weight="1"
+            android:textColor="#FAFAFA"
+            android:background="#4CAF50" />
+
+        <Button
+            android:text="退课"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_Drop"
+            android:layout_weight="1"
+            android:textColor="#FAFAFA"
+            android:background="#F44336" />
+    </LinearLayout>
+
+</RelativeLayout>
