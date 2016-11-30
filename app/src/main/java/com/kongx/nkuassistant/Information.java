@@ -23,32 +23,22 @@ public class Information {
 
     //related to Scores
     static int studiedCourseCount;
+    static int selectedCourseCount;
+    static int examsCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
-    static float creditsAll_a = 0;
-    static float scoresAll_a = 0;
-    static float average_a;
-    static float creditsAll_b = 0;
-    static float scoresAll_b = 0;
-    static float average_b;
-    static float creditsAll_c = 0;
-    static float scoresAll_c = 0;
-    static float average_c;
-    static float creditsAll_d = 0;
-    static float scoresAll_d = 0;
-    static float average_d;
-    static float creditsAll_e = 0;
-    static float scoresAll_e = 0;
-    static float average_e;
+    static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
+    static float[] credits = new float[5];
+    static float[] scores = new float[5];
+    static float[] averages = new float[5];
     static float credits_All;
+    static float scores_All;
     static float average_abcd;
     static float average_abcde;
     static public void resetScores(){
-        creditsAll_a = scoresAll_a = average_a = 0;
-        creditsAll_b = scoresAll_b = average_b = 0;
-        creditsAll_c = scoresAll_c = average_c = 0;
-        creditsAll_d = scoresAll_d = average_d = 0;
-        creditsAll_e = scoresAll_e = average_e = 0;
-        credits_All = average_abcd = average_abcde = 0;
+        for(int i = 0;i < 5;i++){
+            scores[i] = credits[i] = averages[i] = 0;
+        }
+        credits_All = scores_All = average_abcd = average_abcde = 0;
     }
 
     //related to Internet Connection

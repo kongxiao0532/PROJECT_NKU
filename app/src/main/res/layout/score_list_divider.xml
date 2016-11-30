@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="40dp"
-    android:background="@color/colorPrimary"
-    android:weightSum="1">
+    android:layout_width="match_parent">
 
     <TextView
-        android:text="A类课，共10学分"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/textView"
+        android:background="#E0E0E0"
+        android:layout_weight="0.4" />
+
+    <LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:weightSum="1"
+        android:layout_height="30dp">
+
+        <TextView
+        android:text="A类课"
         android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/score_list_divider_type"
         android:layout_gravity="start|center_vertical"
         android:gravity="start|bottom"
-        android:textColor="#FFFFFF"
-        android:textSize="23sp"
-        android:layout_weight="0.5" />
-
+        android:textSize="18sp"
+        android:layout_weight="0.4" />
+    <TextView
+        android:text="共10学分"
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/score_list_divider_credits"
+        android:layout_gravity="start|center_vertical"
+        android:gravity="center|bottom"
+        android:textSize="12sp"
+        android:layout_weight="0.3" />
     <TextView
         android:text="学分绩90分"
         android:layout_marginEnd="10dp"
@@ -26,7 +45,7 @@
         android:id="@+id/score_list_divider_average"
         android:layout_gravity="end|center_vertical"
         android:gravity="end|bottom"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:layout_weight="0.5" />
+        android:textSize="12sp"
+        android:layout_weight="0.3" />
+        </LinearLayout>
 </LinearLayout>

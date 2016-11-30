@@ -87,6 +87,7 @@ public class SelectFragment extends Fragment implements Connectable {
             public void onClick(View view) {
                 if(mIndex_1.getText().toString().isEmpty()){
                     mIndex_1.setError(getString(R.string.error_number_required));
+                    mIndex_1.requestFocus();
                     return;
                 }
                 if(!ifOpen){

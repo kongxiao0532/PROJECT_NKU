@@ -52,7 +52,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="1ab10e0c8a8fd96fd77b8a84ad2054f3211fa6f3">
+        sha1="7d6376222b5b393b1e04e4a88ed7537a74dfd02e">
         <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_2c64607c1bdc6f47bf5e6a17dfd82a83c53cbcf3\classes.dex" />
     </item>
     <item
@@ -84,11 +84,20 @@
     </item>
     <item
         is-multidex="true"
+        jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\exploded-aar\AndroidJSCore-3.0.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.1"
+        sha1="aa46f3c070d7ecfd3486fd04c0016b05b8e4bc27">
+        <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\intermediates-exploded-aar-AndroidJSCore-3.0.1_9518c7a58c664836197ecd11b9ed260b82956316\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="5fbc31edf1d4e916cca5409db6e79cd503705080">
+        sha1="854fcbb0e1d3646e2499fa5dcdf2d6abed1fa06b">
         <dex dex="F:\AndroidStudioProjects\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_93f6dcd2e9ed3183cb665cd246dbd3072128c796\classes.dex" />
     </item>
     <item

@@ -2,92 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context="com.kongx.nkuassistant.ScoreFragment">
 
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/score_list"/>
-
-    <LinearLayout
-        android:visibility="gone"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:text="@string/course_template"
-            android:background="#E0E0E0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/score_a" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/score_layout_a"></LinearLayout>
-
-        <TextView
-            android:text="@string/course_template"
-            android:background="#E0E0E0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/score_b" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/score_layout_b"></LinearLayout>
-
-        <TextView
-            android:text="@string/course_template"
-            android:background="#E0E0E0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/score_c" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/score_layout_c"></LinearLayout>
-
-        <TextView
-            android:text="@string/course_template"
-            android:background="#E0E0E0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/score_d" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/score_layout_d"></LinearLayout>
-
-        <TextView
-            android:text="@string/course_template"
-            android:background="#E0E0E0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/score_e" />
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/score_layout_e"></LinearLayout>
-
-    </LinearLayout>
+        android:id="@+id/score_list"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="50dp">
+    </ListView>
 
     <LinearLayout
         android:orientation="horizontal"
