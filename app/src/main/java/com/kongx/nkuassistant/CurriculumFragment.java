@@ -39,6 +39,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
+        Information.selectedCourses.clear();
         new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
         return myView;
     }
