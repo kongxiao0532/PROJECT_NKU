@@ -9,10 +9,6 @@
     tools:context="com.kongx.nkuassistant.IndexActivity"
     tools:showIn="@layout/app_bar_index">
 
-    <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="com.kongx.nkuassistant.AboutFragment" />
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

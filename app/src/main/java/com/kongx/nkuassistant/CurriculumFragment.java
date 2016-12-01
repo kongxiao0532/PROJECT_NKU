@@ -2,6 +2,7 @@ package com.kongx.nkuassistant;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.IllegalFormatCodePointException;
 import java.util.Scanner;
@@ -49,48 +51,62 @@ public class CurriculumFragment extends Fragment implements Connectable {
 
     @Override
     public void onTaskComplete(Object o, int type) {
-        BufferedInputStream is = (BufferedInputStream)o ;
-        String returnString = new Scanner(is,"GB2312").useDelimiter("\\A").next();
-        if(type == 1){
-            pattern = Pattern.compile("(共 )(\\d)( 页,第)");
+        if(o == null){
+            Log.e("APP", "What the fuck?");
+        }else if(o.getClass() == BufferedInputStream.class) {
+            BufferedInputStream is = (BufferedInputStream) o;
+            String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            if (type == 1) {
+                pattern = Pattern.compile("(共 )(\\d)( 页,第)");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
+                pattern = Pattern.compile("(共 )(.+)( 条记录)");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find())
+                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
+            }
+            pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r\\n)");
             matcher = pattern.matcher(returnString);
-            if(matcher.find())  numberOfPages = Integer.parseInt(matcher.group(2));
-            pattern = Pattern.compile("(共 )(.+)( 条记录)");
-            matcher = pattern.matcher(returnString);
-            if(matcher.find())  Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
+            HashMap<String, String> map = new HashMap<String, String>();
+            for (int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++) {
+                map = new HashMap<String, String>();
+                matcher.find();
+                matcher.find();
+                map.put("index", matcher.group(2));
+                matcher.find();
+                matcher.find();
+                map.put("name", matcher.group(2));
+                matcher.find();
+                map.put("dayOfWeek", matcher.group(2));
+                matcher.find();
+                map.put("startTime", matcher.group(2));
+                matcher.find();
+                map.put("endTime", matcher.group(2));
+                matcher.find();
+                map.put("classRoom", matcher.group(2));
+                matcher.find();
+                map.put("classType", matcher.group(2));
+                matcher.find();
+                map.put("teacherName", matcher.group(2));
+                matcher.find();
+                map.put("startWeek", matcher.group(2));
+                matcher.find();
+                map.put("endWeek", matcher.group(2));
+                matcher.find();
+                Information.selectedCourses.add(map);
+            }
+            if (type == numberOfPages) updateUI();
+            else
+                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/selectedPageAction.do");
+        }else if(o.getClass() == Integer.class){
+            Integer code = (Integer)o;
+            if(code == 302){
+                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
+                getActivity().finish();
+            }
+        }else if(o.getClass() == SocketTimeoutException.class){
+            Log.e("APP","SocketTimeoutException!");
         }
-        pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r\\n)");
-        matcher = pattern.matcher(returnString);
-        HashMap<String,String> map = new HashMap<String,String>();
-        for(int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++){
-            map = new HashMap<String,String>();
-            matcher.find();
-            matcher.find();
-            map.put("index",matcher.group(2));
-            matcher.find();
-            matcher.find();
-            map.put("name",matcher.group(2));
-            matcher.find();
-            map.put("dayOfWeek",matcher.group(2));
-            matcher.find();
-            map.put("startTime",matcher.group(2));
-            matcher.find();
-            map.put("endTime",matcher.group(2));
-            matcher.find();
-            map.put("classRoom",matcher.group(2));
-            matcher.find();
-            map.put("classType",matcher.group(2));
-            matcher.find();
-            map.put("teacherName",matcher.group(2));
-            matcher.find();
-            map.put("startWeek",matcher.group(2));
-            matcher.find();
-            map.put("endWeek",matcher.group(2));
-            matcher.find();
-            Information.selectedCourses.add(map);
-        }
-        if(type == numberOfPages)   updateUI();
-        else new Connect(CurriculumFragment.this, ++type, "index="+type).execute(Information.webUrl+"/xsxk/selectedPageAction.do");
     }
 
     private class MyAdapter extends BaseAdapter {

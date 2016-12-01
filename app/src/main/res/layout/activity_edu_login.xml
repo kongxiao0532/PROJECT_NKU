@@ -58,13 +58,13 @@
                         android:layout_height="wrap_content">
 
                         <EditText
-                            android:id="@+id/email"
+                            android:id="@+id/username"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_email"
                             android:maxLines="1"
                             android:maxLength="7"
-                            android:inputType="number"
+                            android:inputType="textAutoComplete"
                             android:layout_alignBottom="@+id/password"
                             android:layout_centerHorizontal="true"/>
                     </android.support.design.widget.TextInputLayout>
@@ -84,7 +84,7 @@
                             android:inputType="textPassword"
                             android:maxLines="1"
                             android:layout_centerVertical="true"
-                            android:layout_alignStart="@+id/email"
+                            android:layout_alignStart="@+id/username"
                             android:layout_width="match_parent"
                             android:layout_weight="1" />
                     </android.support.design.widget.TextInputLayout>
@@ -104,10 +104,10 @@
                                 android:imeActionId="@+id/login"
                                 android:imeActionLabel="@string/action_sign_in_short"
                                 android:imeOptions="actionUnspecified"
-                                android:inputType="textPassword"
+                                android:inputType="textVisiblePassword"
                                 android:maxLines="1"
                                 android:layout_centerVertical="true"
-                                android:layout_alignStart="@+id/email"
+                                android:layout_alignStart="@+id/username"
                                 android:layout_width="match_parent"
                                 android:layout_weight="1" />
 

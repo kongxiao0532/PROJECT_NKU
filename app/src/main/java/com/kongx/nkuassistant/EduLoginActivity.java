@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -33,12 +31,16 @@ import org.liquidplayer.webkit.javascriptcore.JSContext;
 import org.liquidplayer.webkit.javascriptcore.JSValue;
 
 import java.io.BufferedInputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.SocketTimeoutException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via username/password.
  */
 public class EduLoginActivity extends AppCompatActivity implements Connectable {
 
@@ -128,7 +130,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
                 Toast.LENGTH_SHORT);
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
-        mUsernameView = (EditText) findViewById(R.id.email);
+        mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
         mRemPass = (CheckBox) findViewById(R.id.checkBox_RemPass);
@@ -196,76 +198,95 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
 
     @Override
     public void onTaskComplete(Object o, int type) {
-        BufferedInputStream is = (BufferedInputStream) o;
-        if (is == null) {
-            Log.e("APP", "Maybe network error.");
-            return;
-        }
-        switch (type) {
-            case RequestType.VALIDATE_CODE:
-                Bitmap pic = BitmapFactory.decodeStream(is);
-                if (pic == null) {
-                    Log.e("APP", "Decode is finished but picture is not valid.");
-                } else {
-                    Bitmap resized = Bitmap.createBitmap(pic, 0, 0, pic.getWidth() / 2, pic.getHeight());
-                    resized.setWidth(75);
-                    mValidateCode.setImageBitmap(resized);
+        if(o == null){
+            Log.e("APP", "What the fuck?");
+        }else if(o.getClass() == BufferedInputStream.class) {
+            BufferedInputStream is = (BufferedInputStream) o;
+            switch (type) {
+                case RequestType.VALIDATE_CODE:
+                    Bitmap pic = BitmapFactory.decodeStream(is);
+                    if (pic == null) {
+                        Log.e("APP", "Decode is finished but picture is not valid.");
+                    } else {
+                        Bitmap resized = Bitmap.createBitmap(pic, 0, 0, pic.getWidth() / 2, pic.getHeight());
+                        resized.setWidth(75);
+                        mValidateCode.setImageBitmap(resized);
+                    }
+                    break;
+                case RequestType.LOGIN: {
+                    String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+                    pattern = Pattern.compile("<LI>(.+)\\n(?=</LI>)");
+                    matcher = pattern.matcher(returnString);
+                    if (matcher.find()) {
+                        Toast.makeText(getApplicationContext(), "登录失败，" + matcher.group(1), Toast.LENGTH_SHORT).show();
+                        mValidateView.setText("");
+                        changeCode(null);
+                        showProgress(false);
+                    } else {
+                        CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
+                        for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
+                            if (httpCookie.getName().equals("JSESSIONID")) {
+                                SharedPreferences preferences = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putString("JSESSIONID", httpCookie.getValue());
+                                editor.apply();
+                            }
+                        }
+                        new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl + "/studymanager/stdbaseinfo/queryAction.do");
+                    }
+                    break;
                 }
-                break;
-            case RequestType.LOGIN: {
-                String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-                pattern = Pattern.compile("<LI>(.+)\\n(?=</LI>)");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) {
-                    Toast.makeText(getApplicationContext(), "登录失败，" + matcher.group(1), Toast.LENGTH_SHORT).show();
-                    mValidateView.setText("");
-                    changeCode(null);
-                    showProgress(false);
-                } else {
-                    new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl+"/studymanager/stdbaseinfo/queryAction.do");
-                }
-                break;
-            }
-            case RequestType.USER_INFO: {
-                String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-                pattern = Pattern.compile("<td width=\"10%\" bgcolor=\"#ffffff\" class=\"NavText\">(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) {
-                    Information.id = matcher.group(1);
-                }
-                if (matcher.find()) {
-                    Information.name = matcher.group(1);
+                case RequestType.USER_INFO: {
+                    String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+                    pattern = Pattern.compile("<td width=\"10%\" bgcolor=\"#ffffff\" class=\"NavText\">(.+)</td>");
+                    matcher = pattern.matcher(returnString);
+                    if (matcher.find()) {
+                        Information.id = matcher.group(1);
+                    }
+                    if (matcher.find()) {
+                        Information.name = matcher.group(1);
 
+                    }
+                    pattern = Pattern.compile("<td  bgcolor=\"#ffffff\" class=\"NavText\" colspan=\"3\">(.+)</td>");
+                    matcher = pattern.matcher(returnString);
+                    if (matcher.find()) {
+                        Information.facultyName = matcher.group(1);
+                    }
+                    if (matcher.find()) {
+                        Information.majorName = matcher.group(1);
+                    }
+                    SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("StudentName", Information.name);
+                    editor.putString("FacultyName", Information.facultyName);
+                    editor.putString("MajorName", Information.majorName);
+                    editor.putString("StudentID", Information.id);
+                    editor.apply();
+                    Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                    break;
                 }
-                pattern = Pattern.compile("<td  bgcolor=\"#ffffff\" class=\"NavText\" colspan=\"3\">(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) {
-                    Information.facultyName = matcher.group(1);
-                }
-                if (matcher.find()) {
-                    Information.majorName = matcher.group(1);
-                }
-                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("StudentName", Information.name);
-                editor.putString("FacultyName", Information.facultyName);
-                editor.putString("MajorName", Information.majorName);
-                editor.putString("StudentID", Information.id);
-                editor.apply();
-                Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-                break;
+                default:
+                    break;
             }
-            default:
-                break;
+        }else if(o.getClass() == Integer.class){
+            Integer code = (Integer)o;
+            if(code == 302){
+                //TODO:Login to 202.113.18.106
+                Log.e("APP","Maybe not log in to NKU_WLAN");
+                //this.startActivity(new Intent(null,EduLoginActivity.class));
+                finish();
+            }
+        }else if(o.getClass() == SocketTimeoutException.class){
+            Log.e("APP","SocketTimeoutException!");
         }
     }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (invalid username, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
