@@ -3,6 +3,7 @@ package com.kongx.nkuassistant;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +54,10 @@ public class ScoreFragment extends Fragment implements Connectable{
     }
 
     private void updateUI(){
+        SharedPreferences settings = getActivity().getSharedPreferences(Information.PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("studiedCourseCount",String.valueOf(Information.studiedCourseCount));
+        editor.apply();
         for(int i = 0;i < 5;i++){
             Information.averages[i] = Information.scores[i] / Information.credits[i];
             Information.credits_All += Information.credits[i];

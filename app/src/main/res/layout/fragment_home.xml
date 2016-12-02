@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,73 +7,460 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:gravity="center"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:background="@drawable/week"
-            android:layout_width="100dp"
-            android:layout_height="100dp">
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:textAlignment="center"
-                android:layout_marginTop="25dp"
-                android:textSize="16dp"
-                android:textColor="#FFFFFF"
-                android:text="第"
-                android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_No."                />
+                android:id="@+id/home_schedule_layout">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <TextView
-                android:textAlignment="center"
-                android:layout_marginTop="25dp"
-                android:textSize="40dp"
-                android:textColor="#FFFFFF"
-                android:text="10"
-                android:layout_width="wrap_content"
+                    <ImageView
+                        app:srcCompat="@drawable/ic_menu_schedule"
+                        android:layout_marginTop="10dp"
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.02"
+                        android:layout_width="30dp" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:textColor="#212121"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingTop="10dp"
+                        android:gravity="start"
+                        android:id="@+id/home_schedule_headline"
+                        android:layout_weight="1"
+                        android:text="课程表" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:layout_marginTop="10dp"
+                        android:paddingEnd="15dp"
+                        android:textAlignment="center"
+                        android:text="2016-2017 第一学期"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView_semester"
+                        android:layout_weight="0.02" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="第"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView_No."
+                        android:layout_weight="0.02" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView_weekCount"
+                        android:layout_weight="0.02" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="周"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.02" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:paddingTop="15dp"
+                    android:background="#FFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="10dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="0.02">
+
+                    <TextView
+                    android:background="#FFFFFF"
+                    android:textAlignment="center"
+                    android:text="2016年12月1日"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView_date"
+                    android:layout_weight="1" />
+
+                    <TextView
+                        android:background="#FFFFFF"
+                        android:textAlignment="center"
+                        android:text="星期四"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView_day"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <ListView
+                    android:background="#FFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:layout_marginBottom="1dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:id="@+id/home_schedule_list"/>
+
+                <TextView
+                    android:text="课程表未更新"
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="1dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/home_schedule_text" />
+
+                <TextView
+                    android:text="查看详情"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/home_schedule_details"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/textView_week" />
+                android:background="#E0E0E0"
+                android:id="@+id/home_exam_layout">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <TextView
-                android:textAlignment="center"
-                android:layout_marginTop="25dp"
-                android:textSize="16dp"
-                android:textColor="#FFFFFF"
-                android:text="周"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                    <ImageView
+                        app:srcCompat="@drawable/ic_menu_exam"
+                        android:layout_marginTop="10dp"
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.02"
+                        android:layout_width="30dp" />
+
+                    <TextView
+                        android:text="考试信息"
+                        android:background="#FFFFFF"
+                        android:textColor="#212121"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingTop="10dp"
+                        android:gravity="start"
+                        android:id="@+id/home_exam_headline"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:id="@+id/home_exam_list"/>
+
+                <TextView
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="1dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/home_exam_text"
+                    android:text="考试信息获取中..." />
+
+                <TextView
+                    android:text="查看详情"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/home_exam_details"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E0E0E0"
+                android:id="@+id/home_score_layout">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        app:srcCompat="@drawable/ic_menu_score"
+                        android:layout_marginTop="10dp"
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.02"
+                        android:layout_width="30dp" />
+
+                    <TextView
+                        android:text="分数查询"
+                        android:background="#FFFFFF"
+                        android:textColor="#212121"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingTop="10dp"
+                        android:gravity="start"
+                        android:id="@+id/home_score_headline"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <TextView
+                    android:text="分数信息获取中..."
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="1dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/home_score_text" />
+                <TextView
+                    android:text="查看详情"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/home_score_details"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E0E0E0"
+                android:id="@+id/home_select_layout">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        app:srcCompat="@drawable/ic_menu_select"
+                        android:layout_marginTop="10dp"
+                        android:background="#FFFFFF"
+                        android:paddingTop="10dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.02"
+                        android:layout_width="30dp" />
+
+                    <TextView
+                        android:text="选课系统"
+                        android:background="#FFFFFF"
+                        android:textColor="#212121"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:paddingTop="10dp"
+                        android:gravity="start"
+                        android:id="@+id/home_select_headline"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <TextView
+                    android:text="选课系统状态获取中..."
+                    android:background="#FFFFFF"
+                    android:layout_marginBottom="1dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:id="@+id/home_select_text" />
+                <TextView
+                    android:text="查看详情"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/home_select_details"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E0E0E0"
+                android:id="@+id/home_bus_layout">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:background="#FFFFFF"
+                    android:layout_marginTop="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        app:srcCompat="@drawable/ic_menu_bus"
+                        android:paddingStart="20dp"
+                        android:scaleType="centerCrop"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.02"
+                        android:layout_width="30dp" />
+
+                    <TextView
+                        android:text="612快线"
+                        android:textColor="#212121"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:id="@+id/home_bus_headline"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:text="下一班"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.02" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    android:layout_weight="0.02">
+
+                    <TextView
+                        android:text="八里台 - 津南"
+                        android:textColor="#424242"
+                        android:layout_marginBottom="1dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:text="津南 - 八里台"
+                        android:textColor="#424242"
+                        android:layout_marginBottom="1dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:background="#FFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:layout_weight="0.02">
+
+                    <TextView
+                        android:text="12:00"
+                        android:textSize="24sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/home_bus_balitai"
+                        android:layout_weight="1" />
+                    <TextView
+                        android:text="12:20"
+                        android:textSize="24sp"
+                        android:paddingBottom="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:id="@+id/home_bus_jinnan"
+                        android:layout_weight="1" />
+                </LinearLayout>
+                <TextView
+                    android:text="(根据2016年11月数据)"
+                    android:textSize="10dp"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="1dp"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:text="查看详情"
+                    android:background="#FFFFFF"
+                    android:textColor="@color/colorPrimary"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/home_bus_details"
+                    android:gravity="center"/>
+            </LinearLayout>
+
         </LinearLayout>
-
-        <TextView
-            android:textAlignment="center"
-            android:text="TextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_date" />
-
-        <TextView
-            android:textAlignment="center"
-            android:text="TextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_period" />
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

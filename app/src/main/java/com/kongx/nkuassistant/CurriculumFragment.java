@@ -3,6 +3,8 @@ package com.kongx.nkuassistant;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,9 +24,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CurriculumFragment extends Fragment implements Connectable {
-    String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
-    String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
-    String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
+    public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+    private static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
+    private static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
     private View myView = null;
     private int numberOfPages;
     private ListView mlistView;
@@ -39,13 +41,14 @@ public class CurriculumFragment extends Fragment implements Connectable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Information.selectedCourses.clear();
         myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
-        Information.selectedCourses.clear();
         new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
         return myView;
     }
     void updateUI(){
+        storeCourses();
         mlistView.setAdapter(new MyAdapter(getActivity()));
     }
 
@@ -158,5 +161,23 @@ public class CurriculumFragment extends Fragment implements Connectable {
         TextView teacher;
         TextView index;
         TextView time;
+    }
+    private boolean storeCourses(){
+        SharedPreferences settings = getActivity().getSharedPreferences(Information.COURSE_PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
+        for(int i = 0;i < Information.selectedCourseCount;i++){
+            editor.putString("index"+i,Information.selectedCourses.get(i).get("index"));
+            editor.putString("name"+i,Information.selectedCourses.get(i).get("name"));
+            editor.putString("dayOfWeek"+i,Information.selectedCourses.get(i).get("dayOfWeek"));
+            editor.putString("startTime"+i,Information.selectedCourses.get(i).get("startTime"));
+            editor.putString("endTime"+i,Information.selectedCourses.get(i).get("endTime"));
+            editor.putString("classRoom"+i,Information.selectedCourses.get(i).get("classRoom"));
+            editor.putString("classType"+i,Information.selectedCourses.get(i).get("classType"));
+            editor.putString("teacherName"+i,Information.selectedCourses.get(i).get("teacherName"));
+            editor.putString("startWeek"+i,Information.selectedCourses.get(i).get("startWeek"));
+            editor.putString("endWeek"+i,Information.selectedCourses.get(i).get("endWeek"));
+        }
+        return editor.commit();
     }
 }

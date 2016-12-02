@@ -23,7 +23,6 @@ import java.util.List;
  * This is the interface to handle all the classes's network requests.
  */
 class Connect extends AsyncTask<String, Integer, Object> {
-    private static CookieManager cookieManager;
     private Connectable parent;
     private static final String DEBUG_TAG = "APP";
     private int type;
@@ -35,7 +34,6 @@ class Connect extends AsyncTask<String, Integer, Object> {
     }
     public static void initialize(CookieManager cookieManager){
         CookieHandler.setDefault(cookieManager);
-        Connect.cookieManager = cookieManager;
     }
     @Override
     protected Object doInBackground(String... urls) {

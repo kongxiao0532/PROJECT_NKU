@@ -4,6 +4,10 @@
     <string name="navigation_drawer_close">关闭导航栏</string>
     <string name="title_activity_edu_login">登录</string>
 
+    <!--Strings realted to home page-->
+    <string name="winter_vacation">寒假</string>
+    <string name="summber_vacation">暑假</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">学号</string>
     <string name="prompt_password">密码</string>
@@ -24,7 +28,7 @@
 
     <!--String related to Score-->
     <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$.2f分</string>
-    <string name="average_template">ABCD学分绩%1$.2f分\nABCDE学分绩%2$.2f分</string>
+    <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分</string>
     <string name="credits_template">总学分%1$.1f分</string>
 
     <string name="title_activity_personal_page">个人主页</string>

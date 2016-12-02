@@ -2,6 +2,7 @@ package com.kongx.nkuassistant;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.IDNA;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.net.SocketTimeoutException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,32 +113,46 @@ public class SelectFragment extends Fragment implements Connectable {
 
     @Override
     public void onTaskComplete(Object o, int type) {
-        BufferedInputStream is = (BufferedInputStream)o ;
-        String returnString = new Scanner(is,"GB2312").useDelimiter("\\A").next();
-        switch (type){
-            case RequestType.CHECK_IF_OPEN:{
-                Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
-                Matcher matcher = pattern.matcher(returnString);
-                if(matcher.find()){
-                    if(matcher.group(1).equals("选课系统关闭")){
-                        ifOpen = false;
-                        Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
-                        mNotOpenWarning.setVisibility(View.VISIBLE);
-                    }else {
-                        mNotOpenWarning.setVisibility(View.GONE);
-                        ifOpen = true;
+        if(o == null){
+            Log.e("APP", "What the fuck?");
+        }else if(o.getClass() == BufferedInputStream.class) {
+            BufferedInputStream is = (BufferedInputStream)o ;
+            String returnString = new Scanner(is,"GB2312").useDelimiter("\\A").next();
+            switch (type){
+                case RequestType.CHECK_IF_OPEN:{
+                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
+                    Matcher matcher = pattern.matcher(returnString);
+                    if(matcher.find()){
+                        if(matcher.group(1).equals("选课系统关闭")){
+                            ifOpen = false;
+                            Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
+                            mNotOpenWarning.setVisibility(View.VISIBLE);
+                        }else {
+                            mNotOpenWarning.setVisibility(View.GONE);
+                            ifOpen = true;
+                        }
                     }
+                    else mNotOpenWarning.setVisibility(View.GONE);
+                    break;
                 }
-                else mNotOpenWarning.setVisibility(View.GONE);
-                break;
+                case RequestType.POST:{
+                    //TODO: deal with the return data
+                    break;
+                }
+                default:
+                    break;
             }
-            case RequestType.POST:{
-                //TODO: deal with the return data
-                break;
+        }else if(o.getClass() == Integer.class){
+            Integer code = (Integer)o;
+            if(code == 302){
+                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
+                getActivity().finish();
             }
-            default:
-                break;
+        }else if(o.getClass() == SocketTimeoutException.class){
+            Log.e("APP","SocketTimeoutException!");
         }
+
+
     }
 }
 

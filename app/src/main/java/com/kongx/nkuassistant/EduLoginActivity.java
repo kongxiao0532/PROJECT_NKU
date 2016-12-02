@@ -51,7 +51,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private View mProgressView;
     private ImageView mValidateCode;
     private CheckBox mRemPass;
-    private CheckBox mAutoLogin;
     private Toast pressBackToast;
     private Toast connectionErrorToast;
     private long mLastBackPress;
@@ -59,64 +58,13 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     String encryptedPassword;
     private Pattern pattern;
     private Matcher matcher;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client2;
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("EduLogin Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client2.connect();
-        AppIndex.AppIndexApi.start(client2, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client2, getIndexApiAction());
-        client2.disconnect();
-    }
-
-    public static class RequestType {
+    private static class RequestType {
         static final int VALIDATE_CODE = 0;
         static final int LOGIN = 1;
         static final int USER_INFO = 2;
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
 
     public void onLoginClicked(View view) {
         attemptLogin();
@@ -127,30 +75,11 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
         changeCode(null);
-        pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
-                Toast.LENGTH_SHORT);
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
         mRemPass = (CheckBox) findViewById(R.id.checkBox_RemPass);
-        mAutoLogin = (CheckBox) findViewById(R.id.checkBox_AutoLog);
-        mAutoLogin.setOnClickListener(new CheckBox.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mAutoLogin.isChecked()) {
-                    mRemPass.setChecked(true);
-                }
-            }
-        });
-        mRemPass.setOnClickListener(new CheckBox.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mRemPass.isChecked()) {
-                    mAutoLogin.setChecked(false);
-                }
-            }
-        });
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -164,20 +93,19 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         mProgressView = findViewById(R.id.login_progress);
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         SharedPreferences.Editor settingEditor = settings.edit();
-        settingEditor.putBoolean("ifAutoLogin", false);
+        settingEditor.putBoolean("ifFirstStart", false);
+        settingEditor.apply();
         mUsernameView.setText(settings.getString("StudentID", null));
         if (settings.getBoolean("ifRemPass", false)) {
             mRemPass.setChecked(settings.getBoolean("ifRemPass", false));
             mPasswordView.setText(settings.getString("Password", null));
         }
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
     public void onBackPressed() {
+        pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
+                Toast.LENGTH_SHORT);
         if (getFragmentManager().getBackStackEntryCount() > 1) {
             getFragmentManager().popBackStack();
         } else {
@@ -225,7 +153,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                     } else {
                         CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
                         for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
-                            if (httpCookie.getName().equals("JSESSIONID")) {
+                            if (httpCookie.getName().equals("JSESSIONID")   ) {
                                 SharedPreferences preferences = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.putString("JSESSIONID", httpCookie.getValue());
@@ -332,13 +260,12 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
             SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
             SharedPreferences.Editor settingEditor = settings.edit();
             settingEditor.putBoolean("ifRemPass", mRemPass.isChecked());
-            settingEditor.putBoolean("ifAutoLogin", mAutoLogin.isChecked());
+            settingEditor.putBoolean("ifFirstStart", true);
             settingEditor.putString("StudentID", username);
             if (mRemPass.isChecked()) {
                 settingEditor.putString("Password", password);
             }
             settingEditor.apply();
-            Information.ifAutoLogin = mAutoLogin.isChecked();
 
             JSContext context = new JSContext();
             context.evaluateScript(Information.js);

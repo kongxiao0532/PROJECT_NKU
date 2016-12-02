@@ -7,9 +7,16 @@
     <!-- TODO: Update blank fragment layout -->
 
 
-    <DatePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/datePicker" />
+    <TextView
+        android:text="暂无考试信息"
+        android:textSize="50sp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView_noExam" />
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/exam_list"/>
 </FrameLayout>

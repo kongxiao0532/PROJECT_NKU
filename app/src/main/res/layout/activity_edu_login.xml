@@ -127,36 +127,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentTop="true"
-                    android:layout_toEndOf="@+id/login_progress"
-                    android:layout_weight="0.85"
-                    android:weightSum="1">
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"/>
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="32dp"
-                        app:srcCompat="@drawable/ic_send_black_48dp"
-                        android:id="@+id/imageView2"
-                        android:clickable="true"
-                        android:layout_marginLeft="10dp"
-                        android:onClick="onLoginClicked"
-                        android:layout_alignParentTop="true" />
-
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"/>
-
-                </LinearLayout>
             </LinearLayout>
 
 
@@ -178,12 +148,16 @@
                     android:layout_weight="0.5"
                     android:id="@+id/checkBox_RemPass" />
 
-                <CheckBox
-                    android:text="自动登录"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:id="@+id/checkBox_AutoLog" />
+                <ImageView
+                    android:layout_width="77dp"
+                    android:layout_height="32dp"
+                    app:srcCompat="@drawable/ic_send_black_48dp"
+                    android:id="@+id/imageView2"
+                    android:clickable="true"
+                    android:layout_marginLeft="10dp"
+                    android:onClick="onLoginClicked"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight="0.21" />
 
             </LinearLayout>
 

@@ -21,12 +21,17 @@ public class Information {
     static String majorName;
     static String id;
 
+    //related to Home Page
+    static int weekCount;
+    static String semester;
+    static String date;
+
     //related to Scores
     static int studiedCourseCount;
     static int selectedCourseCount;
-    static int examsCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
     static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
+    static ArrayList<HashMap<String,String>> exams = new ArrayList<>();
     static float[] credits = new float[5];
     static float[] scores = new float[5];
     static float[] averages = new float[5];
@@ -41,9 +46,15 @@ public class Information {
         credits_All = scores_All = average_abcd = average_abcde = 0;
     }
 
+    //related to Exams
+    static int examCount;
+
+
     //related to Internet Connection
-    static boolean ifAutoLogin;
+    static boolean ifFirstStart;
     static final String PREFS_NAME = "NKUFile";
+    static final String COURSE_PREFS_NAME = "CourseFile";
+    static final String EXAM_PREFS_NAME = "ExamFile";
     static final String webUrl = "http://222.30.49.10";
     static final String js = "var biRadixBase=2,biRadixBits=16,bitsPerDigit=biRadixBits,biRadix=65536,biHalfRadix=biRadix>>>1,biRadixSquared=biRadix*biRadix,maxDigitVal=biRadix-1,maxInteger=9999999999999998,maxDigits,ZERO_ARRAY,bigZero,bigOne,result;function BigInt(a){this.digits=\"boolean\"==typeof a&&1==a?null:ZERO_ARRAY.slice(0);this.isNeg=!1}function setMaxDigits(a){maxDigits=a;ZERO_ARRAY=Array(maxDigits);for(a=0;a<ZERO_ARRAY.length;a++)ZERO_ARRAY[a]=0;bigZero=new BigInt;bigOne=new BigInt;bigOne.digits[0]=1}setMaxDigits(20);\n" +
             "var dpl10=15;function biFromNumber(a){var c=new BigInt;c.isNeg=0>a;a=Math.abs(a);for(var b=0;0<a;)c.digits[b++]=a&maxDigitVal,a=Math.floor(a/biRadix);return c}var lr10=biFromNumber(1E15);\n" +
