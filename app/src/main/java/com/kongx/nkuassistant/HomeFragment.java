@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +42,7 @@ public class HomeFragment extends Fragment implements Connectable{
     private TextView mDate;
     private TextView mDay;
     private TextView mScheduleStatus;
-    private ListView mScheduleList;
+    private LinearLayout mScheduleList;
     private int year;
     private int weekOfYear;
     private int dayOfWeek;
@@ -77,7 +78,7 @@ public class HomeFragment extends Fragment implements Connectable{
         mDate = (TextView) myView.findViewById(R.id.textView_date);
         mDay = (TextView) myView.findViewById(R.id.textView_day);
         mScheduleStatus = (TextView) myView.findViewById(R.id.home_schedule_text);
-        mScheduleList = (ListView) myView.findViewById(R.id.home_schedule_list);
+        mScheduleList = (LinearLayout) myView.findViewById(R.id.home_schedule_list);
         mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
         mExamList = (ListView) myView.findViewById(R.id.home_exam_list);
         mScoreStatus = (TextView) myView.findViewById(R.id.home_score_text);
@@ -236,48 +237,15 @@ public class HomeFragment extends Fragment implements Connectable{
         else {
             mScheduleList.setVisibility(View.VISIBLE);
             mScheduleStatus.setVisibility(View.GONE);
-            Log.e("COURSETODAY",courseTodayCount+"");
-            mScheduleList.setAdapter(new ScheduleAdapter(HomeFragment.this.getActivity().getApplicationContext()));
-        }
-    }
-    private class ScheduleAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-        public ScheduleAdapter(Context context) {
-            this.mInflater = LayoutInflater.from(context);
-        }
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return courseToday.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TextView item_name;
-            TextView item_classroom;
-            View view = mInflater.inflate(R.layout.home_schedule_item, null);
-            Log.e("COURSETODAY",position+"");
-            Log.e("COURSETODAY",courseToday.get(position).get("name"));
-//            if(convertView == null){
-//                convertView = mInflater.inflate(R.layout.home_schedule_item,null);
-                item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
-                item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
-//                convertView.setTag(holder);//绑定ViewHolder对象
-//            }
-//            else{
-//                holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
-//            }
-            item_name.setText(courseToday.get(position).get("name"));
-            item_classroom.setText(courseToday.get(position).get("classRoom"));
-            return view;
+            LayoutInflater mInflater = LayoutInflater.from(getActivity());
+            for(int i=0;i<courseTodayCount;i++) {
+                View view = mInflater.inflate(R.layout.home_schedule_item, null);
+                TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
+                TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
+                item_name.setText(courseToday.get(i).get("name"));
+                item_classroom.setText(courseToday.get(i).get("classRoom"));
+                mScheduleList.addView(view);
+            }
         }
     }
 
