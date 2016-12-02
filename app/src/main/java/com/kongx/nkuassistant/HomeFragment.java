@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.transition.CircularPropagation;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ public class HomeFragment extends Fragment implements Connectable{
     private TextView mDate;
     private TextView mDay;
     private TextView mScheduleStatus;
+    private TextView mScheduleDetail;
     private LinearLayout mScheduleList;
     private int year;
     private int weekOfYear;
@@ -51,12 +53,16 @@ public class HomeFragment extends Fragment implements Connectable{
     //Exam Module
     private TextView mExamStatus;
     private ListView mExamList;
+    private TextView mExamDetail;
     //Score Module
     private TextView mScoreStatus;
     private int newStudiedCourseCount;
+    private TextView mScoreDetail;
     //Select Module
     private TextView mSelectStatus;
-
+    private TextView mSelectDetail;
+    //Bus Module
+    private TextView mBusDetail;
     //Network Module
     private Pattern pattern;
     private Matcher matcher;
@@ -79,10 +85,21 @@ public class HomeFragment extends Fragment implements Connectable{
         mDay = (TextView) myView.findViewById(R.id.textView_day);
         mScheduleStatus = (TextView) myView.findViewById(R.id.home_schedule_text);
         mScheduleList = (LinearLayout) myView.findViewById(R.id.home_schedule_list);
+        mScheduleDetail = (TextView) myView.findViewById(R.id.home_schedule_details);
         mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
         mExamList = (ListView) myView.findViewById(R.id.home_exam_list);
+        mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
         mScoreStatus = (TextView) myView.findViewById(R.id.home_score_text);
+        mScoreDetail = (TextView) myView.findViewById(R.id.home_score_details);
         mSelectStatus = (TextView) myView.findViewById(R.id.home_select_text);
+        mSelectDetail = (TextView) myView.findViewById(R.id.home_select_details);
+        mBusDetail = (TextView) myView.findViewById(R.id.home_bus_details);
+        mSelectDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);

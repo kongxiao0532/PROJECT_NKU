@@ -4,6 +4,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:gravity="center"
+    android:paddingTop="10dp"
     android:layout_height="30dp">
 
     <TextView
@@ -12,18 +13,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/home_schedule_item_name"
         android:textColor="#424242"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
         android:gravity="start"
-        android:layout_weight="1" />
+        android:layout_weight="0.45" />
 
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="50dp"
-        android:paddingEnd="50dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
         android:id="@+id/home_schedule_item_classroom"
         android:gravity="end"
-        android:layout_weight="1" />
+        android:layout_weight="0.61" />
 </LinearLayout>
