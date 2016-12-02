@@ -31,7 +31,7 @@ public class IndexActivity extends AppCompatActivity
     private TextView mFacultyDrawerView;
     private TextView mIdDrawerView;
     public static IndexActivity thisIndexPtr = null;
-
+    NavigationView navigationView;
     class NetworkTest {
         NetworkTest() {
             ConnectivityManager connMgr = (ConnectivityManager)
@@ -46,7 +46,9 @@ public class IndexActivity extends AppCompatActivity
     }
 
     public void onClick(View view){
-
+        if(view.getId() == R.id.home_schedule_details) {
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_schedule));
+        }
     }
     public void headerClicked(View view){
             Intent intent = new Intent(this,PersonalPage.class);
@@ -66,7 +68,7 @@ public class IndexActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -129,16 +131,14 @@ public class IndexActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        item.setCheckable(true);
-        item.setChecked(true);
         if (getFragmentManager().getBackStackEntryCount() > 1) {
             getFragmentManager().popBackStack();
         }
+        navigationView.setCheckedItem(id);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.hide(homeFragment);
         if (id == R.id.nav_home) {

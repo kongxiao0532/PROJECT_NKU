@@ -78,6 +78,8 @@ public class HomeFragment extends Fragment implements Connectable{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myView = inflater.inflate(R.layout.fragment_home, container, false);
+        TextView mT = (TextView) myView.findViewById(R.id.home_schedule_details);
+        mT.setOnClickListener((View.OnClickListener) getActivity());
         mWeekText = (TextView) myView.findViewById(R.id.textView_weekCount);
         mNo = (TextView) myView.findViewById(R.id.textView_No_);
         mSememText = (TextView) myView.findViewById(R.id.textView_semester);
@@ -94,12 +96,7 @@ public class HomeFragment extends Fragment implements Connectable{
         mSelectStatus = (TextView) myView.findViewById(R.id.home_select_text);
         mSelectDetail = (TextView) myView.findViewById(R.id.home_select_details);
         mBusDetail = (TextView) myView.findViewById(R.id.home_bus_details);
-        mSelectDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);

@@ -1,33 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="all">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_home"
+            android:checkable="true"
+            android:checked="true"
             android:title="主页" />
         <item android:title="教务系统">
             <menu>
             <item
                 android:id="@+id/nav_schedule"
                 android:icon="@drawable/ic_menu_schedule"
+                android:checkable="true"
+                android:checked="false"
                 android:title="课程表" />
             <item
                 android:id="@+id/nav_score"
                 android:icon="@drawable/ic_menu_score"
+                android:checkable="true"
+                android:checked="false"
                 android:title="分数查询" />
             <item
                 android:id="@+id/nav_curriculum"
                 android:icon="@drawable/ic_menu_curriculum"
+                android:checkable="true"
+                android:checked="false"
                 android:title="已选课程" />
             <item
                 android:id="@+id/nav_exam"
                 android:icon="@drawable/ic_menu_exam"
+                android:checkable="true"
+                android:checked="false"
                 android:title="考试时间" />
             <item
                 android:id="@+id/nav_select"
                 android:icon="@drawable/ic_menu_select"
+                android:checkable="true"
+                android:checked="false"
                 android:title="选课退课" />
+                <item
+                    android:visible="false"
+                    android:id="@+id/menu_none" />
             </menu>
         </item>
         <item android:title="关于">
@@ -35,14 +50,19 @@
                 <item
                     android:id="@+id/nav_share"
                     android:icon="@drawable/ic_menu_share"
+                    android:checkable="true"
+                    android:checked="false"
                     android:title="分享" />
                 <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_menu_about"
+                    android:checkable="true"
+                    android:checked="false"
                 android:title="关于 NKU Assistant" />
             </menu>
 
         </item>
+
         <!--<item android:title="Communicate">
             <menu>
                 <item
