@@ -237,7 +237,7 @@ public class HomeFragment extends Fragment implements Connectable{
             mScheduleList.setVisibility(View.VISIBLE);
             mScheduleStatus.setVisibility(View.GONE);
             Log.e("COURSETODAY",courseTodayCount+"");
-            mScheduleList.setAdapter(new ScheduleAdapter(getActivity()));
+            mScheduleList.setAdapter(new ScheduleAdapter(HomeFragment.this.getActivity().getApplicationContext()));
         }
     }
     private class ScheduleAdapter extends BaseAdapter {
