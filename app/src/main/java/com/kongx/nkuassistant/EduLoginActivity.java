@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,19 +17,12 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import org.liquidplayer.webkit.javascriptcore.JSContext;
-import org.liquidplayer.webkit.javascriptcore.JSValue;
 
 import java.io.BufferedInputStream;
 import java.net.CookieHandler;
@@ -55,10 +49,11 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private Toast connectionErrorToast;
     private long mLastBackPress;
     private static final long mBackPressThreshold = 3500;
-    String encryptedPassword;
     private Pattern pattern;
     private Matcher matcher;
-
+    private WebView webView;
+    static String m_username;
+    static String m_validateCode;
     private static class RequestType {
         static final int VALIDATE_CODE = 0;
         static final int LOGIN = 1;
@@ -70,11 +65,24 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         attemptLogin();
     }
 
+    class JSInterface{
+        JSInterface(){}
+        @android.webkit.JavascriptInterface
+        void updatePwd(String echo){
+            String template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+            String strToPost = String.format(template, m_username, echo, m_validateCode);
+            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl+"/stdloginAction.do");
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
         changeCode(null);
+        webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new JSInterface(),"Echopwd");
+        webView.loadUrl("file:///android_asset/encryptpwd.html");
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -266,17 +274,10 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 settingEditor.putString("Password", password);
             }
             settingEditor.apply();
+            m_username = username;
+            m_validateCode = validateCode;
+            webView.loadUrl("javascript:encryption(\"" + password + "\")");
 
-            JSContext context = new JSContext();
-            context.evaluateScript(Information.js);
-            context.evaluateScript("encryption(\"" + password + "\")");
-            JSValue ePassword = context.property("result");
-            encryptedPassword = ePassword.toString();
-
-            String template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-            String strToPost = String.format(template, username, encryptedPassword, validateCode);
-
-            new Connect(this, RequestType.LOGIN, strToPost).execute(Information.webUrl+"/stdloginAction.do");
             showProgress(true);
         }
     }
