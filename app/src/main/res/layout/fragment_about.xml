@@ -34,12 +34,6 @@
                     android:weightSum="1">
 
 
-                    <TextView
-                        android:text="TextView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/textView"
-                        android:layout_weight="0.29" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -48,6 +42,52 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:srcCompat="@drawable/cd_fox"
+                            android:id="@+id/imageView"
+                            android:scaleType="fitEnd"
+                            android:layout_marginStart="100dp"
+                            android:layout_marginTop="100dp"
+                            android:layout_marginEnd="15dp" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:text="Sun Yi-Ran"
+                                android:textSize="40sp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:layout_marginTop="60dp"
+                                android:layout_marginLeft="20dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:text="Nankai University" />
+                            <TextView
+                                android:text="Contact:\n  sunrisefox@qq.com \nGithub:\n  github.com/SunriseFox"
+                                android:textSize="17sp"
+                                android:lineSpacingMultiplier="1.2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:layout_marginTop="100dp"
+                                android:layout_marginLeft="20dp" />
+
+                        </LinearLayout>
+
+                    </FrameLayout>
                 </LinearLayout>
 
                 <LinearLayout

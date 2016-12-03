@@ -37,6 +37,14 @@
     <string name="connection_error">服务器连接错误</string>
     <string name="Unlogged">未登录</string>
 
+
+    <string name="cdtext_sunrisefox">
+        <p><h1>Sun Yi-Ran</h1></p>
+        <br />
+        Contact: sunrisefox@outlook.com
+        <br />
+        Github: <a href="https://github.com/SunriseFox">https://github.com/SunriseFox</a>
+    </string>
     <drawable name="red">#4CAF50</drawable>
     <drawable name="yellow">#CDDC39</drawable>
     <drawable name="green">#F44336</drawable>
