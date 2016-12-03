@@ -1,12 +1,11 @@
 package com.kongx.nkuassistant;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.IllegalFormatCodePointException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,11 +26,8 @@ public class CurriculumFragment extends Fragment implements Connectable {
     public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
     private static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
     private static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
-    private View myView = null;
     private int numberOfPages;
     private ListView mlistView;
-    private Pattern pattern;
-    private Matcher matcher;
     private Activity m_activity;
    @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +39,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Information.selectedCourses.clear();
-        myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
+        View myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
         return myView;
     }
@@ -68,12 +63,15 @@ public class CurriculumFragment extends Fragment implements Connectable {
     }
 
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void onTaskComplete(Object o, int type) {
         if(m_activity == null) return;
         if(o == null){
             Log.e("APP", "What the fuck?");
         }else if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
+            Pattern pattern;
+            Matcher matcher;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
@@ -130,7 +128,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
 
     private class MyAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
-        public MyAdapter(Context context) {
+        MyAdapter(Context context) {
             this.mInflater = LayoutInflater.from(context);
         }
         @Override
@@ -147,20 +145,22 @@ public class CurriculumFragment extends Fragment implements Connectable {
         public long getItemId(int position) {
             return position;
         }
+
         @Override
+        @SuppressLint("InflateParams")
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if(convertView == null){
-                    convertView = mInflater.inflate(R.layout.selected_list_item,null);
+                    convertView = mInflater.inflate(R.layout.selected_list_item, null);
                     holder = new ViewHolder();
                     holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
                     holder.teacher = (TextView) convertView.findViewById(R.id.selected_list_teacher);
                     holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
                     holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
-                    convertView.setTag(holder);//绑定ViewHolder对象
+                    convertView.setTag(holder);
                 }
             else{
-                holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
+                holder = (ViewHolder)convertView.getTag();
             }
                 holder.name.setText(Information.selectedCourses.get(position).get("name"));
                 holder.teacher.setText(Information.selectedCourses.get(position).get("teacherName")+" （"+Information.selectedCourses.get(position).get("classType")+"）");

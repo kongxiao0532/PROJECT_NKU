@@ -7,6 +7,7 @@
 
 
     <TabHost
+        android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,7 +20,8 @@
                 android:id="@android:id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical|fill_horizontal" />
 
             <FrameLayout
                 android:id="@android:id/tabcontent"
@@ -30,19 +32,12 @@
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:weightSum="1">
-
+                    android:orientation="vertical">
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
                     <FrameLayout
+                        android:id="@+id/tab2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -86,18 +81,9 @@
                                 android:layout_marginLeft="20dp" />
 
                         </LinearLayout>
-
                     </FrameLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                </LinearLayout>
             </FrameLayout>
+
         </LinearLayout>
     </TabHost>
 </FrameLayout>

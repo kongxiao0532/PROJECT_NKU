@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,45 +19,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class IndexActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
-    private Toast pressBackToast;
-    private Toast connectionErrorToast;
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener{
+    private Toast mPressBackToast;
     private long mLastBackPress;
     private static final long mBackPressThreshold = 3500;
     private HomeFragment homeFragment;
-    static final String DEBUG_TAG = "APP";
-    private TextView mNameDrawerView;
-    private TextView mFacultyDrawerView;
-    private TextView mIdDrawerView;
-    public static IndexActivity thisIndexPtr = null;
-    NavigationView navigationView;
-    class NetworkTest {
-        NetworkTest() {
-            ConnectivityManager connMgr = (ConnectivityManager)
-                    getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if(networkInfo == null) {
-                IndexActivity.this.connectionErrorToast.show();
-                return;
-            }
-            Log.e("APP", networkInfo.getTypeName());
-        }
-    }
+    private NavigationView navigationView;
 
     public void onClick(View view){
         if(view.getId() == R.id.home_schedule_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_schedule));
         }
     }
+
     public void headerClicked(View view){
-            Intent intent = new Intent(this.getApplicationContext(),PersonalPage.class);
-            startActivity(intent);
+        startActivity(new Intent(getApplicationContext(),PersonalPage.class));
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.index);
-        thisIndexPtr = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -76,10 +58,12 @@ public class IndexActivity extends AppCompatActivity
         fragmentTransaction.add(R.id.fragment_container,homeFragment,"HomeFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        pressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit,
-                Toast.LENGTH_SHORT);
-        connectionErrorToast = Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT);
-        new NetworkTest();
+
+        mPressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit, Toast.LENGTH_SHORT);
+
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if(networkInfo == null) Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -94,10 +78,10 @@ public class IndexActivity extends AppCompatActivity
         else {
             long currentTime = System.currentTimeMillis();
             if (Math.abs(currentTime - mLastBackPress) > mBackPressThreshold) {
-                pressBackToast.show();
+                mPressBackToast.show();
                 mLastBackPress = currentTime;
             } else {
-                pressBackToast.cancel();
+                mPressBackToast.cancel();
                 finish();
             }
         }
@@ -105,35 +89,32 @@ public class IndexActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.index, menu);
-        mNameDrawerView = (TextView) findViewById(R.id.drawer_Name);
-        mFacultyDrawerView = (TextView) findViewById(R.id.drawer_Faculty);
-        mIdDrawerView = (TextView) findViewById(R.id.drawer_ID);
-        mNameDrawerView.setText(Information.name);
-        mIdDrawerView.setText(Information.id);
-        mFacultyDrawerView.setText(Information.facultyName);
+
+        TextView nameTextView = (TextView) findViewById(R.id.drawer_Name);
+        nameTextView.setText(Information.name);
+
+        TextView facultyTextView = (TextView) findViewById(R.id.drawer_Faculty);
+        facultyTextView.setText(Information.facultyName);
+
+        TextView idTextView = (TextView) findViewById(R.id.drawer_ID);
+        idTextView.setText(Information.id);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        }else
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (getFragmentManager().getBackStackEntryCount() > 1) {
             getFragmentManager().popBackStack();

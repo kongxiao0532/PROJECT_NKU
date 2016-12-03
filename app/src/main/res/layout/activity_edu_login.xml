@@ -115,7 +115,7 @@
                             android:layout_width="match_parent"
                             android:cropToPadding="false"
                             android:adjustViewBounds="false"
-                            android:onClick="changeCode"/>
+                            android:onClick="getValidateCode"/>
 
                     </LinearLayout>
 
