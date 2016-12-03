@@ -1,5 +1,6 @@
 package com.kongx.nkuassistant;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class ScoreFragment extends Fragment implements Connectable{
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
+    private Activity m_activity;
     @Override
         public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,12 +51,24 @@ public class ScoreFragment extends Fragment implements Connectable{
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
         mCreditsAll = (TextView) myView.findViewById(R.id.score_credits);
         mAverageAll = (TextView) myView.findViewById(R.id.score_average);
-        new Connect(ScoreFragment.this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
         return myView;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        m_activity = (Activity)context;
+        new Connect(ScoreFragment.this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        m_activity = null;
+    }
+
     private void updateUI(){
-        SharedPreferences settings = getActivity().getSharedPreferences(Information.PREFS_NAME,0);
+        SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("studiedCourseCount",String.valueOf(Information.studiedCourseCount));
         editor.apply();
@@ -71,11 +85,12 @@ public class ScoreFragment extends Fragment implements Connectable{
         mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
         if(Information.average_abcd < 80)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.yellow));
         if(Information.average_abcd < 60)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.red));
-        mScoreList.setAdapter(new MyAdapter(getActivity()));
+        mScoreList.setAdapter(new MyAdapter(m_activity));
     }
 
     @Override
     public void onTaskComplete(Object o, int type) {
+        if(m_activity == null)return;
         if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
@@ -134,8 +149,8 @@ public class ScoreFragment extends Fragment implements Connectable{
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
-                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
-                getActivity().finish();
+                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
+                m_activity.finish();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
             Log.e("APP","SocketTimeoutException!");

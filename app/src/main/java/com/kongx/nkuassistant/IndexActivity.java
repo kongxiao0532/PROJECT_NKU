@@ -51,7 +51,7 @@ public class IndexActivity extends AppCompatActivity
         }
     }
     public void headerClicked(View view){
-            Intent intent = new Intent(this,PersonalPage.class);
+            Intent intent = new Intent(this.getApplicationContext(),PersonalPage.class);
             startActivity(intent);
     }
     @Override

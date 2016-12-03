@@ -4,21 +4,32 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class PersonalPage extends AppCompatActivity {
+public class PersonalPage extends AppCompatActivity implements View.OnClickListener {
     private TextView mNameView;
     private TextView mFacultyView;
     private TextView mMajorView;
     private TextView mStudentIDView;
     private TextView mGradeView;
     private Button mLogoutButton;
+
+    @Override
+    public void onClick(View view) {
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_page);
+        View view = findViewById(android.R.id.content);
+        view.setOnClickListener(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         mLogoutButton = (Button) findViewById(R.id.button_logOut);
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override

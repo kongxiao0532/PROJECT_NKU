@@ -154,7 +154,12 @@ public class HomeFragment extends Fragment implements Connectable{
         new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
         new Connect(HomeFragment.this, RequestType.getExamNumber,null).execute(Information.webUrl+"/xxcx/stdexamarrange/listAction.do");
         new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.webUrl+"/xsxk/selectMianInitAction.do");
-        updateSchedule();
+        try{
+            updateSchedule();
+        }catch (IndexOutOfBoundsException e){
+            Log.e("APP","Maybe you changed the fragment too quick.");
+        }
+
         updateBus();
         return myView;
     }
@@ -227,7 +232,7 @@ public class HomeFragment extends Fragment implements Connectable{
 
     }
 
-    private void updateSchedule(){
+    private void updateSchedule() throws IndexOutOfBoundsException{
         if(Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")){
             mScheduleStatus.setText("今天没有课，记得找点事充实自己的生活哦~");
         }

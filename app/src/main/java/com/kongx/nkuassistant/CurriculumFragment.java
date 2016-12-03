@@ -1,5 +1,6 @@
 package com.kongx.nkuassistant;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
     private ListView mlistView;
     private Pattern pattern;
     private Matcher matcher;
+    private Activity m_activity;
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,16 +46,30 @@ public class CurriculumFragment extends Fragment implements Connectable {
         Information.selectedCourses.clear();
         myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
-        new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
         return myView;
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        m_activity = (Activity)context;
+        new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        m_activity = null;
+    }
+
     void updateUI(){
         storeCourses();
-        mlistView.setAdapter(new MyAdapter(getActivity()));
+        mlistView.setAdapter(new MyAdapter(m_activity));
     }
 
     @Override
     public void onTaskComplete(Object o, int type) {
+        if(m_activity == null) return;
         if(o == null){
             Log.e("APP", "What the fuck?");
         }else if(o.getClass() == BufferedInputStream.class) {
@@ -104,8 +120,8 @@ public class CurriculumFragment extends Fragment implements Connectable {
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
-                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
-                getActivity().finish();
+                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
+                m_activity.finish();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
             Log.e("APP","SocketTimeoutException!");
@@ -163,7 +179,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
         TextView time;
     }
     private boolean storeCourses(){
-        SharedPreferences settings = getActivity().getSharedPreferences(Information.COURSE_PREFS_NAME,0);
+        SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
         for(int i = 0;i < Information.selectedCourseCount;i++){
