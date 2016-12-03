@@ -53,6 +53,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private Matcher matcher;
     private WebView webView;
     static String m_username;
+    static String m_encryptedPassword;
     static String m_validateCode;
     private static class RequestType {
         static final int VALIDATE_CODE = 0;
@@ -71,6 +72,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         void updatePwd(String echo){
             String template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
             String strToPost = String.format(template, m_username, echo, m_validateCode);
+            m_encryptedPassword = echo;
             new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl+"/stdloginAction.do");
         }
     }
@@ -106,7 +108,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         mUsernameView.setText(settings.getString("StudentID", null));
         if (settings.getBoolean("ifRemPass", false)) {
             mRemPass.setChecked(settings.getBoolean("ifRemPass", false));
-            mPasswordView.setText(settings.getString("Password", null));
+            mPasswordView.setText("\bRememberedPWD");
         }
     }
 
@@ -169,6 +171,13 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                             }
                         }
                         new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl + "/studymanager/stdbaseinfo/queryAction.do");
+                        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                        SharedPreferences.Editor settingEditor = settings.edit();
+                        settingEditor.putBoolean("ifRemPass", mRemPass.isChecked());
+                        settingEditor.putBoolean("ifFirstStart", true);
+                        settingEditor.putString("StudentID", m_username);
+                        settingEditor.putString("Password", m_encryptedPassword);
+                        settingEditor.apply();
                     }
                     break;
                 }
@@ -261,23 +270,22 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-            SharedPreferences.Editor settingEditor = settings.edit();
-            settingEditor.putBoolean("ifRemPass", mRemPass.isChecked());
-            settingEditor.putBoolean("ifFirstStart", true);
-            settingEditor.putString("StudentID", username);
-            if (mRemPass.isChecked()) {
-                settingEditor.putString("Password", password);
-            }
-            settingEditor.apply();
             m_username = username;
             m_validateCode = validateCode;
-            webView.loadUrl("javascript:encryption(\"" + password + "\")");
-
+            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+            if(settings.getBoolean("ifRemPass",false) && mPasswordView.getText().toString().equals("\bRememberedPWD")){
+                String template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+                Log.e("APP","Served from remembered.");
+                if (settings.getString("Password",null) != null)
+                    Log.e("APP",settings.getString("Password",null));
+                String strToPost = String.format(template, m_username, settings.getString("Password",null), m_validateCode);
+                new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl+"/stdloginAction.do");
+            }else {
+                Log.e("APP",mPasswordView.getText().toString());
+                webView.loadUrl("javascript:encryption(\"" + password + "\")");
+            }
             showProgress(true);
         }
     }

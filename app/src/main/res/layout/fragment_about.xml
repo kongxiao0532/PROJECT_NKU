@@ -33,12 +33,6 @@
                     android:orientation="vertical"
                     android:weightSum="1">
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/common_google_signin_btn_icon_dark"
-                        android:id="@+id/imageView"
-                        android:layout_weight="0.29" />
 
                     <TextView
                         android:text="TextView"

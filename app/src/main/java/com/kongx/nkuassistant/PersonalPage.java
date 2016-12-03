@@ -34,10 +34,10 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
         mLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
-                SharedPreferences.Editor settingEditor = settings.edit();
-                settingEditor.putBoolean("ifRemPass",false);
-                settingEditor.apply();
+//                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
+//                SharedPreferences.Editor settingEditor = settings.edit();
+//                settingEditor.putBoolean("ifRemPass",false);
+//                settingEditor.apply();
                 IndexActivity.thisIndexPtr.finish();
                 Intent intent = new Intent(getApplicationContext(), EduLoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
