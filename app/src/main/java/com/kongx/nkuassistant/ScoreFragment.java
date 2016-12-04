@@ -94,7 +94,6 @@ public class ScoreFragment extends Fragment implements Connectable{
         if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            Log.e("APP", returnString);
             HashMap<String, String> map = new HashMap<String, String>();
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");

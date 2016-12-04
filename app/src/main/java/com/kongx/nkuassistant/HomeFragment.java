@@ -272,5 +272,5 @@ public class HomeFragment extends Fragment implements Connectable{
         static final int getSelectStatus = 3;
     }
 
-}
+} 
 

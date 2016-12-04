@@ -67,7 +67,6 @@ public class CurriculumFragment extends Fragment implements Connectable {
     public void onTaskComplete(Object o, int type) {
         if(m_activity == null) return;
         if(o == null){
-            Log.e("APP", "What the fuck?");
         }else if(o.getClass() == BufferedInputStream.class) {
 
             BufferedInputStream is = (BufferedInputStream) o;
