@@ -55,15 +55,13 @@ public class ScoreFragment extends Fragment implements Connectable{
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        m_activity = (Activity)context;
-        new Connect(ScoreFragment.this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
+    public void onResume() {
+        m_activity = getActivity();
+        new Connect(ScoreFragment.this, 1, null).execute(Information.webUrl + "/xsxk/selectedAction.do");
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
         m_activity = null;
     }
 
