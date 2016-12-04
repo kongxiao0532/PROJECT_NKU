@@ -7,8 +7,17 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="4bb5fd4f77617ce8c79f4d30408ef63b79b4314c">
+        sha1="d120b1c859dec0fdf9e556a8ff5a9af73f7924e9">
         <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_c0fb87ca9d2496da694661f6ab43b8a54e6a2832\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.1.1\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.1"
+        sha1="f62e763609f65e47dc6c498760a4accf02776788">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-vector-drawable-24.1.1_5188b96c0e3af61369bdb8c64cc17102baa66d12\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -21,66 +30,21 @@
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\jars\classes.jar"
+        jar="C:\Users\Manyu\AppData\Local\Android\Sdk\extras\android\m2repository\com\android\support\support-annotations\24.1.1\support-annotations-24.1.1.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-fragment-24.2.1_70820f93fae386c26b55c198514a3c489a44f8ff\classes.dex" />
+        sha1="3af19f153122737b372622fa6c81dd11a1c6b999">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-24.1.1_b4eef81fb123a89ff4f1252836c3f9498476f80f\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-fragment\24.2.1\jars\libs\internal_impl-24.2.1.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.1.1\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="5f64d657e838e8375135c0f6057a7ff8fab6a50e">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.2.1_addef8ef1e978e3a5a6caad90bfbd3df43355daa\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="43b2dba6b5a0b14527961b75329d0b90025f15ea">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-appcompat-v7-24.2.1_57369b9eff61cd91eed47444bd304a94f143dce9\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-media-compat-24.2.1_8bcf9ddf3c6afbf1389a1d25ace847aa57b23ed1\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-24.2.1_f417f4d286ba8f90ba880a7d033e0fd09523e7cb\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\design\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="e03f47f3d1017a093bb3239d4ec47c3447f40744">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-design-24.2.1_6c53c8d1abd9a45480c58a17ed453fad9c19511e\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\jars\libs\internal_impl-24.2.1.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="935a969265b2a166b2d20415423f5f6e90fe16e0">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.2.1_e76c0917297f6f758628aac45849ace9578e85ff\classes.dex" />
+        sha1="c936c1bd42f0c018c18920c7bec619ef056b24f8">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-24.1.1_e07d066861859a475f265c678f1331954a2f385c\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -102,30 +66,12 @@
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\24.2.1\jars\libs\internal_impl-24.2.1.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\libs\internal_impl-24.1.1.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="fbf8da429efd5ad21e02e3e5ecaa1efc4167878d">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.2.1_46aa9c1fd1d6840e1c5acccba6abc8f01eb5377e\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="e7f3132168957eefc46229fc32c3bd464642b71e">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-ui-24.2.1_42e00e575411f8951851dc2baaaf4dcf2884dc12\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-compat\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="0ecb4b595fa0f0f8018a149ace3ea6525624f94e">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-compat-24.2.1_35a8c38bb7ab200547f8e989884d7ccf66db6c60\classes.dex" />
+        sha1="f78c2f395cb096f9dc1dc07e729922b8fcd3c4f5">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.1.1_be863665b547becdfca8bf06c7b53a4d8a1a0473\classes.dex" />
     </item>
     <item
         is-multidex="true"
@@ -133,71 +79,44 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="00cbc22546d311a0670e21bb2d28245d5fc81b85">
+        sha1="2b68a51db2b0f4e9de971758a68d78b378e8646d">
         <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_be6b7b50fd33f0de637f0b2a18e8964ed9502360\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\24.2.1\jars\libs\internal_impl-24.2.1.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\24.1.1\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="867dad63c33388ff8c7644b236579355036d075f">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.2.1_181067a20d57aa6d2852c709635a6dfefd4ff8bc\classes.dex" />
+        sha1="787871951412550519b0222aba3c9df4cea49875">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-24.1.1_3e03ac3d2d64292f0c7b35ccedcb59acc97277ed\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.2.1\jars\classes.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\design\24.1.1\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-animated-vector-drawable-24.2.1_54f340fc921ea3d97407a71ef6c8d478d9269941\classes.dex" />
+        sha1="e195bd694d5389acfba27ff4fdfa64c4c65b2c05">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-design-24.1.1_235ac7afa68980ec5cb460f8be0eb4ae658ca0bc\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.2.1\jars\classes.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.1.1\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="d5c731fc64c03dfe04d51134955b483551c35849">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-vector-drawable-24.2.1_203bf40607fbba458200883490a9ec62caf9dc79\classes.dex" />
+        sha1="6d7d803871e3203465f71a163e7af104f807b446">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-v4-24.1.1_1b03d92dd065eed20c34909cff910860a7da983a\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\24.2.1\jars\classes.jar"
+        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.1.1\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.1"
-        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-support-core-utils-24.2.1_f7aac7677be088341bcd7980471102b0f439c8de\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\AppData\Local\Android\Sdk\extras\android\m2repository\com\android\support\support-annotations\24.2.1\support-annotations-24.2.1.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="8de3aafecbdf98a61db6427f008f2d515bcd2544">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-24.2.1_c5f8f16baafd3ee43b2f334f7be46e3ca6ad662b\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\24.2.1\jars\classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="7521486d9bfd2cd9e756e0cf75ed7d97f2ce2d3b">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-recyclerview-v7-24.2.1_1a7339877b333d71e57bed58a1441cbfed4b5cf0\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\exploded-aar\com.android.support\support-compat\24.2.1\jars\libs\internal_impl-24.2.1.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.1"
-        sha1="7e4389bd133359a2ff88623ff1e4ff93d6e6f780">
-        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\internal_impl-24.2.1_09afa1791b0fbbaa5b0f6938f5c0d83169b47be1\classes.dex" />
+        sha1="1256c10604bb098490eab070d76754ac5ceab35c">
+        <dex dex="C:\Users\Manyu\NKU_ASSISTANT\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.android.support-appcompat-v7-24.1.1_12e1ae1430ff485ac97894f29f07a78c8e574421\classes.dex" />
     </item>
 
 </items>

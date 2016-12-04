@@ -55,15 +55,15 @@ public class ScoreFragment extends Fragment implements Connectable{
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        m_activity = (Activity)context;
-        new Connect(ScoreFragment.this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
+    public void onResume() {
+        super.onResume();
+        m_activity = getActivity();
+        new Connect(ScoreFragment.this, 1, null).execute(Information.webUrl + "/xsxk/studiedAction.do");
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         m_activity = null;
     }
 
@@ -94,6 +94,7 @@ public class ScoreFragment extends Fragment implements Connectable{
         if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            Log.e("APP", returnString);
             HashMap<String, String> map = new HashMap<String, String>();
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
@@ -135,7 +136,7 @@ public class ScoreFragment extends Fragment implements Connectable{
                     Information.studiedCourses.add(divider);
                 }
                 if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
-
+                    Log.e("APP", String.valueOf(tmpS2.charAt(0)));
                     Information.scores[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4);
                     Information.credits[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS4);
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");

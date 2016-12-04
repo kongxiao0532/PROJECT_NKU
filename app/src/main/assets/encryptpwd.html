@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
 <script type="text/javascript">
 var biRadixBase=2,biRadixBits=16,bitsPerDigit=biRadixBits,biRadix=65536,biHalfRadix=biRadix>>>1,biRadixSquared=biRadix*biRadix,maxDigitVal=biRadix-1,maxInteger=9999999999999998,maxDigits,ZERO_ARRAY,bigZero,bigOne,result;function BigInt(a){this.digits="boolean"==typeof a&&1==a?null:ZERO_ARRAY.slice(0);this.isNeg=!1}function setMaxDigits(a){maxDigits=a;ZERO_ARRAY=Array(maxDigits);for(a=0;a<ZERO_ARRAY.length;a++)ZERO_ARRAY[a]=0;bigZero=new BigInt;bigOne=new BigInt;bigOne.digits[0]=1}setMaxDigits(20);

@@ -30,11 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HomeFragment extends Fragment implements Connectable{
-    private static class RequestType{
-        static final int getScoreNumber = 1;
-        static final int getExamNumber = 2;
-        static final int getSelectStatus = 3;
-    }
     //Schedule Module
     private View myView = null;
     private TextView mWeekText;
@@ -70,7 +65,7 @@ public class HomeFragment extends Fragment implements Connectable{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
     }
 
     @Override
@@ -102,7 +97,6 @@ public class HomeFragment extends Fragment implements Connectable{
         year = calendar.get(Calendar.YEAR);
         weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
         dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
-        Log.e("APP",""+dayOfWeek);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
         Information.date = dateFormat.format(calendar.getTime());
         if(year == 2017){
@@ -270,6 +264,12 @@ public class HomeFragment extends Fragment implements Connectable{
 
     private void updateBus(){
 
+    }
+
+    private static class RequestType {
+        static final int getScoreNumber = 1;
+        static final int getExamNumber = 2;
+        static final int getSelectStatus = 3;
     }
 
 }

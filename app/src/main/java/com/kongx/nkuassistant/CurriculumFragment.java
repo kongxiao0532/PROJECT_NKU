@@ -45,15 +45,15 @@ public class CurriculumFragment extends Fragment implements Connectable {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        m_activity = (Activity)context;
+    public void onResume() {
+        super.onResume();
+        m_activity = getActivity();
         new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onPause() {
+        super.onPause();
         m_activity = null;
     }
 
@@ -69,6 +69,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
         if(o == null){
             Log.e("APP", "What the fuck?");
         }else if(o.getClass() == BufferedInputStream.class) {
+
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
             Matcher matcher;
@@ -126,6 +127,25 @@ public class CurriculumFragment extends Fragment implements Connectable {
         }
     }
 
+    private boolean storeCourses() {
+        SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
+        for (int i = 0; i < Information.selectedCourseCount; i++) {
+            editor.putString("index" + i, Information.selectedCourses.get(i).get("index"));
+            editor.putString("name" + i, Information.selectedCourses.get(i).get("name"));
+            editor.putString("dayOfWeek" + i, Information.selectedCourses.get(i).get("dayOfWeek"));
+            editor.putString("startTime" + i, Information.selectedCourses.get(i).get("startTime"));
+            editor.putString("endTime" + i, Information.selectedCourses.get(i).get("endTime"));
+            editor.putString("classRoom" + i, Information.selectedCourses.get(i).get("classRoom"));
+            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
+            editor.putString("teacherName" + i, Information.selectedCourses.get(i).get("teacherName"));
+            editor.putString("startWeek" + i, Information.selectedCourses.get(i).get("startWeek"));
+            editor.putString("endWeek" + i, Information.selectedCourses.get(i).get("endWeek"));
+        }
+        return editor.commit();
+    }
+
     private class MyAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         MyAdapter(Context context) {
@@ -172,28 +192,11 @@ public class CurriculumFragment extends Fragment implements Connectable {
         }
 
     }
+
     class ViewHolder{
         TextView name;
         TextView teacher;
         TextView index;
         TextView time;
-    }
-    private boolean storeCourses(){
-        SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME,0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
-        for(int i = 0;i < Information.selectedCourseCount;i++){
-            editor.putString("index"+i,Information.selectedCourses.get(i).get("index"));
-            editor.putString("name"+i,Information.selectedCourses.get(i).get("name"));
-            editor.putString("dayOfWeek"+i,Information.selectedCourses.get(i).get("dayOfWeek"));
-            editor.putString("startTime"+i,Information.selectedCourses.get(i).get("startTime"));
-            editor.putString("endTime"+i,Information.selectedCourses.get(i).get("endTime"));
-            editor.putString("classRoom"+i,Information.selectedCourses.get(i).get("classRoom"));
-            editor.putString("classType"+i,Information.selectedCourses.get(i).get("classType"));
-            editor.putString("teacherName"+i,Information.selectedCourses.get(i).get("teacherName"));
-            editor.putString("startWeek"+i,Information.selectedCourses.get(i).get("startWeek"));
-            editor.putString("endWeek"+i,Information.selectedCourses.get(i).get("endWeek"));
-        }
-        return editor.commit();
     }
 }
