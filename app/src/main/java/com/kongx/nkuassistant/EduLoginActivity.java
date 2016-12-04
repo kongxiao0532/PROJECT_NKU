@@ -7,14 +7,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -33,49 +34,22 @@ import java.util.regex.Pattern;
 
 
 public class EduLoginActivity extends AppCompatActivity implements Connectable {
+    private static final long mBackPressThreshold = 3500;
+    static String m_username;
+    static String m_encryptedPassword;
+    static String m_validateCode;
+    private long mLastBackPress;
     private EditText mUsernameView;
     private EditText mPasswordView;
     private EditText mValidateView;
     private View mProgressView;
     private ImageView mValidateCode;
     private CheckBox mRemPass;
-    private long mLastBackPress;
-    private static final long mBackPressThreshold = 3500;
     private WebView webView;
-    static String m_username;
-    static String m_encryptedPassword;
-    static String m_validateCode;
-    private static class RequestType {
-        static final int VALIDATE_CODE = 0;
-        static final int LOGIN = 1;
-        static final int USER_INFO = 2;
-    }
-    public final static class Strings{
-        final static String template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-        final static String webview_url = "file:///android_asset/encryptpwd.html";
-        final static String remembered_pwd = "\bRememberedPWD";
-        final static String setting_remember_pwd = "ifRemPass";
-        final static String setting_studentID = "StudentID";
-        final static String setting_password = "Password";
-        final static String setting_student_name = "StudentName";
-        final static String setting_student_faculty = "FacultyName";
-        final static String setting_student_major = "MajorName";
-        final static String url_validate_code = "/ValidateCode";
-        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
-    }
+    private boolean useRememberedPWD;
 
     public void onLoginClicked(View view) {
         attemptLogin();
-    }
-
-    class JSInterface{
-        @android.webkit.JavascriptInterface
-        @SuppressWarnings("unused")
-        void updatePwd(String echo){
-            String strToPost = String.format(Strings.template, m_username, echo, m_validateCode);
-            m_encryptedPassword = echo;
-            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl+"/stdloginAction.do");
-        }
     }
 
     @Override
@@ -89,13 +63,14 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new JSInterface(),"echoPWD");
-        webView.loadUrl(Strings.webview_url);
+        webView.loadUrl(Strings.url_webview);
 
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
         mRemPass = (CheckBox) findViewById(R.id.checkBox_RemPass);
+
         mValidateView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -103,13 +78,36 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 return true;
             }
         });
+
         mProgressView = findViewById(R.id.login_progress);
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         mUsernameView.setText(settings.getString(Strings.setting_studentID, null));
-        if (settings.getBoolean(Strings.setting_remember_pwd, false)) {
-            mRemPass.setChecked(settings.getBoolean(Strings.setting_remember_pwd, false));
-            mPasswordView.setText(Strings.remembered_pwd);
+        if (useRememberedPWD = settings.getBoolean(Strings.setting_remember_pwd, false)) {
+            mRemPass.setChecked(true);
+            mPasswordView.setSelectAllOnFocus(true);
+            mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            mPasswordView.setText(Strings.str_pwd_not_changed);
         }
+
+        mPasswordView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                useRememberedPWD = false;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.e("APP", charSequence.toString());
+                mPasswordView.setSelectAllOnFocus(false);
+                mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                mPasswordView.removeTextChangedListener(this);
+                mPasswordView.setSelection(mPasswordView.getText().length());
+            }
+        });
     }
 
     @Override
@@ -256,8 +254,8 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         m_username = username;
         m_validateCode = validateCode;
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-        if (settings.getBoolean(Strings.setting_remember_pwd, false) && password.equals("\bRememberedPWD")) {
-            String strToPost = String.format(Strings.template, m_username, settings.getString("Password", null), m_validateCode);
+        if (useRememberedPWD) {
+            String strToPost = String.format(Strings.url_template, m_username, settings.getString(Strings.setting_password, null), m_validateCode);
             new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
         } else webView.loadUrl("javascript:encryption(\"" + password + "\")");
         showProgress(true);
@@ -272,6 +270,36 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 mProgressView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
             }
         });
+    }
+
+    private static class RequestType {
+        static final int VALIDATE_CODE = 0;
+        static final int LOGIN = 1;
+        static final int USER_INFO = 2;
+    }
+
+    public final static class Strings {
+        final static String str_pwd_not_changed = "<Not Changed>";
+        final static String setting_remember_pwd = "ifRemPass";
+        final static String setting_studentID = "StudentID";
+        final static String setting_password = "Password";
+        final static String setting_student_name = "StudentName";
+        final static String setting_student_faculty = "FacultyName";
+        final static String setting_student_major = "MajorName";
+        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+        final static String url_validate_code = "/ValidateCode";
+        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
+        final static String url_webview = "file:///android_asset/encryptpwd.html";
+    }
+
+    class JSInterface {
+        @android.webkit.JavascriptInterface
+        @SuppressWarnings("unused")
+        void updatePwd(String echo) {
+            String strToPost = String.format(Strings.url_template, m_username, echo, m_validateCode);
+            m_encryptedPassword = echo;
+            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
+        }
     }
 }
 
