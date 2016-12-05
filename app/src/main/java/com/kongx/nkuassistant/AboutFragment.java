@@ -11,12 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TabHost;
 
 public class AboutFragment extends Fragment {
-
-
-    public AboutFragment() {
-        // Required empty public constructor
-    }
-
+    private View myView = null;
+    private TabHost tabhost;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +21,8 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = (View) inflater.inflate(R.layout.fragment_about, container, false);
-        TabHost tabhost = (TabHost) view.findViewById(android.R.id.tabhost);
+        myView = (View) inflater.inflate(R.layout.fragment_about, container, false);
+        tabhost = (TabHost) myView.findViewById(android.R.id.tabhost);
         tabhost.setup();
         TabHost.TabSpec ts = tabhost.newTabSpec("tag1");
         ts.setContent(R.id.tab1);
@@ -37,7 +33,7 @@ public class AboutFragment extends Fragment {
         ts.setContent(R.id.tab2);
         ts.setIndicator("Second Tab");
         tabhost.addTab(ts);
-        return view;
+        return myView;
     }
 
 

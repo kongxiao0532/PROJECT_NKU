@@ -30,6 +30,12 @@
     <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$.2f分</string>
     <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分</string>
     <string name="credits_template">总学分%1$.1f分</string>
+    <!--String related to Bus-->
+    <string name="tab_tojinnan">八里台-津南</string>
+    <string name="tab_tobalitai">津南-八里台</string>
+    <string name="pointToPoint">点对点</string>
+    <string name="FastLine">快线</string>
+
 
     <string name="title_activity_personal_page">个人主页</string>
     <string name="action_settings">设置</string>
@@ -48,4 +54,7 @@
     <drawable name="red">#4CAF50</drawable>
     <drawable name="yellow">#CDDC39</drawable>
     <drawable name="green">#F44336</drawable>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

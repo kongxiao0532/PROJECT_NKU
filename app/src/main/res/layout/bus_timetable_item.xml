@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+
+    <TextView
+        android:text="点对点"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_way"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textSize="25sp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="12:20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_time"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:gravity="end"
+        android:textSize="25sp"
+        android:layout_weight="1" />
+</LinearLayout>

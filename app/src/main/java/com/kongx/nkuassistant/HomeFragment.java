@@ -7,6 +7,7 @@ import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.text.TextWatcher;
 import android.transition.CircularPropagation;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,6 +41,8 @@ public class HomeFragment extends Fragment implements Connectable{
     private TextView mScheduleStatus;
     private TextView mScheduleDetail;
     private LinearLayout mScheduleList;
+    private int hour;
+    private int minute;
     private int year;
     private int weekOfYear;
     private int dayOfWeek;
@@ -58,6 +61,10 @@ public class HomeFragment extends Fragment implements Connectable{
     private TextView mSelectDetail;
     //Bus Module
     private TextView mBusDetail;
+    private TextView mBusToBalitai;
+    private TextView mBusToJinnan;
+    private TextView mBusToBalitaiWay;
+    private TextView mBusToJinnanWay;
     //Network Module
     private Pattern pattern;
     private Matcher matcher;
@@ -73,8 +80,6 @@ public class HomeFragment extends Fragment implements Connectable{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myView = inflater.inflate(R.layout.fragment_home, container, false);
-        TextView mT = (TextView) myView.findViewById(R.id.home_schedule_details);
-        mT.setOnClickListener((View.OnClickListener) getActivity());
         mWeekText = (TextView) myView.findViewById(R.id.textView_weekCount);
         mNo = (TextView) myView.findViewById(R.id.textView_No_);
         mSememText = (TextView) myView.findViewById(R.id.textView_semester);
@@ -91,12 +96,22 @@ public class HomeFragment extends Fragment implements Connectable{
         mSelectStatus = (TextView) myView.findViewById(R.id.home_select_text);
         mSelectDetail = (TextView) myView.findViewById(R.id.home_select_details);
         mBusDetail = (TextView) myView.findViewById(R.id.home_bus_details);
-
+        mBusToBalitai = (TextView) myView.findViewById(R.id.home_bus_jinnan);
+        mBusToJinnan = (TextView) myView.findViewById(R.id.home_bus_balitai);
+        mBusToBalitaiWay = (TextView) myView.findViewById(R.id.home_bus_jinnan_way);
+        mBusToJinnanWay = (TextView) myView.findViewById(R.id.home_bus_balitai_way);
+        mScheduleDetail.setOnClickListener((View.OnClickListener) getActivity());
+        mExamDetail.setOnClickListener((View.OnClickListener) getActivity());
+        mScoreDetail.setOnClickListener((View.OnClickListener) getActivity());
+        mSelectDetail.setOnClickListener((View.OnClickListener) getActivity());
+        mBusDetail.setOnClickListener((View.OnClickListener) getActivity());
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
         weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
         dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
         Information.date = dateFormat.format(calendar.getTime());
         if(year == 2017){
@@ -245,7 +260,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }
         }
         if (courseTodayCount == 0){
-            mScoreStatus.setText("今天没有课哦");
+            mScheduleStatus.setText("今天没有课哦");
         }
         else {
             mScheduleList.setVisibility(View.VISIBLE);
@@ -263,7 +278,94 @@ public class HomeFragment extends Fragment implements Connectable{
     }
 
     private void updateBus(){
+        int minute_after = hour * 60 + minute;
+        Log.e("BUS",""+minute_after);
+        int toJinnanID = -1;
+        int toBalitaiID = -1;
+        if(dayOfWeek <= 5){
+            for(toJinnanID = 0;toJinnanID < Information.weekdays_tojinnan.size();toJinnanID++){
+                Log.e("BUS",""+Information.weekdays_tojinnan.size());
+                Log.e("BUS",""+toJinnanID);
+                if(minute_after > Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("minute")){
+                    toJinnanID = -1;
+                    break;
+                }
+                if(minute_after < Information.weekdays_tojinnan.get(toJinnanID).get("hour") * 60 + Information.weekdays_tojinnan.get(toJinnanID).get("minute")){
+                    break;
+                }
+            }
+            for(toBalitaiID = 0;toBalitaiID < Information.weekdays_tobalitai.size();toBalitaiID++){
+                if(minute_after > Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("minute")){
+                    toBalitaiID = -1;
+                    break;
+                }
+                if(minute_after < Information.weekdays_tobalitai.get(toBalitaiID).get("hour") * 60 + Information.weekdays_tobalitai.get(toBalitaiID).get("minute")){
+                    break;
+                }
+            }
+            if(toJinnanID != -1){
+                mBusToJinnan.setText(String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("minute"))));
+                mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
+                mBusToJinnanWay.setVisibility(View.VISIBLE);
+            }else{
+                mBusToJinnan.setText("无可用车辆");
+                mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                mBusToJinnanWay.setVisibility(View.INVISIBLE);
+            }
+            if(toBalitaiID != -1){
+                mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("minute"))));
+                mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
+                mBusToBalitaiWay.setVisibility(View.VISIBLE);
+            }else{
+                mBusToBalitai.setText("无可用车辆");
+                mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                mBusToBalitaiWay.setVisibility(View.INVISIBLE);
+            }
+            return;
 
+        }else {
+            for(toJinnanID = 0;toJinnanID < Information.weekends_tojinnan.size();toJinnanID++){
+                if(minute_after > Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("hour") * 60 + Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("minute")){
+                    toJinnanID = -1;
+                    break;
+                }
+                if(minute_after < Information.weekends_tojinnan.get(toJinnanID).get("hour") * 60 + Information.weekends_tojinnan.get(toJinnanID).get("minute")){
+                    break;
+                }
+            }
+            for(toBalitaiID = 0;toBalitaiID < Information.weekends_tobalitai.size();toBalitaiID++){
+                if(minute_after > Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("hour") * 60 + Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("minute")){
+                    toBalitaiID = -1;
+                    break;
+                }
+                if(minute_after < Information.weekends_tobalitai.get(toBalitaiID).get("hour") * 60 + Information.weekends_tobalitai.get(toBalitaiID).get("minute")){
+                    break;
+                }
+            }
+            if(toJinnanID != -1){
+                mBusToJinnan.setText(String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("minute"))));
+                mBusToJinnanWay.setText(Information.weekends_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
+                mBusToJinnanWay.setVisibility(View.VISIBLE);
+            }else{
+                mBusToJinnan.setText("无可用车辆");
+                mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                mBusToJinnanWay.setVisibility(View.INVISIBLE);
+            }
+            if(toBalitaiID != -1){
+                mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("minute"))));
+                mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
+                mBusToBalitaiWay.setVisibility(View.VISIBLE);
+            }else{
+                mBusToBalitai.setText("无可用车辆");
+                mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                mBusToBalitaiWay.setVisibility(View.INVISIBLE);
+            }
+            return;
+        }
     }
 
     private static class RequestType {

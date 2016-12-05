@@ -3,9 +3,9 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'myandroidkey'
+            keyAlias 'MyAndroidKey'
             keyPassword '1234567890'
-            storeFile file('D:/QQFiles/917625679/FileRecv/MyAndroidKey.jks')
+            storeFile file('F:/MyAndroidKey.jks')
             storePassword '1234567890'
         }
     }
@@ -33,9 +33,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.android.support:support-v4:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

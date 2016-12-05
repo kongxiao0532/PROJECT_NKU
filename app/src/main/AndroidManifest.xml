@@ -13,21 +13,25 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".IndexActivity"
+            android:icon="@drawable/icon"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".EduLoginActivity"
+            android:icon="@drawable/icon"
             android:label="@string/title_activity_edu_login"
             android:parentActivityName=".IndexActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".PersonalPage"
+            android:icon="@drawable/icon"
             android:label="个人信息"
             android:parentActivityName=".IndexActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WelcomeActivity"
+            android:icon="@drawable/icon"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>

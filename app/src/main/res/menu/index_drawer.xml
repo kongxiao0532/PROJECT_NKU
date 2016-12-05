@@ -45,6 +45,19 @@
                     android:id="@+id/menu_none" />
             </menu>
         </item>
+
+        <item android:title="信息查询">
+            <menu>
+                <item
+                    android:id="@+id/nav_612bus"
+                    android:icon="@drawable/ic_menu_bus"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="612时间表" />
+            </menu>
+
+        </item>
+
         <item android:title="关于">
             <menu>
                 <item

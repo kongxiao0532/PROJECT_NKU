@@ -108,7 +108,8 @@
                     <TextView
                     android:background="#FFFFFF"
                     android:textAlignment="center"
-                    android:text="2016年12月1日"
+                        android:textColor="@color/colorPrimary"
+                        android:text="2016年12月1日"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/textView_date"
@@ -117,6 +118,7 @@
                     <TextView
                         android:background="#FFFFFF"
                         android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
                         android:text="星期四"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -420,23 +422,56 @@
                     android:paddingTop="5dp"
                     android:layout_weight="0.02">
 
-                    <TextView
-                        android:text="12:00"
-                        android:textSize="24sp"
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:id="@+id/home_bus_balitai"
-                        android:layout_weight="1" />
-                    <TextView
-                        android:text="12:20"
-                        android:textSize="24sp"
-                        android:paddingBottom="10dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:text="快"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/home_bus_balitai_way"
+                            android:visibility="invisible"
+                            android:gravity="end"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:textSize="22sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:id="@+id/home_bus_balitai"
+                            android:layout_weight="1"
+                            android:text="无可用车辆" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:id="@+id/home_bus_jinnan"
-                        android:layout_weight="1" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:text="快"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/home_bus_jinnan_way"
+                            android:visibility="invisible"
+                            android:gravity="end"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:textSize="22sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:id="@+id/home_bus_jinnan"
+                            android:layout_weight="1"
+                            android:text="无可用车辆" />
+                    </LinearLayout>
+
                 </LinearLayout>
                 <TextView
                     android:text="(根据2016年11月数据)"

@@ -29,6 +29,14 @@ public class IndexActivity extends AppCompatActivity
     public void onClick(View view){
         if(view.getId() == R.id.home_schedule_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_schedule));
+        }else if(view.getId() == R.id.home_exam_details){
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_exam));
+        }else if(view.getId() == R.id.home_score_details){
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_score));
+        }else if(view.getId() == R.id.home_select_details){
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_select));
+        }else if(view.getId() == R.id.home_bus_details){
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_612bus));
         }
     }
 
@@ -139,6 +147,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new ShareFragment());
             } else if (id == R.id.nav_about) {
                 fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
+            } else if (id == R.id.nav_612bus) {
+                fragmentTransaction.replace(R.id.fragment_container, new ShuttleBusFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

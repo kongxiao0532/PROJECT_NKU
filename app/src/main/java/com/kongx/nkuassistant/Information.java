@@ -49,6 +49,12 @@ public class Information {
     //related to Exams
     static int examCount;
 
+    //related to Bus TimeTable
+    static ArrayList<HashMap<String,Integer>> weekdays_tojinnan;
+    static ArrayList<HashMap<String,Integer>> weekdays_tobalitai;
+    static ArrayList<HashMap<String,Integer>> weekends_tojinnan;
+    static ArrayList<HashMap<String,Integer>> weekends_tobalitai;
+
 
     //related to Internet Connection
     static boolean ifFirstStart;

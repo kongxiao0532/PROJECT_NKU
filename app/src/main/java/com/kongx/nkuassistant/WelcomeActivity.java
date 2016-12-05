@@ -2,10 +2,12 @@ package com.kongx.nkuassistant;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
@@ -13,6 +15,18 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.InterruptedIOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -67,6 +81,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 Information.selectedCourses.add(map);
             }
         }
+        readBusFile();
         System.setProperty("java.net.useSystemProxies", "true");
         new Timer().schedule(new TimerTask() {
                                  public void run() {
@@ -82,5 +97,78 @@ public class WelcomeActivity extends AppCompatActivity {
                                  }
                              }
                 , 2500);
+    }
+    private void readBusFile(){
+        Element element = null;
+        InputStream inputStream  = null;
+        try{ inputStream = getAssets().open("timetable.xml");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        DocumentBuilder documentBuilder = null;
+        DocumentBuilderFactory documentBuilderFactory = null;
+        Information.weekdays_tojinnan = new ArrayList<>();
+        Information.weekdays_tobalitai = new ArrayList<>();
+        Information.weekends_tojinnan = new ArrayList<>();
+        Information.weekends_tobalitai = new ArrayList<>();
+        try{
+            documentBuilderFactory  = DocumentBuilderFactory.newInstance();
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(inputStream);
+            element  = document.getDocumentElement();
+            Log.e("BUS",element.getNodeName());
+            NodeList days = element.getChildNodes();
+            NodeList weekdays_tojinnan_list = days.item(1).getChildNodes().item(1).getChildNodes();
+            NodeList weekdays_tobalitai_list = days.item(1).getChildNodes().item(3).getChildNodes();
+            NodeList weekends_tojinnan_list = days.item(3).getChildNodes().item(1).getChildNodes();
+            NodeList weekends_tobalitai_list = days.item(3).getChildNodes().item(3).getChildNodes();
+            HashMap<String,Integer> tmpMap;
+            for(int i = 0;i<weekdays_tojinnan_list.getLength();i++){
+                Node node  = weekdays_tojinnan_list.item(i);
+                if("busItem".equals(node.getNodeName())){
+                    tmpMap = new HashMap<>();
+                    tmpMap.put("id",Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue()));
+                    tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
+                    tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
+                    tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
+                    Information.weekdays_tojinnan.add(tmpMap);
+                }
+            }
+            for(int i = 0;i<weekdays_tobalitai_list.getLength();i++){
+                Node node  = weekdays_tobalitai_list.item(i);
+                if("busItem".equals(node.getNodeName())){
+                    tmpMap = new HashMap<>();
+                    tmpMap.put("id",Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue()));
+                    tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
+                    tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
+                    tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
+                    Information.weekdays_tobalitai.add(tmpMap);
+                }
+            }
+            for(int i = 0;i<weekends_tojinnan_list.getLength();i++){
+                Node node  = weekends_tojinnan_list.item(i);
+                if("busItem".equals(node.getNodeName())){
+                    tmpMap = new HashMap<>();
+                    tmpMap.put("id",Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue()));
+                    tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
+                    tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
+                    tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
+                    Information.weekends_tojinnan.add(tmpMap);
+                }
+            }
+            for(int i = 0;i<weekends_tobalitai_list.getLength();i++){
+                Node node  = weekends_tobalitai_list.item(i);
+                if("busItem".equals(node.getNodeName())){
+                    tmpMap = new HashMap<>();
+                    tmpMap.put("id",Integer.parseInt(node.getAttributes().getNamedItem("id").getNodeValue()));
+                    tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
+                    tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
+                    tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
+                    Information.weekends_tobalitai.add(tmpMap);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
