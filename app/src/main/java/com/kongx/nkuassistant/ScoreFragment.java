@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.IDNA;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,16 +19,19 @@ import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class ScoreFragment extends Fragment implements Connectable{
+public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
     char lastType;
     private View myView = null;
     private int numberOfPages;
+    private SwipeRefreshLayout mRefresh;
+    private ArrayList<HashMap<String,String>> tmpScore;
     private Pattern pattern;
     private Matcher matcher;
     private ListView mScoreList;
@@ -44,10 +48,9 @@ public class ScoreFragment extends Fragment implements Connectable{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Information.resetScores();
-        Information.studiedCourses.clear();
-        lastType = 'A';
         myView = inflater.inflate(R.layout.fragment_score, container, false);
+        mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.score_refresh);
+        mRefresh.setOnRefreshListener(this);
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
         mCreditsAll = (TextView) myView.findViewById(R.id.score_credits);
         mAverageAll = (TextView) myView.findViewById(R.id.score_average);
@@ -58,7 +61,7 @@ public class ScoreFragment extends Fragment implements Connectable{
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        new Connect(ScoreFragment.this, 1, null).execute(Information.webUrl + "/xsxk/studiedAction.do");
+        onRefresh();
     }
 
     @Override
@@ -67,7 +70,16 @@ public class ScoreFragment extends Fragment implements Connectable{
         m_activity = null;
     }
 
-    private void updateUI(){
+    public void onRefresh() {
+        mRefresh.setRefreshing(true);
+        lastType = 'A';
+        Information.resetScores();
+        tmpScore = new ArrayList<>();
+        new Connect(this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
+    }
+
+    private void update(){
+        Information.studiedCourses = tmpScore;
         SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("studiedCourseCount",String.valueOf(Information.studiedCourseCount));
@@ -85,6 +97,7 @@ public class ScoreFragment extends Fragment implements Connectable{
         mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
         if(Information.average_abcd < 80)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.yellow));
         if(Information.average_abcd < 60)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.red));
+        mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
 
@@ -104,7 +117,7 @@ public class ScoreFragment extends Fragment implements Connectable{
                 if (matcher.find())
                     Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
                 map.put("name", "dividerA");
-                Information.studiedCourses.add(map);
+                tmpScore.add(map);
             }
             pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r)");
             matcher = pattern.matcher(returnString);
@@ -132,7 +145,7 @@ public class ScoreFragment extends Fragment implements Connectable{
                     HashMap<String, String> divider = new HashMap<>();
                     lastType = tmpS2.charAt(0);
                     divider.put("name", "divider" + lastType);
-                    Information.studiedCourses.add(divider);
+                    tmpScore.add(divider);
                 }
                 if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
                     Log.e("APP", String.valueOf(tmpS2.charAt(0)));
@@ -141,9 +154,9 @@ public class ScoreFragment extends Fragment implements Connectable{
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
                 }
-                Information.studiedCourses.add(map);
+                tmpScore.add(map);
             }
-            if (type == numberOfPages) updateUI();
+            if (type == numberOfPages) update();
             else
                 new Connect(ScoreFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/studiedPageAction.do");
         }else if(o.getClass() == Integer.class){

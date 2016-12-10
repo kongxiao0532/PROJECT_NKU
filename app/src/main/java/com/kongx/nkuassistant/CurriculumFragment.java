@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,18 +18,22 @@ import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CurriculumFragment extends Fragment implements Connectable {
+public class CurriculumFragment extends Fragment implements Connectable,SwipeRefreshLayout.OnRefreshListener {
     public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
     private static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
     private static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
     private int numberOfPages;
+    private SwipeRefreshLayout mRefresh;
     private ListView mlistView;
     private Activity m_activity;
+    private ArrayList<HashMap<String,String>> tmpCurriculum;
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,9 +43,10 @@ public class CurriculumFragment extends Fragment implements Connectable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Information.selectedCourses.clear();
         View myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
+        mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.curriculum_refresh);
+        mRefresh.setOnRefreshListener(CurriculumFragment.this);
         return myView;
     }
 
@@ -48,7 +54,9 @@ public class CurriculumFragment extends Fragment implements Connectable {
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
+        if(Information.selectedCourseCount == 0){
+           onRefresh();
+        }else mlistView.setAdapter(new MyAdapter(m_activity));
     }
 
     @Override
@@ -56,9 +64,20 @@ public class CurriculumFragment extends Fragment implements Connectable {
         super.onPause();
         m_activity = null;
     }
+    public void onRefresh() {
+        mRefresh.setRefreshing(true);
+        tmpCurriculum = new ArrayList<>();
+        new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
+    }
 
-    void updateUI(){
+    void update(){
+        Calendar calendar = Calendar.getInstance();
+        int minute = calendar.get(Calendar.MINUTE);
+        String time_now = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + ":" + ((minute == 0) ? "00" : String.valueOf(minute));
+        Information.curriculum_lastUpdate = Information.date + " " + time_now;
+        Information.selectedCourses = tmpCurriculum;
         storeCourses();
+        mRefresh.setRefreshing(false);
         mlistView.setAdapter(new MyAdapter(m_activity));
     }
 
@@ -110,9 +129,9 @@ public class CurriculumFragment extends Fragment implements Connectable {
                 matcher.find();
                 map.put("endWeek", matcher.group(2));
                 matcher.find();
-                Information.selectedCourses.add(map);
+                tmpCurriculum.add(map);
             }
-            if (type == numberOfPages) updateUI();
+            if (type == numberOfPages) update();
             else
                 new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/selectedPageAction.do");
         }else if(o.getClass() == Integer.class){
@@ -126,8 +145,8 @@ public class CurriculumFragment extends Fragment implements Connectable {
         }
     }
 
-    private boolean storeCourses() {
-        SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
+    public boolean storeCourses() {
+           SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
         for (int i = 0; i < Information.selectedCourseCount; i++) {
@@ -142,6 +161,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
             editor.putString("startWeek" + i, Information.selectedCourses.get(i).get("startWeek"));
             editor.putString("endWeek" + i, Information.selectedCourses.get(i).get("endWeek"));
         }
+        editor.putString("curriculum_lastUpdate",Information.curriculum_lastUpdate);
         return editor.commit();
     }
 
@@ -151,42 +171,43 @@ public class CurriculumFragment extends Fragment implements Connectable {
             this.mInflater = LayoutInflater.from(context);
         }
         @Override
-        public int getCount() {
-            return Information.selectedCourseCount;
-        }
-
+        public int getCount() { return Information.selectedCourseCount + 1;}
         @Override
         public Object getItem(int position) {
             return Information.selectedCourses.get(position);
         }
-
         @Override
         public long getItemId(int position) {
             return position;
         }
-
         @Override
         @SuppressLint("InflateParams")
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if(convertView == null){
+            if(position == Information.selectedCourseCount){
+                convertView = mInflater.inflate(R.layout.listview_lastupdate,null);
+                TextView last_update_view = (TextView) convertView.findViewById(R.id.last_update);
+                last_update_view.setText("最后更新：" + ((Information.curriculum_lastUpdate == null) ? "从未更新" : Information.curriculum_lastUpdate));
+            }
+            else {
+                ViewHolder holder;
+//                if(convertView == null){
                     convertView = mInflater.inflate(R.layout.selected_list_item, null);
                     holder = new ViewHolder();
                     holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
-                    holder.teacher = (TextView) convertView.findViewById(R.id.selected_list_teacher);
+                    holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
                     holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
                     holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
-                    convertView.setTag(holder);
-                }
-            else{
-                holder = (ViewHolder)convertView.getTag();
-            }
+//                    convertView.setTag(holder);
+//                }
+//                else{
+//                    holder = (ViewHolder)convertView.getTag();
+//                }
                 holder.name.setText(Information.selectedCourses.get(position).get("name"));
-                holder.teacher.setText(Information.selectedCourses.get(position).get("teacherName")+" （"+Information.selectedCourses.get(position).get("classType")+"）");
-                holder.index.setText(Information.selectedCourses.get(position).get("classRoom"));
-                holder.time.setText(dayOfWeek[Integer.parseInt(Information.selectedCourses.get(position).get("dayOfWeek"))]+" "+
-                        startTime[Integer.parseInt(Information.selectedCourses.get(position).get("startTime"))]+"-"+
+                holder.day.setText(dayOfWeek[Integer.parseInt(Information.selectedCourses.get(position).get("dayOfWeek"))]);
+                holder.index.setText(Information.selectedCourses.get(position).get("index"));
+                holder.time.setText(startTime[Integer.parseInt(Information.selectedCourses.get(position).get("startTime"))]+"-"+
                         endTime[Integer.parseInt(Information.selectedCourses.get(position).get("endTime"))]);
+            }
             return convertView;
         }
 
@@ -194,7 +215,7 @@ public class CurriculumFragment extends Fragment implements Connectable {
 
     class ViewHolder{
         TextView name;
-        TextView teacher;
+        TextView day;
         TextView index;
         TextView time;
     }

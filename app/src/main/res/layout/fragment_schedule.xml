@@ -1,18 +1,107 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.kongx.nkuassistant.ScheduleFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <GridView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="40dp">
+        <TextView
+            android:gravity="center"
+            android:layout_width="@dimen/fragment_class_month_num_width"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期一"
+            android:id="@+id/Schedule_Monday"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期二"
+            android:gravity="center"
+            android:id="@+id/Schedule_Tuesday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期三"
+            android:gravity="center"
+            android:id="@+id/Schedule_Wednesday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期四"
+            android:gravity="center"
+            android:id="@+id/Schedule_Thursday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期五"
+            android:gravity="center"
+            android:id="@+id/Schedule_Friday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期六"
+            android:gravity="center"
+            android:id="@+id/Schedule_Saturday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+        <TextView
+            android:text="星期日"
+            android:gravity="center"
+            android:id="@+id/Schedule_Sunday"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorPrimary"
+            android:background="#E0E0E0"
+            android:layout_weight="1" />
+    </LinearLayout>
 
-    </GridView>
-
-    <GridView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/schedule_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</FrameLayout>
+        android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/schedule_relative_layout"
+            android:orientation="vertical" >
+                <com.kongx.nkuassistant.ListViewNoScroll
+                    android:id="@+id/list_schedule"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </com.kongx.nkuassistant.ListViewNoScroll>
+        </RelativeLayout>
+    </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

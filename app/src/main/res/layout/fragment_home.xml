@@ -5,8 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.kongx.nkuassistant.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/home_refresh">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -24,6 +26,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/home_schedule_layout">
                 <LinearLayout
+                    android:background="@color/white"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -31,7 +34,6 @@
                     <ImageView
                         app:srcCompat="@drawable/ic_menu_schedule"
                         android:layout_marginTop="10dp"
-                        android:background="#FFFFFF"
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
@@ -41,7 +43,6 @@
                         android:layout_width="30dp" />
 
                     <TextView
-                        android:background="#FFFFFF"
                         android:textColor="#212121"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -53,7 +54,6 @@
                         android:text="课程表" />
 
                     <TextView
-                        android:background="#FFFFFF"
                         android:paddingTop="10dp"
                         android:layout_marginTop="10dp"
                         android:paddingEnd="15dp"
@@ -62,43 +62,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/textView_semester"
-                        android:layout_weight="0.02" />
+                        android:layout_weight="0.04" />
+
 
                     <TextView
-                        android:background="#FFFFFF"
-                        android:paddingTop="10dp"
+                        android:background="@drawable/themecolorrect"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingStart="3dp"
+                        android:paddingEnd="3dp"
                         android:layout_marginTop="10dp"
-                        android:text="第"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/textView_No."
-                        android:layout_weight="0.02" />
-
-                    <TextView
-                        android:background="#FFFFFF"
-                        android:paddingTop="10dp"
-                        android:layout_marginTop="10dp"
-                        android:text="10"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/white"
+                        android:text="第10周"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/textView_weekCount"
                         android:layout_weight="0.02" />
 
-                    <TextView
-                        android:background="#FFFFFF"
-                        android:paddingTop="10dp"
-                        android:layout_marginTop="10dp"
-                        android:text="周"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.02" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:paddingTop="15dp"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingBottom="10dp"
@@ -106,7 +95,6 @@
                     android:layout_weight="0.02">
 
                     <TextView
-                    android:background="#FFFFFF"
                     android:textAlignment="center"
                         android:textColor="@color/colorPrimary"
                         android:text="2016年12月1日"
@@ -116,7 +104,6 @@
                     android:layout_weight="1" />
 
                     <TextView
-                        android:background="#FFFFFF"
                         android:textAlignment="center"
                         android:textColor="@color/colorPrimary"
                         android:text="星期四"
@@ -127,7 +114,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
@@ -139,7 +126,6 @@
 
                 <TextView
                     android:text="课程表未更新"
-                    android:background="#FFFFFF"
                     android:layout_marginBottom="1dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -150,8 +136,8 @@
 
                 <TextView
                     android:text="查看详情"
-                    android:background="#FFFFFF"
                     android:textColor="@color/colorPrimary"
+                    android:background="@color/white"
                     android:paddingTop="5dp"
                     android:paddingBottom="20dp"
                     android:layout_width="match_parent"
@@ -165,7 +151,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E0E0E0"
+                android:background="@color/grey"
                 android:id="@+id/home_exam_layout">
                 <LinearLayout
                     android:orientation="horizontal"
@@ -175,7 +161,7 @@
                     <ImageView
                         app:srcCompat="@drawable/ic_menu_exam"
                         android:layout_marginTop="10dp"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
@@ -186,7 +172,7 @@
 
                     <TextView
                         android:text="考试信息"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -204,7 +190,7 @@
                     android:id="@+id/home_exam_list"/>
 
                 <TextView
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_marginBottom="1dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -216,7 +202,7 @@
 
                 <TextView
                     android:text="查看详情"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
@@ -231,7 +217,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E0E0E0"
+                android:background="@color/grey"
                 android:id="@+id/home_score_layout">
                 <LinearLayout
                     android:orientation="horizontal"
@@ -241,7 +227,7 @@
                     <ImageView
                         app:srcCompat="@drawable/ic_menu_score"
                         android:layout_marginTop="10dp"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
@@ -252,7 +238,7 @@
 
                     <TextView
                         android:text="分数查询"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -265,7 +251,7 @@
 
                 <TextView
                     android:text="分数信息获取中..."
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_marginBottom="1dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -275,7 +261,7 @@
                     android:id="@+id/home_score_text" />
                 <TextView
                     android:text="查看详情"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
@@ -290,7 +276,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E0E0E0"
+                android:background="@color/grey"
                 android:id="@+id/home_select_layout">
 
                 <LinearLayout
@@ -301,7 +287,7 @@
                     <ImageView
                         app:srcCompat="@drawable/ic_menu_select"
                         android:layout_marginTop="10dp"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
@@ -312,7 +298,7 @@
 
                     <TextView
                         android:text="选课系统"
-                        android:background="#FFFFFF"
+                        android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -325,7 +311,7 @@
 
                 <TextView
                     android:text="选课系统状态获取中..."
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_marginBottom="1dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -335,7 +321,7 @@
                     android:id="@+id/home_select_text" />
                 <TextView
                     android:text="查看详情"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
@@ -350,13 +336,13 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#E0E0E0"
+                android:background="@color/grey"
                 android:id="@+id/home_bus_layout">
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_marginTop="10dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -388,7 +374,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -416,7 +402,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="5dp"
@@ -426,57 +412,67 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:gravity="center"
                         android:layout_weight="1">
 
                         <TextView
                             android:text="快"
+                            android:background="@drawable/themecolorcircle"
+                            android:textColor="@color/white"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/home_bus_balitai_way"
-                            android:visibility="invisible"
-                            android:gravity="end"
-                            android:layout_weight="1" />
+                            android:visibility="gone" />
 
                         <TextView
                             android:textSize="22sp"
-                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="start"
                             android:id="@+id/home_bus_balitai"
-                            android:layout_weight="1"
-                            android:text="无可用车辆" />
+                            android:text="无可用车辆"
+                            android:layout_width="wrap_content" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:gravity="center"
                         android:layout_weight="1">
 
                         <TextView
                             android:text="快"
+                            android:background="@drawable/themecolorcircle"
+                            android:textColor="@color/white"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            android:layout_marginEnd="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/home_bus_jinnan_way"
-                            android:visibility="invisible"
-                            android:gravity="end"
-                            android:layout_weight="1" />
+                            android:visibility="gone" />
 
                         <TextView
                             android:textSize="22sp"
-                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="start"
                             android:id="@+id/home_bus_jinnan"
-                            android:layout_weight="1"
-                            android:text="无可用车辆" />
+                            android:text="无可用车辆"
+                            android:layout_width="wrap_content" />
                     </LinearLayout>
 
                 </LinearLayout>
                 <TextView
                     android:text="(根据2016年11月数据)"
                     android:textSize="10dp"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:layout_width="match_parent"
@@ -486,7 +482,7 @@
 
                 <TextView
                     android:text="查看详情"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
@@ -498,5 +494,8 @@
 
         </LinearLayout>
     </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </FrameLayout>

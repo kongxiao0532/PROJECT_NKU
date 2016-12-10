@@ -6,20 +6,47 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:fitsSystemWindows="false"
+    android:background="@drawable/loginbackground"
     tools:context="com.kongx.nkuassistant.EduLoginActivity">
 
     <!-- Login progress -->
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="44dp" />
+        android:layout_height="130dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="0.2" />
+
+        <ImageView
+            app:srcCompat="@drawable/headers"
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:scaleType="fitStart"
+            android:layout_height="100dp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2" />
+    </LinearLayout>
+
     <ProgressBar
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:visibility="invisible" />
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -36,7 +63,7 @@
             <Space
                 android:minHeight="100dp"
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                android:layout_height="70dp" />
 
             <LinearLayout
                 android:weightSum="1"
@@ -50,69 +77,119 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <android.support.design.widget.TextInputLayout
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:background="@drawable/greyrect"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <EditText
-                            android:id="@+id/username"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/prompt_email"
-                            android:maxLines="1"
-                            android:maxLength="7"
-                            android:inputType="textAutoComplete"
-                            android:layout_alignBottom="@+id/password"
-                            android:layout_centerHorizontal="true"/>
-                    </android.support.design.widget.TextInputLayout>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            app:srcCompat="@drawable/ic_account_circle_white_24dp"
+                            android:layout_weight="1"
+                            android:scaleType="centerInside"
+                            android:layout_height="match_parent"
+                            android:layout_width="50dp" />
 
                         <EditText
-                            android:id="@+id/password"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/prompt_password"
-                            android:inputType="textPassword"
-                            android:maxLines="1"
-                            android:layout_centerVertical="true"
-                            android:layout_alignStart="@+id/username"
-                            android:layout_width="match_parent"
+                                android:id="@+id/username"
+                            android:background="@null"
+                                android:textColor="#E0E0E0"
+                                android:textColorHint="#E0E0E0"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="0dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/prompt_email"
+                                android:maxLines="1"
+                                android:maxLength="7"
+                                android:inputType="textAutoComplete"
                             android:layout_weight="1" />
-                    </android.support.design.widget.TextInputLayout>
+                    </LinearLayout>
+
 
                     <LinearLayout
                         android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:background="@drawable/greyrect"
+                        android:layout_height="wrap_content">
 
-                        <android.support.design.widget.TextInputLayout android:layout_height="match_parent"
-                            android:layout_width="100dp">
-
-                            <EditText
-                                android:id="@+id/ValidateCode"
-                                android:layout_height="match_parent"
-                                android:hint="@string/prompt_validate"
-                                android:imeActionId="@+id/login"
-                                android:imeActionLabel="@string/action_sign_in_short"
-                                android:imeOptions="actionUnspecified"
-                                android:inputType="textVisiblePassword"
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            app:srcCompat="@drawable/ic_vpn_key_white_24dp"
+                            android:layout_weight="1"
+                            android:scaleType="centerInside"
+                            android:layout_height="match_parent"
+                            android:layout_width="50dp" />
+                        <EditText
+                                android:id="@+id/password"
+                            android:background="@null"
+                                android:textColor="#E0E0E0"
+                                android:textColorHint="#E0E0E0"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="0dp"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/prompt_password"
+                                android:inputType="textPassword"
                                 android:maxLines="1"
-                                android:layout_centerVertical="true"
-                                android:layout_alignStart="@+id/username"
                                 android:layout_width="match_parent"
-                                android:layout_weight="1" />
+                            android:layout_weight="1" />
+                    </LinearLayout>
 
-                        </android.support.design.widget.TextInputLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:weightSum="1">
+
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:background="@drawable/greyrect"
+                            android:layout_height="match_parent"
+                            android:layout_width="130dp">
+
+                            <ImageView
+                                android:layout_marginStart="10dp"
+                                app:srcCompat="@drawable/ic_security_white_24dp"
+                                android:layout_weight="1"
+                                android:scaleType="centerInside"
+                                android:layout_height="match_parent"
+                                android:layout_width="50dp" />
+                            <EditText
+                                    android:id="@+id/ValidateCode"
+                                android:background="@null"
+                                    android:textColor="#E0E0E0"
+                                    android:textColorHint="#E0E0E0"
+                                    android:paddingTop="10dp"
+                                    android:paddingBottom="10dp"
+                                    android:paddingStart="10dp"
+                                    android:paddingEnd="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:hint="@string/prompt_validate"
+                                    android:imeActionId="@+id/login"
+                                    android:imeActionLabel="@string/action_sign_in_short"
+                                    android:imeOptions="actionUnspecified"
+                                    android:inputType="textVisiblePassword"
+                                    android:maxLines="1"
+                                    android:layout_width="120dp"
+                                android:layout_weight="1" />
+                        </LinearLayout>
+
 
                         <ImageView
                             android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
                             app:srcCompat="@drawable/validatecode"
                             android:id="@+id/imageView_ValidateCode"
                             android:scaleType="fitCenter"
-                            android:layout_width="match_parent"
+                            android:layout_width="95dp"
                             android:cropToPadding="false"
                             android:adjustViewBounds="false"
                             android:onClick="getValidateCode"/>
@@ -127,33 +204,25 @@
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="10dp"/>
-            <LinearLayout
-                android:orientation="horizontal"
+
+
+            <Switch
+                android:text="记住密码"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:weightSum="1"
-                android:layout_alignTop="@+id/linearLayout"
-                android:layout_toEndOf="@+id/login_progress">
+                android:layout_height="wrap_content"
+                android:paddingStart="30dp"
+                android:paddingBottom="30dp"
+                android:textColor="@color/white"
+                android:id="@+id/switch_RemPass" />
 
-                <CheckBox
-                    android:text="记住密码"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:id="@+id/checkBox_RemPass" />
+            <Button
+                android:text="@string/title_activity_edu_login"
+                android:background="@drawable/loginbutton"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textColor="@color/white"
+                android:id="@+id/button_login"/>
 
-                <ImageView
-                    android:layout_width="77dp"
-                    android:layout_height="32dp"
-                    app:srcCompat="@drawable/ic_send_black_48dp"
-                    android:id="@+id/imageView2"
-                    android:clickable="true"
-                    android:layout_marginLeft="10dp"
-                    android:onClick="onLoginClicked"
-                    android:layout_alignParentTop="true"
-                    android:layout_weight="0.21" />
-
-            </LinearLayout>
 
 
         </LinearLayout>

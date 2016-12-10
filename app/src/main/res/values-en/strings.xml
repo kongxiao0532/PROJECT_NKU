@@ -4,16 +4,12 @@
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Log in</string>
     <string name="action_sign_in_short">Log in</string>
-    <string name="dummy_button"></string>
-    <string name="dummy_content"></string>
     <string name="error_incorrect_password">Invalid student ID or password</string>
     <string name="error_invalid_studentID">Invalid student ID</string>
     <string name="error_password_required">Please enter your password</string>
     <string name="error_studentID_required">Please enter your student ID</string>
     <string name="error_validate_required">Please enter the validate code</string>
     <string name="error_invalid_validate">Invalid Validate Code</string>
-    <string name="hello_blank_fragment"></string>
-    <string name="navigation_drawer_close"></string>
     <string name="prompt_email">Student ID</string>
     <string name="prompt_password">Password</string>
     <string name="title_activity_edu_login">Log in</string>
@@ -26,4 +22,17 @@
     <!--String related to Selection-->
     <string name="prompt_index">Course Number</string>
     <string name="not_Open_Warning">System Shut Down</string>
+    <string name="FastLine">FastLine</string>
+    <string name="average_template">ABCD Average is %1$.2f \\n ABCDE Average is %2$.2f</string>
+    <string name="cdtext_sunrisefox">"         <p><h1>Sun Yi-Ran</h1></p>         <br />         Contact: sunrisefox@outlook.com         <br />         Github: <a href="https://github.com/SunriseFox">https://github.com/SunriseFox</a>     "</string>
+    <string name="course_template">%1$c Courses，%2$f Credits，Average score is %3$.2f</string>
+    <string name="credits_template">Counted %1$.1f credits</string>
+    <string name="error_number_required">Please enter the index of the course</string>
+    <string name="navigation_drawer_close">Open up the Drawer</string>
+    <string name="navigation_drawer_open">Close the Drawer</string>
+    <string name="pointToPoint">Straight</string>
+    <string name="summber_vacation">Summer Vacation</string>
+    <string name="tab_tobalitai">Jinnan to Balitai</string>
+    <string name="tab_tojinnan">Balitai to Jinnan</string>
+    <string name="winter_vacation">Winter Vacation</string>
 </resources>

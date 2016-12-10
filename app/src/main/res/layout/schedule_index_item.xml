@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:text="12"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:background="#E0E0E0"
+        android:layout_width="@dimen/fragment_class_month_num_width"
+        android:layout_height="@dimen/fragment_class_list_item_height">
+</TextView>

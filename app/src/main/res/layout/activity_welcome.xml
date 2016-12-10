@@ -8,23 +8,44 @@
         android:background="#000000"
         android:fitsSystemWindows="true"
         android:id="@+id/layout_welcome"
+        android:weightSum="1"
         android:orientation="vertical">
 
         <ImageView
             android:layout_width="match_parent"
-            app:srcCompat="@drawable/startpic"
+            android:src="@drawable/startpic"
             android:id="@+id/imageView_start"
-            android:layout_weight="0.8"
+            android:layout_weight="1"
             android:scaleType="fitXY"
             android:layout_height="0dp" />
 
-        <ImageView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:srcCompat="@drawable/welcomepic"
-            android:id="@+id/imageView5"
             android:layout_weight="0.2"
-            android:adjustViewBounds="false"
-            android:cropToPadding="false" />
+            android:weightSum="1"
+            android:layout_height="wrap_content">
+
+            <Space
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_width="60dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:src="@drawable/welcomepic2"
+                android:id="@+id/imageView5"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.8"/>
+
+            <Space
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:layout_width="60dp" />
+        </LinearLayout>
 
     </LinearLayout>

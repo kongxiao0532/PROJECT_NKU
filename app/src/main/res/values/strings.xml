@@ -22,7 +22,7 @@
     <string name="error_invalid_validate">验证码无效</string>
 
     <!--String related to Selection-->
-    <string name="error_number_required">"请输入选课序号"</string>
+    <string name="error_number_required">请输入选课序号</string>
     <string name="prompt_index">选课序号</string>
     <string name="not_Open_Warning">选课系统关闭</string>
 
@@ -55,6 +55,4 @@
     <drawable name="yellow">#CDDC39</drawable>
     <drawable name="green">#F44336</drawable>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

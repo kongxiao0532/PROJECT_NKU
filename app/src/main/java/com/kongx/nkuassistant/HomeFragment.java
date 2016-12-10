@@ -1,5 +1,6 @@
 package com.kongx.nkuassistant;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextWatcher;
 import android.transition.CircularPropagation;
 import android.util.Log;
@@ -25,16 +27,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HomeFragment extends Fragment implements Connectable{
+public class HomeFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
+    private SwipeRefreshLayout mReFresh;
+    private Activity m_activity;
     //Schedule Module
     private View myView = null;
     private TextView mWeekText;
-    private TextView mNo;
     private TextView mSememText;
     private TextView mDate;
     private TextView mDay;
@@ -80,8 +84,10 @@ public class HomeFragment extends Fragment implements Connectable{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         myView = inflater.inflate(R.layout.fragment_home, container, false);
+        m_activity = getActivity();
+        mReFresh = (SwipeRefreshLayout) myView.findViewById(R.id.home_refresh);
+        mReFresh.setOnRefreshListener(this);
         mWeekText = (TextView) myView.findViewById(R.id.textView_weekCount);
-        mNo = (TextView) myView.findViewById(R.id.textView_No_);
         mSememText = (TextView) myView.findViewById(R.id.textView_semester);
         mDate = (TextView) myView.findViewById(R.id.textView_date);
         mDay = (TextView) myView.findViewById(R.id.textView_day);
@@ -100,11 +106,11 @@ public class HomeFragment extends Fragment implements Connectable{
         mBusToJinnan = (TextView) myView.findViewById(R.id.home_bus_balitai);
         mBusToBalitaiWay = (TextView) myView.findViewById(R.id.home_bus_jinnan_way);
         mBusToJinnanWay = (TextView) myView.findViewById(R.id.home_bus_balitai_way);
-        mScheduleDetail.setOnClickListener((View.OnClickListener) getActivity());
-        mExamDetail.setOnClickListener((View.OnClickListener) getActivity());
-        mScoreDetail.setOnClickListener((View.OnClickListener) getActivity());
-        mSelectDetail.setOnClickListener((View.OnClickListener) getActivity());
-        mBusDetail.setOnClickListener((View.OnClickListener) getActivity());
+        mScheduleDetail.setOnClickListener((View.OnClickListener) m_activity);
+        mExamDetail.setOnClickListener((View.OnClickListener) m_activity);
+        mScoreDetail.setOnClickListener((View.OnClickListener) m_activity);
+        mSelectDetail.setOnClickListener((View.OnClickListener) m_activity);
+        mBusDetail.setOnClickListener((View.OnClickListener) m_activity);
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
@@ -137,7 +143,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }
             if(weekOfYear > 28 || weekOfYear <= 36){
                 Information.weekCount = weekOfYear - 28;
-                Information.semester = "暑假";
+                Information.semester = getString(R.string.summber_vacation);
             }
         }
         else if(year == 2016){
@@ -151,15 +157,41 @@ public class HomeFragment extends Fragment implements Connectable{
             }
         }
         if(Information.weekCount == 0){
-            mNo.setVisibility(View.INVISIBLE);
-            mWeekText.setText("考试");
+            mWeekText.setText("考试周");
         }
         else {
-            mWeekText.setText(String.valueOf(Information.weekCount));
+            mWeekText.setText("第"+String.valueOf(Information.weekCount)+"周");
         }
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(CurriculumFragment.dayOfWeek[dayOfWeek]);
+        if(Information.selectedCourseCount == 0){
+            onRefresh();
+        } else{
+            updateSchedule();
+            updateExam();
+            updateBus();
+            mScoreStatus.setText("成绩更新未获取...");
+            mSelectStatus.setText("选课系统状态未获取...");
+        }
+        return myView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        m_activity = getActivity();
+        onRefresh();
+    }
+    @Override
+    public void onPause(){
+        super.onPause();
+        m_activity = null;
+    }
+
+    @Override
+    public void onRefresh(){
+        mReFresh.setRefreshing(true);
         new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
         new Connect(HomeFragment.this, RequestType.getExamNumber,null).execute(Information.webUrl+"/xxcx/stdexamarrange/listAction.do");
         new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.webUrl+"/xsxk/selectMianInitAction.do");
@@ -168,9 +200,8 @@ public class HomeFragment extends Fragment implements Connectable{
         }catch (IndexOutOfBoundsException e){
             Log.e("APP","Maybe you changed the fragment too quick.");
         }
-
         updateBus();
-        return myView;
+        mReFresh.setRefreshing(false);
     }
 
     @Override
@@ -226,11 +257,11 @@ public class HomeFragment extends Fragment implements Connectable{
                 default:
                     break;
             }
-        }else if(o.getClass() == Integer.class){
+        }else if(type == RequestType.getScoreNumber && o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
-                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
-                getActivity().finish();
+                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
+                m_activity.finish();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
             Log.e("APP","SocketTimeoutException!");
@@ -242,6 +273,12 @@ public class HomeFragment extends Fragment implements Connectable{
     }
 
     private void updateSchedule() throws IndexOutOfBoundsException{
+        courseToday.clear();
+        mScheduleList.removeAllViews();
+        if(Information.selectedCourseCount == 0){
+            mScheduleStatus.setText("课程表未更新");
+            return;
+        }
         if(Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")){
             mScheduleStatus.setText("今天没有课，记得找点事充实自己的生活哦~");
         }
@@ -265,7 +302,7 @@ public class HomeFragment extends Fragment implements Connectable{
         else {
             mScheduleList.setVisibility(View.VISIBLE);
             mScheduleStatus.setVisibility(View.GONE);
-            LayoutInflater mInflater = LayoutInflater.from(getActivity());
+            LayoutInflater mInflater = LayoutInflater.from(m_activity);
             for(int i=0;i<courseTodayCount;i++) {
                 View view = mInflater.inflate(R.layout.home_schedule_item, null);
                 TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
@@ -311,7 +348,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }else{
                 mBusToJinnan.setText("无可用车辆");
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToJinnanWay.setVisibility(View.INVISIBLE);
+                mBusToJinnanWay.setVisibility(View.GONE);
             }
             if(toBalitaiID != -1){
                 mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("hour"))+":"+
@@ -321,7 +358,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }else{
                 mBusToBalitai.setText("无可用车辆");
                 mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToBalitaiWay.setVisibility(View.INVISIBLE);
+                mBusToBalitaiWay.setVisibility(View.GONE);
             }
             return;
 
@@ -352,7 +389,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }else{
                 mBusToJinnan.setText("无可用车辆");
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToJinnanWay.setVisibility(View.INVISIBLE);
+                mBusToJinnanWay.setVisibility(View.GONE);
             }
             if(toBalitaiID != -1){
                 mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("hour"))+":"+
@@ -362,7 +399,7 @@ public class HomeFragment extends Fragment implements Connectable{
             }else{
                 mBusToBalitai.setText("无可用车辆");
                 mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToBalitaiWay.setVisibility(View.INVISIBLE);
+                mBusToBalitaiWay.setVisibility(View.GONE);
             }
             return;
         }

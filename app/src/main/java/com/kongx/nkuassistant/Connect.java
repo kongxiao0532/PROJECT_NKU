@@ -19,6 +19,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * This is the interface to handle all the classes's network requests.
  */
@@ -37,6 +39,7 @@ class Connect extends AsyncTask<String, Integer, Object> {
     }
     @Override
     protected Object doInBackground(String... urls) {
+        Log.e("APP",CookieHandler.getDefault().toString());
         InputStream is = null;
         try {
             ProxySelector defaultProxySelector = ProxySelector.getDefault();

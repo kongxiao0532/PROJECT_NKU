@@ -3,71 +3,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:orientation="horizontal"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
-    android:padding="5dip"
     android:weightSum="1"
     app:layout_collapseParallaxMultiplier="0.0"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     android:layout_height="50dp">
 
     <LinearLayout
+        android:paddingStart="10dp"
+        android:paddingEnd="5dp"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_gravity="center"
-        android:weightSum="1"
-        android:layout_weight="0.4">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8">
 
         <TextView
-            android:id="@+id/selected_list_name"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="start|top"
-            android:textSize="16sp"
-            android:textColor="#212121"
-            android:layout_weight="0.4"
-            android:layout_marginLeft="10dp"
-            android:text="一元函数微积分（信）"/>
-
-        <TextView
-            android:id="@+id/selected_list_teacher"
+            android:id="@+id/selected_list_day"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:textSize="12sp"
-            android:layout_weight="0.6"
-            android:layout_marginLeft="10dp"
-            android:text="孙玉华 （主讲）"/>
+            android:paddingBottom="2dp"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="#212121"
+            android:text="星期四"/>
+
+        <TextView
+            android:id="@+id/selected_list_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:gravity="center"
+            android:textSize="8sp"
+            android:text="10:00-11:40"/>
+
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_width="match_parent"
+        android:paddingStart="0dp"
+        android:paddingEnd="10dp"
         android:layout_height="match_parent"
-        android:weightSum="1"
-        android:layout_weight="0.6">
+        android:layout_weight="0.2">
 
         <TextView
+            android:text="经典统计学与MATLAB"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="19sp"
+            android:id="@+id/selected_list_name"
+            android:layout_width="match_parent"/>
+
+        <TextView
+            android:text="1100"
+            android:layout_width="match_parent"
+            android:paddingStart="2dp"
+            android:layout_height="wrap_content"
             android:id="@+id/selected_list_index"
-            android:layout_width="wrap_content"
-            android:gravity="end"
-            android:layout_gravity="end"
-            android:textSize="12sp"
-            android:layout_marginEnd="10dp"
-            android:text="津南5B222"
-            android:layout_weight="0.5"
-            android:layout_height="25dp" />
-
-        <TextView
-            android:id="@+id/selected_list_time"
-            android:layout_width="wrap_content"
-            android:gravity="end"
-            android:layout_gravity="end"
-            android:textSize="12sp"
-            android:layout_marginEnd="10dp"
-            android:text="星期四 1-4节"
-            android:layout_weight="0.5"
-            android:layout_height="25dp" />
+            android:gravity="center"/>
     </LinearLayout>
 
 </LinearLayout>

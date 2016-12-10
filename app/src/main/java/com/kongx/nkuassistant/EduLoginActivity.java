@@ -16,10 +16,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class EduLoginActivity extends AppCompatActivity implements Connectable {
+public class EduLoginActivity extends AppCompatActivity implements Connectable,View.OnClickListener {
     private static final long mBackPressThreshold = 3500;
     static String m_username;
     static String m_encryptedPassword;
@@ -42,15 +46,13 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private EditText mUsernameView;
     private EditText mPasswordView;
     private EditText mValidateView;
+    private Button mLoginButton;
     private View mProgressView;
     private ImageView mValidateCode;
-    private CheckBox mRemPass;
+    private Switch mRemPass;
     private WebView webView;
     private boolean useRememberedPWD;
 
-    public void onLoginClicked(View view) {
-        attemptLogin();
-    }
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
@@ -62,14 +64,27 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
 
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new JSInterface(),"echoPWD");
+//        webView.addJavascriptInterface(new JSInterface(),"echoPWD");
+        webView.setWebChromeClient(new WebChromeClient(){
+            public boolean onConsoleMessage(ConsoleMessage cm)
+            {
+                Log.e("CONTENT", String.format("%s @ %d: %s",
+                        cm.message(), cm.lineNumber(), cm.sourceId()));
+                String strToPost = String.format(Strings.url_template, m_username, cm.message(), m_validateCode);
+                m_encryptedPassword = cm.message();
+                new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
+                return true;
+            }
+        });
         webView.loadUrl(Strings.url_webview);
 
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
-        mRemPass = (CheckBox) findViewById(R.id.checkBox_RemPass);
+        mRemPass = (Switch) findViewById(R.id.switch_RemPass);
+        mLoginButton = (Button) findViewById(R.id.button_login);
+        mLoginButton.setOnClickListener(this);
 
         mValidateView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -86,7 +101,9 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
             mRemPass.setChecked(true);
             mPasswordView.setSelectAllOnFocus(true);
             mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            mPasswordView.setText(Strings.str_pwd_not_changed);
+            if(settings.getString(Strings.setting_password,null) != null){
+                mPasswordView.setText(Strings.str_pwd_not_changed);
+            }
         }
 
         mPasswordView.addTextChangedListener(new TextWatcher() {
@@ -108,6 +125,12 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 mPasswordView.setSelection(mPasswordView.getText().length());
             }
         });
+    }
+    @Override
+    public void onClick(View view){
+        if(view.getId() == R.id.button_login){
+            attemptLogin();
+        }
     }
 
     @Override
@@ -262,12 +285,12 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     }
 
     private void showProgress(final boolean show) {
-        mProgressView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
         mProgressView.animate().setDuration(10).alpha(
                 show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             }
         });
     }

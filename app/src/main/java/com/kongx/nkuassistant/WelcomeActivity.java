@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import java.io.InputStream;
 import java.net.CookieManager;
@@ -28,24 +29,29 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cn.jpush.android.api.JPushInterface;
+
 public class WelcomeActivity extends AppCompatActivity {
 
 
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
-        setContentView(R.layout.activity_welcome);
+        View v = View.inflate(getApplicationContext(),R.layout.activity_welcome,null);
+
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(getApplication());
+        setContentView(v);
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
-        Information.ifFirstStart = settings.getBoolean("ifFirstStart",false);
+        Information.ifRemPass = settings.getBoolean("ifRemPass",false);
         Information.studiedCourseCount = Integer.parseInt(settings.getString("studiedCourseCount","0"));
         CookieManager cookieManager = new CookieManager();
         Connect.initialize(cookieManager);
-        if(!Information.ifFirstStart){
+        if(!Information.ifRemPass){
             Information.name = "Name";
             Information.facultyName = "Faculty";
             Information.majorName = "Major";
             Information.id = "ID";
-        }
-        else {
+        } else {
             Information.name = settings.getString("StudentName","Name");
             Information.facultyName = settings.getString("FacultyName","Faculty");
             Information.id = settings.getString("StudentID","id");
@@ -62,8 +68,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        //get Curriculum Preferences
         settings = getSharedPreferences(Information.COURSE_PREFS_NAME,0);
         Information.selectedCourseCount = Integer.parseInt(settings.getString("selectedCourseCount","0"));
+        Information.curriculum_lastUpdate = settings.getString("curriculum_lastUpdate",null);
         if(Information.selectedCourseCount != 0){
             HashMap<String,String> map;
             for(int i = 0;i < Information.selectedCourseCount;i++){
@@ -81,12 +89,13 @@ public class WelcomeActivity extends AppCompatActivity {
                 Information.selectedCourses.add(map);
             }
         }
+
         readBusFile();
         System.setProperty("java.net.useSystemProxies", "true");
         new Timer().schedule(new TimerTask() {
                                  public void run() {
                                      Intent localIntent;
-                                     if(Information.ifFirstStart)    {
+                                     if(Information.ifRemPass)    {
                                          localIntent = new Intent(WelcomeActivity.this, IndexActivity.class);
                                      }
                                      else   {
@@ -116,7 +125,6 @@ public class WelcomeActivity extends AppCompatActivity {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(inputStream);
             element  = document.getDocumentElement();
-            Log.e("BUS",element.getNodeName());
             NodeList days = element.getChildNodes();
             NodeList weekdays_tojinnan_list = days.item(1).getChildNodes().item(1).getChildNodes();
             NodeList weekdays_tobalitai_list = days.item(1).getChildNodes().item(3).getChildNodes();

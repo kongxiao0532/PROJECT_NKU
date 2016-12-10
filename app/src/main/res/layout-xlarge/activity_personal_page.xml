@@ -17,7 +17,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:background="@drawable/top"
+            android:background="@drawable/headers_bg"
             android:layout_gravity="bottom|left"
             android:gravity="bottom|left"
             android:layout_height="180dp">

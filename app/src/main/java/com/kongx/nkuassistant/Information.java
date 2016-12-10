@@ -14,6 +14,10 @@ import java.util.Queue;
  */
 
 public class Information {
+    //realted to Index Activity
+    static final String UPDATE_URL = "http://kongxiao0532.cf/projectnku/update/";
+    static final String NOTICE_URL = "http://kongxiao0532.cf/projectnku/notice/";
+    static int newestNotice;
 
     //related to Personal Information
     static String name;
@@ -27,11 +31,10 @@ public class Information {
     static String date;
 
     //related to Scores
+//    static String score_lastUpdate;
     static int studiedCourseCount;
     static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
-    static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
-    static ArrayList<HashMap<String,String>> exams = new ArrayList<>();
     static float[] credits = new float[5];
     static float[] scores = new float[5];
     static float[] averages = new float[5];
@@ -45,8 +48,13 @@ public class Information {
         }
         credits_All = scores_All = average_abcd = average_abcde = 0;
     }
+    //related to Curriculum
+    static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
+    static String curriculum_lastUpdate;
+
 
     //related to Exams
+    static ArrayList<HashMap<String,String>> exams = new ArrayList<>();
     static int examCount;
 
     //related to Bus TimeTable
@@ -57,7 +65,7 @@ public class Information {
 
 
     //related to Internet Connection
-    static boolean ifFirstStart;
+    static boolean ifRemPass;
     static final String PREFS_NAME = "NKUFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
