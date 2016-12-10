@@ -21,6 +21,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,7 +55,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        if(Information.selectedCourseCount == 0){
+        if(Information.selectedCourseCount == -1){
            onRefresh();
         }else mlistView.setAdapter(new MyAdapter(m_activity));
     }
@@ -73,7 +74,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     void update(){
         Calendar calendar = Calendar.getInstance();
         int minute = calendar.get(Calendar.MINUTE);
-        String time_now = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY)) + ":" + ((minute == 0) ? "00" : String.valueOf(minute));
+        String time_now = String.format(Locale.US,"%2d:%2d",calendar.get(Calendar.HOUR_OF_DAY) ,minute);
         Information.curriculum_lastUpdate = Information.date + " " + time_now;
         Information.selectedCourses = tmpCurriculum;
         storeCourses();
@@ -146,7 +147,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     }
 
     public boolean storeCourses() {
-           SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
+        SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
         for (int i = 0; i < Information.selectedCourseCount; i++) {

@@ -63,7 +63,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
         super.onResume();
         m_activity = getActivity();
         m_activity = getActivity();
-        if(Information.selectedCourseCount == 0){
+        if(Information.selectedCourseCount == -1){
             onRefresh();
         }else loadCurriculum();
     }
@@ -145,7 +145,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     public boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
+        editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
             editor.putString("index" + i, Information.selectedCourses.get(i).get("index"));
             editor.putString("name" + i, Information.selectedCourses.get(i).get("name"));

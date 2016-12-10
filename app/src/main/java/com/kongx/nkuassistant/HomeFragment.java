@@ -165,14 +165,14 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(CurriculumFragment.dayOfWeek[dayOfWeek]);
-        if(Information.selectedCourseCount == 0){
+        if(Information.selectedCourseCount == -1){
             onRefresh();
         } else{
             updateSchedule();
             updateExam();
             updateBus();
-            mScoreStatus.setText("成绩更新未获取...");
-            mSelectStatus.setText("选课系统状态未获取...");
+            mScoreStatus.setText("下拉刷新");
+            mSelectStatus.setText("下拉刷新");
         }
         return myView;
     }
@@ -181,7 +181,6 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     public void onResume(){
         super.onResume();
         m_activity = getActivity();
-        onRefresh();
     }
     @Override
     public void onPause(){
@@ -198,7 +197,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         try{
             updateSchedule();
         }catch (IndexOutOfBoundsException e){
-            Log.e("APP","Maybe you changed the fragment too quick.");
+            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
         }
         updateBus();
         mReFresh.setRefreshing(false);
@@ -264,7 +263,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 m_activity.finish();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+            Log.e("HomeFragment","SocketTimeoutException!");
         }
     }
 
@@ -275,7 +274,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     private void updateSchedule() throws IndexOutOfBoundsException{
         courseToday.clear();
         mScheduleList.removeAllViews();
-        if(Information.selectedCourseCount == 0){
+        if(Information.selectedCourseCount == -1){
             mScheduleStatus.setText("课程表未更新");
             return;
         }
@@ -316,13 +315,10 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
 
     private void updateBus(){
         int minute_after = hour * 60 + minute;
-        Log.e("BUS",""+minute_after);
         int toJinnanID = -1;
         int toBalitaiID = -1;
         if(dayOfWeek <= 5){
             for(toJinnanID = 0;toJinnanID < Information.weekdays_tojinnan.size();toJinnanID++){
-                Log.e("BUS",""+Information.weekdays_tojinnan.size());
-                Log.e("BUS",""+toJinnanID);
                 if(minute_after > Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("minute")){
                     toJinnanID = -1;
                     break;

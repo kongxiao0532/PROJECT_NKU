@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -70,8 +72,10 @@ public class IndexActivity extends AppCompatActivity
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if(networkInfo == null) Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT).show();
-        new Connect(this, RequestType.CHECK_FOR_UPDATE,null).execute(Information.UPDATE_URL);
-        new Connect(this,RequestType.CHECK_FOR_NOTICE,null).execute(Information.NOTICE_URL);
+        else {
+            new Connect(this, RequestType.CHECK_FOR_UPDATE, null).execute(Information.UPDATE_URL);
+            new Connect(this, RequestType.CHECK_FOR_NOTICE, null).execute(Information.NOTICE_URL);
+        }
     }
     @Override
     protected void onResume() {
@@ -86,61 +90,61 @@ public class IndexActivity extends AppCompatActivity
 
     @Override
     public void onTaskComplete(Object o, int type) {
-        InputStream is = (InputStream) o;
-        String returnstring;
-        switch (type){
-            case RequestType.CHECK_FOR_UPDATE:{
-                returnstring = new Scanner(is).useDelimiter("\\n").next();
-                String version = null;
-                try{
-                    PackageManager manager = this.getPackageManager();
-                    PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-                    version = info.versionName;
-                }catch (Exception e){
-                    e.printStackTrace();
+        if(o.getClass() == BufferedInputStream.class) {
+            BufferedInputStream is = (BufferedInputStream) o;
+            String retString;
+            switch (type) {
+                case RequestType.CHECK_FOR_UPDATE: {
+                    retString = new Scanner(is).useDelimiter("\\n").next();
+                    String version = "";
+                    try {
+                        PackageManager manager = this.getPackageManager();
+                        PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+                        version = info.versionName;
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    if (version.equals(retString))
+                        break;
+                    Toast.makeText(this, "有版本更新", Toast.LENGTH_SHORT).show();
+                    break;
                 }
-                if (version.equals(returnstring)){
-                    return;
-                }else {
-                    Toast.makeText(this,"有版本更新", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            case RequestType.CHECK_FOR_NOTICE:{
-                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
-                Information.newestNotice = settings.getString("newestNotice",null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice",null));
-                returnstring = new Scanner(is).useDelimiter("\\A").next();
-                Pattern pattern = Pattern.compile("<id>([0-9])(</id>)");
-                Matcher matcher = pattern.matcher(returnstring);
-                matcher.find();
-                int tmpId = Integer.parseInt(matcher.group(1));
-                if(Information.newestNotice == tmpId){
-                    return;
-                }else {
-                    Information.newestNotice = tmpId;
-                    pattern = Pattern.compile("<headline>(.+)(</headline>)");
-                    matcher = pattern.matcher(returnstring);
+                case RequestType.CHECK_FOR_NOTICE: {
+                    SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                    Information.newestNotice = settings.getString("newestNotice", null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
+                    retString = new Scanner(is).useDelimiter("\\A").next();
+                    Pattern pattern = Pattern.compile("<id>([0-9])(</id>)");
+                    Matcher matcher = pattern.matcher(retString);
                     matcher.find();
-                    String tmpHeadline = matcher.group(1);
-                    pattern = Pattern.compile("<content>(.+)(</content>)");
-                    matcher = pattern.matcher(returnstring);
-                    matcher.find();
-                    String tmpContent = matcher.group(1);
-                    new AlertDialog.Builder(this).setTitle(tmpHeadline)
-                            .setMessage(tmpContent)
-                            .setPositiveButton("确定",new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            }).show();
-                    SharedPreferences.Editor editor = settings.edit();
-                    editor.putString("newestNotice",String.valueOf(Information.newestNotice));
-                    editor.apply();
+                    int tmpId = Integer.parseInt(matcher.group(1));
+                    if (Information.newestNotice == tmpId) {
+                        return;
+                    } else {
+                        Information.newestNotice = tmpId;
+                        pattern = Pattern.compile("<headline>(.+)(</headline>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpHeadline = matcher.group(1);
+                        pattern = Pattern.compile("<content>(.+)(</content>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpContent = matcher.group(1);
+                        new AlertDialog.Builder(this).setTitle(tmpHeadline)
+                                .setMessage(tmpContent)
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                }).show();
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("newestNotice", String.valueOf(Information.newestNotice));
+                        editor.apply();
+                    }
+                    break;
                 }
-                break;
+                default:
+                    break;
             }
-            default:
-                break;
         }
     }
 
@@ -210,7 +214,7 @@ public class IndexActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (getFragmentManager().getBackStackEntryCount() > 1) {
             getFragmentManager().popBackStack();

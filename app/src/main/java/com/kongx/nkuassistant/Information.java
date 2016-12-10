@@ -14,7 +14,7 @@ import java.util.Queue;
  */
 
 public class Information {
-    //realted to Index Activity
+    //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cf/projectnku/update/";
     static final String NOTICE_URL = "http://kongxiao0532.cf/projectnku/notice/";
     static int newestNotice;
@@ -70,4 +70,22 @@ public class Information {
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
     static final String webUrl = "http://222.30.49.10";
+    public final static class Strings {
+        final static String str_pwd_not_changed = "<Not Changed>";
+        final static String str_socket_time_out = "请求超时，请重试";
+        final static String str_gateway_redirected = "似乎未登录校园网网关？";
+        final static String setting_remember_pwd = "ifRemPass";
+        final static String setting_studentID = "StudentID";
+        final static String setting_password = "Password";
+        final static String setting_studied_course_count = "studiedCourseCount";
+        final static String setting_selected_course_count = "selectedCourseCount";
+        final static String setting_last_update_time = "curriculum_lastUpdate";
+        final static String setting_student_name = "StudentName";
+        final static String setting_student_faculty = "FacultyName";
+        final static String setting_student_major = "MajorName";
+        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+        final static String url_validate_code = "/ValidateCode";
+        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
+        final static String url_webview = "file:///android_asset/encryptpwd.html";
+    }
 }

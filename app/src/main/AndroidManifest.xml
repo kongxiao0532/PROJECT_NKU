@@ -20,7 +20,8 @@
             android:name=".EduLoginActivity"
             android:label="@string/title_activity_edu_login"
             android:parentActivityName=".IndexActivity"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/AppTheme.NoActionBar.TranslucentStatus"/>
         <activity
             android:name=".PersonalPage"
             android:label="个人信息"
