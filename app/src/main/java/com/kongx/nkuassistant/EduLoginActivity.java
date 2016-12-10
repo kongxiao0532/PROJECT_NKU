@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -16,13 +17,15 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +39,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.kongx.nkuassistant.Information.*;
 
-public class EduLoginActivity extends AppCompatActivity implements Connectable,View.OnClickListener {
+public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private static final long mBackPressThreshold = 3500;
     static String m_username;
     static String m_encryptedPassword;
@@ -52,26 +56,22 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
     private Switch mRemPass;
     private WebView webView;
     private boolean useRememberedPWD;
-
+    static int lastHeightDiff = 0;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
-
         getValidateCode(null);
 
         webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-//        webView.addJavascriptInterface(new JSInterface(),"echoPWD");
         webView.setWebChromeClient(new WebChromeClient(){
             public boolean onConsoleMessage(ConsoleMessage cm)
             {
-                Log.e("CONTENT", String.format("%s @ %d: %s",
-                        cm.message(), cm.lineNumber(), cm.sourceId()));
-                String strToPost = String.format(Strings.url_template, m_username, cm.message(), m_validateCode);
                 m_encryptedPassword = cm.message();
+                String strToPost = String.format(Strings.url_template, m_username, m_encryptedPassword, m_validateCode);
                 new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
                 return true;
             }
@@ -84,8 +84,12 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
         mLoginButton = (Button) findViewById(R.id.button_login);
-        mLoginButton.setOnClickListener(this);
-
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptLogin();
+            }
+        });
         mValidateView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -93,7 +97,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
                 return true;
             }
         });
-
         mProgressView = findViewById(R.id.login_progress);
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         mUsernameView.setText(settings.getString(Strings.setting_studentID, null));
@@ -111,26 +114,17 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 useRememberedPWD = false;
             }
-
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.e("APP", charSequence.toString());
                 mPasswordView.setSelectAllOnFocus(false);
                 mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
-
             @Override
             public void afterTextChanged(Editable editable) {
                 mPasswordView.removeTextChangedListener(this);
                 mPasswordView.setSelection(mPasswordView.getText().length());
             }
         });
-    }
-    @Override
-    public void onClick(View view){
-        if(view.getId() == R.id.button_login){
-            attemptLogin();
-        }
     }
 
     @Override
@@ -149,7 +143,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
     @Override
     public void onTaskComplete(Object o, int type) {
         if(o == null){
-            Log.e("APP", "What the fuck?");
+            Log.e("EduLoginActivity", "Connectable returned null?");
         }else if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
@@ -158,7 +152,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
                 case RequestType.VALIDATE_CODE:
                     Bitmap pic = BitmapFactory.decodeStream(is);
                     if (pic == null) {
-                        Log.e("APP", "Decode is finished but picture is not valid.");
+                        Log.e("EduLoginActivity", "Decode is finished but picture is not valid.");
                     } else {
                         Bitmap resized = Bitmap.createBitmap(pic, 0, 0, pic.getWidth() / 2, pic.getHeight());
                         resized.setWidth(75);
@@ -175,22 +169,21 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
                         getValidateCode(null);
                         showProgress(false);
                     } else {
+                        new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl + Strings.url_student_info);
+                        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
+                        SharedPreferences.Editor settingEditor = settings.edit();
                         CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
                         for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
                             if (httpCookie.getName().equals("JSESSIONID")   ) {
-                                SharedPreferences preferences = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putString("JSESSIONID", httpCookie.getValue());
-                                editor.apply();
+                                settingEditor.putString("JSESSIONID", httpCookie.getValue());
+                                break;
                             }
                         }
-                        new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl + Strings.url_student_info);
-                        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-                        SharedPreferences.Editor settingEditor = settings.edit();
                         settingEditor.putBoolean(Strings.setting_remember_pwd, mRemPass.isChecked());
                         settingEditor.putString(Strings.setting_studentID, m_username);
                         settingEditor.putString(Strings.setting_password, m_encryptedPassword);
                         settingEditor.apply();
+
                     }
                     break;
                 }
@@ -198,27 +191,20 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
                     String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
                     pattern = Pattern.compile("<td width=\"10%\" bgcolor=\"#ffffff\" class=\"NavText\">(.+)</td>");
                     matcher = pattern.matcher(returnString);
-                    if (matcher.find()) {
-                        Information.id = matcher.group(1);
-                    }
-                    if (matcher.find()) {
-                        Information.name = matcher.group(1);
-
-                    }
+                    if (matcher.find()) Information.id = matcher.group(1);
+                    if (matcher.find()) Information.name = matcher.group(1);
                     pattern = Pattern.compile("<td  bgcolor=\"#ffffff\" class=\"NavText\" colspan=\"3\">(.+)</td>");
                     matcher = pattern.matcher(returnString);
-                    if (matcher.find()) {
-                        Information.facultyName = matcher.group(1);
-                    }
-                    if (matcher.find()) {
-                        Information.majorName = matcher.group(1);
-                    }
+                    if (matcher.find()) Information.facultyName = matcher.group(1);
+                    if (matcher.find()) Information.majorName = matcher.group(1);
+
                     SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString(Strings.setting_student_name, Information.name);
                     editor.putString(Strings.setting_student_faculty, Information.facultyName);
                     editor.putString(Strings.setting_student_major, Information.majorName);
                     editor.apply();
+
                     Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -232,12 +218,10 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
             Integer code = (Integer)o;
             if(code == 302){
                 //TODO:Login to 202.113.18.106
-                Log.e("APP","Maybe not log in to NKU");
-                finish();
+                Toast.makeText(getApplicationContext(), Strings.str_gateway_redirected , Toast.LENGTH_SHORT).show();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
-            //TODO:Handle SocketTimeoutException
-            Log.e("APP","SocketTimeoutException!");
+            Toast.makeText(getApplicationContext(), Strings.str_socket_time_out , Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -299,30 +283,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable,V
         static final int VALIDATE_CODE = 0;
         static final int LOGIN = 1;
         static final int USER_INFO = 2;
-    }
-
-    public final static class Strings {
-        final static String str_pwd_not_changed = "<Not Changed>";
-        final static String setting_remember_pwd = "ifRemPass";
-        final static String setting_studentID = "StudentID";
-        final static String setting_password = "Password";
-        final static String setting_student_name = "StudentName";
-        final static String setting_student_faculty = "FacultyName";
-        final static String setting_student_major = "MajorName";
-        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-        final static String url_validate_code = "/ValidateCode";
-        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
-        final static String url_webview = "file:///android_asset/encryptpwd.html";
-    }
-
-    class JSInterface {
-        @android.webkit.JavascriptInterface
-        @SuppressWarnings("unused")
-        void updatePwd(String echo) {
-            String strToPost = String.format(Strings.url_template, m_username, echo, m_validateCode);
-            m_encryptedPassword = echo;
-            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
-        }
     }
 }
 

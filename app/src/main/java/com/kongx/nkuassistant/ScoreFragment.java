@@ -82,7 +82,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         Information.studiedCourses = tmpScore;
         SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("studiedCourseCount",String.valueOf(Information.studiedCourseCount));
+        editor.putInt("studiedCourseCount",Information.studiedCourseCount);
         editor.apply();
         for(int i = 0;i < 5;i++){
             Information.averages[i] = Information.scores[i] / Information.credits[i];
@@ -166,7 +166,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 m_activity.finish();
             }
         }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+            Log.e("ScoreFragment","SocketTimeoutException!");
         }
     }
 

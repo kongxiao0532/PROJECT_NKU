@@ -12,7 +12,10 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
+    <style name="AppTheme.NoActionBar.TranslucentStatus">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowActionBarOverlay">false</item>
+    </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -20,6 +23,7 @@
     <style name="AppTheme.NoActionBar.Fullscreen">
         <item name="android:windowActionBarOverlay">false</item>
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/splashscreen</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>

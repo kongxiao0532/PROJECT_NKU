@@ -2,12 +2,12 @@ package com.kongx.nkuassistant;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpCookie;
@@ -20,61 +20,76 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.InterruptedIOException;
-import java.lang.reflect.Array;
+import javax.xml.parsers.ParserConfigurationException;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import cn.jpush.android.api.JPushInterface;
 
+import static com.kongx.nkuassistant.Information.*;
+
 public class WelcomeActivity extends AppCompatActivity {
 
-
+    private boolean componentReady = false;
+    private Intent startIntent = null;
+    final TimerTask timerTask = new TimerTask() {
+        public void run() {
+            synchronized (this){
+                while (!componentReady) try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            WelcomeActivity.this.startActivity(startIntent);
+            WelcomeActivity.this.finish();
+        }
+    };;
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         View v = View.inflate(getApplicationContext(),R.layout.activity_welcome,null);
+        setContentView(v);
+        new Timer().schedule(timerTask, 500);
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(getApplication());
-        setContentView(v);
-        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
-        Information.ifRemPass = settings.getBoolean("ifRemPass",false);
-        Information.studiedCourseCount = Integer.parseInt(settings.getString("studiedCourseCount","0"));
+
+        System.setProperty("java.net.useSystemProxies", "true");
         CookieManager cookieManager = new CookieManager();
         Connect.initialize(cookieManager);
-        if(!Information.ifRemPass){
-            Information.name = "Name";
-            Information.facultyName = "Faculty";
-            Information.majorName = "Major";
-            Information.id = "ID";
-        } else {
-            Information.name = settings.getString("StudentName","Name");
-            Information.facultyName = settings.getString("FacultyName","Faculty");
-            Information.id = settings.getString("StudentID","id");
-            Information.majorName = settings.getString("MajorName","Major");
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        ifRemPass = settings.getBoolean(Strings.setting_remember_pwd, false);
+        studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
+
+        name = settings.getString(Strings.setting_student_name, "Name");
+        facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
+        id = settings.getString(Strings.setting_studentID, "ID");
+        majorName = settings.getString(Strings.setting_student_major, "Major");
+        if(ifRemPass) {
+            startIntent = new Intent(WelcomeActivity.this, IndexActivity.class);
             try {
-                HttpCookie cookie = new HttpCookie("JSESSIONID",settings.getString("JSESSIONID",""));
+                HttpCookie cookie = new HttpCookie("JSESSIONID", settings.getString("JSESSIONID", ""));
                 cookie.setDomain("222.30.49.10");
                 cookie.setPath("/");
                 cookie.setVersion(0);
-                cookieManager.getCookieStore().add(new URI(Information.webUrl+"/"), cookie);
-                Log.e("APP",cookieManager.getCookieStore().get(new URI(Information.webUrl+"/xsxk/studiedAction.do")).toString());
+                cookieManager.getCookieStore().add(new URI(webUrl + "/"), cookie);
             } catch (URISyntaxException e) {
-                Log.e("APP","???");
-                e.printStackTrace();
+                Log.e("WelcomeActivity", "Caught URISyntaxException");
             }
-        }
+        }else startIntent = new Intent(WelcomeActivity.this, EduLoginActivity.class);
+
         //get Curriculum Preferences
-        settings = getSharedPreferences(Information.COURSE_PREFS_NAME,0);
-        Information.selectedCourseCount = Integer.parseInt(settings.getString("selectedCourseCount","0"));
-        Information.curriculum_lastUpdate = settings.getString("curriculum_lastUpdate",null);
-        if(Information.selectedCourseCount != 0){
+        settings = getSharedPreferences(COURSE_PREFS_NAME,0);
+        selectedCourseCount = settings.getInt(Strings.setting_selected_course_count, -1);
+        curriculum_lastUpdate = settings.getString(Strings.setting_last_update_time, null);
+        if(selectedCourseCount != -1){
             HashMap<String,String> map;
-            for(int i = 0;i < Information.selectedCourseCount;i++){
+            for(int i = 0;i < selectedCourseCount;i++){
                 map = new HashMap<>();
                 map.put("index",settings.getString("index"+i,null));
                 map.put("name",settings.getString("name"+i,null));
@@ -86,40 +101,31 @@ public class WelcomeActivity extends AppCompatActivity {
                 map.put("teacherName",settings.getString("teacherName"+i,null));
                 map.put("startWeek",settings.getString("startWeek"+i,null));
                 map.put("endWeek",settings.getString("endWeek"+i,null));
-                Information.selectedCourses.add(map);
+                selectedCourses.add(map);
             }
         }
 
         readBusFile();
-        System.setProperty("java.net.useSystemProxies", "true");
-        new Timer().schedule(new TimerTask() {
-                                 public void run() {
-                                     Intent localIntent;
-                                     if(Information.ifRemPass)    {
-                                         localIntent = new Intent(WelcomeActivity.this, IndexActivity.class);
-                                     }
-                                     else   {
-                                         localIntent = new Intent(WelcomeActivity.this, EduLoginActivity.class);
-                                     }
-                                     WelcomeActivity.this.startActivity(localIntent);
-                                     WelcomeActivity.this.finish();
-                                 }
-                             }
-                , 2500);
+        componentReady = true;
+        synchronized (timerTask) {
+            timerTask.notifyAll();
+        }
     }
+
     private void readBusFile(){
         Element element = null;
         InputStream inputStream  = null;
-        try{ inputStream = getAssets().open("timetable.xml");
+        try{
+            inputStream = getAssets().open("timetable.xml");
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e("WelcomeActivity", "Open bus file failed.");
         }
         DocumentBuilder documentBuilder = null;
         DocumentBuilderFactory documentBuilderFactory = null;
-        Information.weekdays_tojinnan = new ArrayList<>();
-        Information.weekdays_tobalitai = new ArrayList<>();
-        Information.weekends_tojinnan = new ArrayList<>();
-        Information.weekends_tobalitai = new ArrayList<>();
+        weekdays_tojinnan = new ArrayList<>();
+        weekdays_tobalitai = new ArrayList<>();
+        weekends_tojinnan = new ArrayList<>();
+        weekends_tobalitai = new ArrayList<>();
         try{
             documentBuilderFactory  = DocumentBuilderFactory.newInstance();
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -139,7 +145,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
                     tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
-                    Information.weekdays_tojinnan.add(tmpMap);
+                    weekdays_tojinnan.add(tmpMap);
                 }
             }
             for(int i = 0;i<weekdays_tobalitai_list.getLength();i++){
@@ -150,7 +156,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
                     tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
-                    Information.weekdays_tobalitai.add(tmpMap);
+                    weekdays_tobalitai.add(tmpMap);
                 }
             }
             for(int i = 0;i<weekends_tojinnan_list.getLength();i++){
@@ -161,7 +167,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
                     tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
-                    Information.weekends_tojinnan.add(tmpMap);
+                    weekends_tojinnan.add(tmpMap);
                 }
             }
             for(int i = 0;i<weekends_tobalitai_list.getLength();i++){
@@ -172,11 +178,11 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("way",Integer.parseInt(node.getAttributes().getNamedItem("way").getNodeValue()));
                     tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
-                    Information.weekends_tobalitai.add(tmpMap);
+                    weekends_tobalitai.add(tmpMap);
                 }
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (SAXException|ParserConfigurationException|IOException e) {
+            Log.e("WelcomeActivity", e.toString());
         }
     }
 }

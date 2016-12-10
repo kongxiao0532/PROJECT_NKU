@@ -1,9 +1,8 @@
 package com.kongx.nkuassistant;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.util.Log;
+import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -29,6 +28,7 @@ class Connect extends AsyncTask<String, Integer, Object> {
     private static final String DEBUG_TAG = "APP";
     private int type;
     private String postMessage;
+    private static int timeoutTime = 3000;
     public Connect(Connectable parent, int type, @Nullable String post) {
         this.parent = parent;
         this.type = type;
@@ -37,9 +37,11 @@ class Connect extends AsyncTask<String, Integer, Object> {
     public static void initialize(CookieManager cookieManager){
         CookieHandler.setDefault(cookieManager);
     }
+    public static void serTimeout(int time){
+        timeoutTime = time;
+    }
     @Override
     protected Object doInBackground(String... urls) {
-        Log.e("APP",CookieHandler.getDefault().toString());
         InputStream is = null;
         try {
             ProxySelector defaultProxySelector = ProxySelector.getDefault();
@@ -51,8 +53,8 @@ class Connect extends AsyncTask<String, Integer, Object> {
             }
             URL url = new URL(urls[0]);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection(proxy);
-            conn.setReadTimeout(3000);
-            conn.setConnectTimeout(3000);
+            conn.setReadTimeout(timeoutTime);
+            conn.setConnectTimeout(timeoutTime);
             conn.setDoInput(true);
             if(postMessage == null){
                 conn.setRequestMethod("GET");
