@@ -28,13 +28,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
-                </LinearLayout>
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/cd_fox"
+                        android:scaleType="fitEnd"
+                        android:layout_marginStart="100dp"
+                        android:layout_marginTop="100dp"
+                        android:layout_marginEnd="15dp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:text="Little_孔子"
+                            android:textSize="40sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:layout_marginTop="60dp"
+                            android:layout_marginLeft="20dp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="Nankai University" />
+                        <TextView
+                            android:text="Contact:\n  kongxiao0532@163.com \nGithub:\n  github.com/kongxiao0532"
+                            android:textSize="17sp"
+                            android:lineSpacingMultiplier="1.2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:layout_marginTop="100dp"
+                            android:layout_marginLeft="20dp" />
+
+                    </LinearLayout>
+                </FrameLayout>
 
                     <FrameLayout
                         android:id="@+id/tab2"
@@ -44,7 +82,7 @@
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            app:srcCompat="@drawable/cd_fox"
+                            android:src="@drawable/cd_fox"
                             android:id="@+id/imageView"
                             android:scaleType="fitEnd"
                             android:layout_marginStart="100dp"

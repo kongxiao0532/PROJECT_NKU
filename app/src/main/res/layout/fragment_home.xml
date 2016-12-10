@@ -32,7 +32,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        app:srcCompat="@drawable/ic_menu_schedule"
+                        android:src="@drawable/ic_menu_schedule"
                         android:layout_marginTop="10dp"
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
@@ -159,7 +159,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        app:srcCompat="@drawable/ic_menu_exam"
+                        android:src="@drawable/ic_menu_exam"
                         android:layout_marginTop="10dp"
                         android:background="@color/white"
                         android:paddingTop="10dp"
@@ -225,7 +225,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        app:srcCompat="@drawable/ic_menu_score"
+                        android:src="@drawable/ic_menu_score"
                         android:layout_marginTop="10dp"
                         android:background="@color/white"
                         android:paddingTop="10dp"
@@ -285,7 +285,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        app:srcCompat="@drawable/ic_menu_select"
+                        android:src="@drawable/ic_menu_select"
                         android:layout_marginTop="10dp"
                         android:background="@color/white"
                         android:paddingTop="10dp"
@@ -349,7 +349,7 @@
                     android:layout_height="match_parent">
 
                     <ImageView
-                        app:srcCompat="@drawable/ic_menu_bus"
+                        android:src="@drawable/ic_menu_bus"
                         android:paddingStart="20dp"
                         android:scaleType="centerCrop"
                         android:layout_height="match_parent"

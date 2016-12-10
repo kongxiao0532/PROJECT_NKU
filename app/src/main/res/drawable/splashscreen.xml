@@ -8,5 +8,8 @@
         </shape>
         <color android:color="@color/colorPrimary" />
     </item>
+    <item>
+        <bitmap android:src="@drawable/startpic" android:gravity="fill"/>
+    </item>
 
 </layer-list>

@@ -61,11 +61,17 @@
         <item android:title="关于">
             <menu>
                 <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_menu_about"
+                    android:id="@+id/nav_feedback"
+                    android:icon="@drawable/ic_menu_about"
                     android:checkable="true"
                     android:checked="false"
-                android:title="关于 NKU Assistant" />
+                    android:title="关于Project NKU" />
+                <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_code_black_48dp"
+                    android:checkable="true"
+                    android:checked="false"
+                android:title="关于开发者" />
             </menu>
 
         </item>
