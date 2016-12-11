@@ -26,12 +26,12 @@ public class AboutFragment extends Fragment {
         tabhost.setup();
         TabHost.TabSpec ts = tabhost.newTabSpec("tag1");
         ts.setContent(R.id.tab1);
-        ts.setIndicator("\"VS是世界上最好的IDE\"");
+        ts.setIndicator("\"微软爸爸最牛逼\"");
         tabhost.addTab(ts);
 
         ts = tabhost.newTabSpec("tag2");
         ts.setContent(R.id.tab2);
-        ts.setIndicator("\"Qt强无敌\"");
+        ts.setIndicator("\"徇私枉法最高15年\"");
         tabhost.addTab(ts);
         return myView;
     }
