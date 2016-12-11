@@ -1,13 +1,54 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="com.kongx.nkuassistant.FeedbackFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <ImageView
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/headers"/>
+
+    <Button
+        android:text="@string/check_for_update"
+        android:id="@+id/button_check_for_update"
+        android:background="@drawable/white_button"
+        android:layout_gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp"/>
+
+    <Button
+        android:text="@string/feedback"
+        android:id="@+id/button_feedback"
+        android:background="@drawable/white_button"
+        android:layout_gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp" />
+
+    <TextView
+        android:layout_gravity="center|bottom"
+        android:gravity="bottom"
+        android:textColor="@color/grey"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/version"/>
+
+</LinearLayout>

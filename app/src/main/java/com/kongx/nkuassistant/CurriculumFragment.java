@@ -68,7 +68,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public void onRefresh() {
         mRefresh.setRefreshing(true);
         tmpCurriculum = new ArrayList<>();
-        new Connect(CurriculumFragment.this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
+        new Connect(CurriculumFragment.this,1,null).execute(Information.WEB_URL +"/xsxk/selectedAction.do");
     }
 
     void update(){
@@ -134,7 +134,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
             }
             if (type == numberOfPages) update();
             else
-                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/selectedPageAction.do");
+                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
@@ -149,7 +149,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString("selectedCourseCount", String.valueOf(Information.selectedCourseCount));
+        editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
             editor.putString("index" + i, Information.selectedCourses.get(i).get("index"));
             editor.putString("name" + i, Information.selectedCourses.get(i).get("name"));

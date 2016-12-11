@@ -35,7 +35,10 @@
     <string name="tab_tobalitai">津南-八里台</string>
     <string name="pointToPoint">点对点</string>
     <string name="FastLine">快线</string>
-
+    <!--String related to Feedback-->
+    <string name="feedback">意见反馈</string>
+    <string name="check_for_update">检查更新</string>
+    <string name="update_available">有可用更新</string>
 
     <string name="title_activity_personal_page">个人主页</string>
     <string name="action_settings">设置</string>

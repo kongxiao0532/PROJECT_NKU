@@ -5,10 +5,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +73,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         lastType = 'A';
         Information.resetScores();
         tmpScore = new ArrayList<>();
-        new Connect(this,1,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
+        new Connect(this,1,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
     }
 
     private void update(){
@@ -158,7 +156,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             }
             if (type == numberOfPages) update();
             else
-                new Connect(ScoreFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/studiedPageAction.do");
+                new Connect(ScoreFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/studiedPageAction.do");
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){

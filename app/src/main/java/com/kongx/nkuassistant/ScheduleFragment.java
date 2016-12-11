@@ -2,13 +2,10 @@ package com.kongx.nkuassistant;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.pm.ActivityInfoCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -20,12 +17,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -76,7 +71,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
 
     public void onRefresh(){
         mRefresh.setRefreshing(true);
-        new Connect(this,1,null).execute(Information.webUrl+"/xsxk/selectedAction.do");
+        new Connect(this,1,null).execute(Information.WEB_URL +"/xsxk/selectedAction.do");
     }
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -130,7 +125,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
             }
             if (type == numberOfPages) loadCurriculum();
             else
-                new Connect(ScheduleFragment.this, ++type, "index=" + type).execute(Information.webUrl + "/xsxk/selectedPageAction.do");
+                new Connect(ScheduleFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){

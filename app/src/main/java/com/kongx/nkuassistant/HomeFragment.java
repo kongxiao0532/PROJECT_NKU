@@ -2,24 +2,16 @@ package com.kongx.nkuassistant;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.icu.text.IDNA;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.TextWatcher;
-import android.transition.CircularPropagation;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
@@ -27,8 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.IllegalFormatCodePointException;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,9 +181,9 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.webUrl+"/xsxk/studiedAction.do");
-        new Connect(HomeFragment.this, RequestType.getExamNumber,null).execute(Information.webUrl+"/xxcx/stdexamarrange/listAction.do");
-        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.webUrl+"/xsxk/selectMianInitAction.do");
+        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
+        new Connect(HomeFragment.this, RequestType.getExamNumber,null).execute(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do");
+        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
         try{
             updateSchedule();
         }catch (IndexOutOfBoundsException e){
@@ -217,7 +207,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                         mScoreStatus.setText("暂无成绩更新");
                     }
                     else {
-                        mScoreStatus.setText("有"+Math.abs(newStudiedCourseCount - Information.studiedCourseCount)+"条成绩更新");
+                        mScoreStatus.setText("有"+Math.abs(newStudiedCourseCount - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount))+"条成绩更新");
                     }
                     break;
                 }

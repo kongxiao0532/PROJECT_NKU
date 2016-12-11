@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -17,15 +16,12 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,7 +68,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
             {
                 m_encryptedPassword = cm.message();
                 String strToPost = String.format(Strings.url_template, m_username, m_encryptedPassword, m_validateCode);
-                new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
+                new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.WEB_URL + "/stdloginAction.do");
                 return true;
             }
         });
@@ -137,7 +133,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     }
 
     public void getValidateCode(View view) {
-        new Connect(this, RequestType.VALIDATE_CODE, null).execute(Information.webUrl+Strings.url_validate_code);
+        new Connect(this, RequestType.VALIDATE_CODE, null).execute(Information.WEB_URL +Strings.url_validate_code);
     }
 
     @Override
@@ -169,7 +165,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                         getValidateCode(null);
                         showProgress(false);
                     } else {
-                        new Connect(this, RequestType.USER_INFO, null).execute(Information.webUrl + Strings.url_student_info);
+                        new Connect(this, RequestType.USER_INFO, null).execute(Information.WEB_URL + Strings.url_student_info);
                         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
                         SharedPreferences.Editor settingEditor = settings.edit();
                         CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
@@ -263,7 +259,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         if (useRememberedPWD) {
             String strToPost = String.format(Strings.url_template, m_username, settings.getString(Strings.setting_password, null), m_validateCode);
-            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.webUrl + "/stdloginAction.do");
+            new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.WEB_URL + "/stdloginAction.do");
         } else webView.loadUrl("javascript:encryption(\"" + password + "\")");
         showProgress(true);
     }

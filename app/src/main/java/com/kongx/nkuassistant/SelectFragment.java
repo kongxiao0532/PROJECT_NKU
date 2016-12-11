@@ -1,11 +1,7 @@
 package com.kongx.nkuassistant;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.icu.text.IDNA;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,7 +56,7 @@ public class SelectFragment extends Fragment implements Connectable {
         mDrop = (Button) myView.findViewById(R.id.button_Drop);
         mNotOpenWarning = (TextView) myView.findViewById(R.id.textView_notOpenWarning);
         mNotOpenWarning.setVisibility(View.GONE);
-        new Connect(SelectFragment.this, RequestType.CHECK_IF_OPEN,null).execute(Information.webUrl+"/xsxk/selectMianInitAction.do");
+        new Connect(SelectFragment.this, RequestType.CHECK_IF_OPEN,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
         mSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,7 +77,7 @@ public class SelectFragment extends Fragment implements Connectable {
                                 mIndex_4.getText().toString().isEmpty()?"":mIndex_4.getText().toString(),
                                 mReRead.isChecked()?"selected":"",
                                 mMinor.isChecked()?"selected":"");
-                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.webUrl+"/xsxk/swichAction.do");
+                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
             }
         });
         mSelect.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +101,7 @@ public class SelectFragment extends Fragment implements Connectable {
                                 mIndex_4.getText().toString().isEmpty()?"":mIndex_4.getText().toString(),
                                 mReRead.isChecked()?"selected":"",
                                 mMinor.isChecked()?"selected":"");
-                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.webUrl+"/xsxk/swichAction.do");
+                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
             }
         });
         return myView;

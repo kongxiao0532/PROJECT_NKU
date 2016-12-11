@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,6 +71,14 @@ public class IndexActivity extends AppCompatActivity
 
         mPressBackToast = Toast.makeText(getApplicationContext(), R.string.press_back_again_to_exit, Toast.LENGTH_SHORT);
 
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            Information.version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if(networkInfo == null) Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT).show();
@@ -93,28 +103,58 @@ public class IndexActivity extends AppCompatActivity
         if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
             String retString;
+            Pattern pattern;
+            Matcher matcher;
             switch (type) {
                 case RequestType.CHECK_FOR_UPDATE: {
-                    retString = new Scanner(is).useDelimiter("\\n").next();
-                    String version = "";
-                    try {
-                        PackageManager manager = this.getPackageManager();
-                        PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-                        version = info.versionName;
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    if (version.equals(retString))
+                    retString = new Scanner(is).useDelimiter("\\A").next();
+                    String versionNew = "";
+                    String apkSize = "";
+                    String updateTime = "";
+                    String updateLog = "";
+                    pattern = Pattern.compile("<version>(.+)(</version>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  versionNew = matcher.group(1);
+                    pattern = Pattern.compile("<size>(.+)(</size>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  apkSize = matcher.group(1);
+                    pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  updateTime = matcher.group(1);
+                    pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  updateLog = matcher.group(1);
+                    pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
+                    matcher = pattern.matcher(retString);
+                    matcher.find();
+                    final String downloadLink = matcher.group(1);
+                    if (Information.version.equals(versionNew)){
                         break;
-                    Toast.makeText(this, "有版本更新", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
+                                .setMessage("更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
+                                .setPositiveButton("更新", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Uri uri = Uri.parse(downloadLink);
+                                        Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
+                                        Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
+                    }
                     break;
                 }
                 case RequestType.CHECK_FOR_NOTICE: {
                     SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
                     Information.newestNotice = settings.getString("newestNotice", null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
                     retString = new Scanner(is).useDelimiter("\\A").next();
-                    Pattern pattern = Pattern.compile("<id>([0-9])(</id>)");
-                    Matcher matcher = pattern.matcher(retString);
+                    pattern = Pattern.compile("<id>([0-9])(</id>)");
+                    matcher = pattern.matcher(retString);
                     matcher.find();
                     int tmpId = Integer.parseInt(matcher.group(1));
                     if (Information.newestNotice == tmpId) {
@@ -145,6 +185,8 @@ public class IndexActivity extends AppCompatActivity
                 default:
                     break;
             }
+        }else if(o.getClass() == SocketTimeoutException.class){
+            Log.e("APP","SocketTimeoutException!");
         }
     }
 

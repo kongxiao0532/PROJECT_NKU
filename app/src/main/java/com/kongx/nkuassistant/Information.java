@@ -14,6 +14,7 @@ import java.util.Queue;
  */
 
 public class Information {
+    static String version = "";
     //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cf/projectnku/update/";
     static final String NOTICE_URL = "http://kongxiao0532.cf/projectnku/notice/";
@@ -62,14 +63,16 @@ public class Information {
     static ArrayList<HashMap<String,Integer>> weekdays_tobalitai;
     static ArrayList<HashMap<String,Integer>> weekends_tojinnan;
     static ArrayList<HashMap<String,Integer>> weekends_tobalitai;
-
+    //related to Feedback
+    static final String FEEDBACK_EMAIL = "mailto:kongxiao0532@163.com";
+    static final String FEEDBACK_SUBJECT = "[Project NKU] 用户意见反馈";
 
     //related to Internet Connection
     static boolean ifRemPass;
     static final String PREFS_NAME = "NKUFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
-    static final String webUrl = "http://222.30.49.10";
+    static final String WEB_URL = "http://222.30.49.10";
     public final static class Strings {
         final static String str_pwd_not_changed = "<Not Changed>";
         final static String str_socket_time_out = "请求超时，请重试";

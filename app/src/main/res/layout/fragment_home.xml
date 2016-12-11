@@ -350,6 +350,7 @@
 
                     <ImageView
                         android:src="@drawable/ic_menu_bus"
+                        android:paddingEnd="20dp"
                         android:paddingStart="20dp"
                         android:scaleType="centerCrop"
                         android:layout_height="match_parent"

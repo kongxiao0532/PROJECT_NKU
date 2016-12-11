@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +40,7 @@ public class ExamFragment extends Fragment implements Connectable{
         Information.exams.clear();
         mExamList = (ListView) myView.findViewById(R.id.exam_list);
         mNoText = (TextView) myView.findViewById(R.id.textView_noExam);
-        new Connect(ExamFragment.this,0,null).execute(Information.webUrl+"/xxcx/stdexamarrange/listAction.do");
+        new Connect(ExamFragment.this,0,null).execute(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do");
         return myView;
     }
 

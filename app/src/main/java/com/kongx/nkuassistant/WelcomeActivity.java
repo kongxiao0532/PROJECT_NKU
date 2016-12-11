@@ -53,7 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(paramBundle);
         View v = View.inflate(getApplicationContext(),R.layout.activity_welcome,null);
         setContentView(v);
-        new Timer().schedule(timerTask, 500);
+        new Timer().schedule(timerTask, 2000);
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(getApplication());
@@ -77,7 +77,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 cookie.setDomain("222.30.49.10");
                 cookie.setPath("/");
                 cookie.setVersion(0);
-                cookieManager.getCookieStore().add(new URI(webUrl + "/"), cookie);
+                cookieManager.getCookieStore().add(new URI(WEB_URL + "/"), cookie);
             } catch (URISyntaxException e) {
                 Log.e("WelcomeActivity", "Caught URISyntaxException");
             }

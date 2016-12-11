@@ -21,17 +21,17 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = (View) inflater.inflate(R.layout.fragment_about, container, false);
+        myView = inflater.inflate(R.layout.fragment_about, container, false);
         tabhost = (TabHost) myView.findViewById(android.R.id.tabhost);
         tabhost.setup();
         TabHost.TabSpec ts = tabhost.newTabSpec("tag1");
         ts.setContent(R.id.tab1);
-        ts.setIndicator("First Tab");
+        ts.setIndicator("\"VS是世界上最好的IDE\"");
         tabhost.addTab(ts);
 
         ts = tabhost.newTabSpec("tag2");
         ts.setContent(R.id.tab2);
-        ts.setIndicator("Second Tab");
+        ts.setIndicator("\"Qt强无敌\"");
         tabhost.addTab(ts);
         return myView;
     }
