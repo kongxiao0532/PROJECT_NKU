@@ -1,13 +1,32 @@
 <resources>
-    <string name="app_name">NKU小助手</string>
+    <string name="app_name">Project NKU</string>
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
     <string name="title_activity_edu_login">登录</string>
+    <!--Strings related to drawer-->
+    <string name="drawer_home_page">主页</string>
+    <string name="drawer_edu_system_divider">教务系统</string>
+    <string name="drawer_schedule">课程表</string>
+    <string name="drawer_score">分数查询</string>
+    <string name="drawer_selected">已选课程</string>
+    <string name="drawer_exam">考试时间</string>
+    <string name="drawer_select">选课退课</string>
+    <string name="drawer_information_divider">信息查询</string>
+    <string name="drawer_612bus">612时刻表</string>
+    <string name="drawer_about_divider">关于</string>
+    <string name="drawer_about_projectnku">关于Project NKU</string>
+    <string name="drawer_about_developer">关于开发者</string>
 
-    <!--Strings realted to home page-->
+
+    <!--Strings related to home page-->
     <string name="winter_vacation">寒假</string>
     <string name="summber_vacation">暑假</string>
-
+    <string name="details">查看详情</string>
+    <string name="pull_to_refresh">下拉更新</string>
+    <string name="no_course_today">今天没有课哦~</string>
+    <string name="next_bus">下一班</string>
+    <string name="no_available_buses">无可用车辆</string>
+    <string name="bus_schedule_sourse">（根据2016年10月数据）</string>
     <!-- Strings related to login -->
     <string name="prompt_email">学号</string>
     <string name="prompt_password">密码</string>
@@ -20,16 +39,21 @@
     <string name="error_password_required">请输入密码</string>
     <string name="error_validate_required">请输入验证码</string>
     <string name="error_invalid_validate">验证码无效</string>
+    <string name="remember_pass">记住密码</string>
 
-    <!--String related to Selection-->
+    <!--String related to Personal Page-->
+    <string name="nku">南开大学</string>
+
+    <!--String related to Select-->
     <string name="error_number_required">请输入选课序号</string>
     <string name="prompt_index">选课序号</string>
     <string name="not_Open_Warning">选课系统关闭</string>
-
     <!--String related to Score-->
     <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$.2f分</string>
     <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分</string>
     <string name="credits_template">总学分%1$.1f分</string>
+    <!--String related to Exams-->
+    <string name="no_exam_info">暂无考试信息</string>
     <!--String related to Bus-->
     <string name="tab_tojinnan">八里台-津南</string>
     <string name="tab_tobalitai">津南-八里台</string>
@@ -39,26 +63,18 @@
     <string name="feedback">意见反馈</string>
     <string name="check_for_update">检查更新</string>
     <string name="update_available">有可用更新</string>
+    <!--String related to Developers-->
+    <string name="kongx_name">Little_孔子</string>
+    <string name="kongx_info">电子邮箱:\n  kongxiao0532@163.com \nGithub主页:\n  github.com/kongxiao0532 \n微信：\n kongxiaonku</string>
+    <string name="fox_name">Sun Yi-Ran</string>
+    <string name="fox_info">电子邮箱:\n  sunrisefox@qq.com \nGithub主页:\n  github.com/SunriseFox</string>
+
 
     <string name="title_activity_personal_page">个人主页</string>
+    <string name="action_share">分享Project NKU</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
     <string name="connection_error">网络无连接</string>
     <string name="Unlogged">未登录</string>
-
-
-    <string name="cdtext_sunrisefox">
-        <p><h1>Sun Yi-Ran</h1></p>
-        <br />
-        Contact: sunrisefox@outlook.com
-        <br />
-        Github: <a href="https://github.com/SunriseFox">https://github.com/SunriseFox</a>
-    </string>
-    <drawable name="red">#4CAF50</drawable>
-    <drawable name="yellow">#CDDC39</drawable>
-    <drawable name="green">#F44336</drawable>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

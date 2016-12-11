@@ -8,7 +8,7 @@
 
 
     <TextView
-        android:text="暂无考试信息"
+        android:text="@string/no_exam_info"
         android:textSize="50sp"
         android:gravity="center"
         android:layout_width="match_parent"

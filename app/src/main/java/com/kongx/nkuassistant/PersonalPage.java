@@ -14,7 +14,8 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
         if(view.getId() == R.id.button_logOut){
             Information.selectedCourseCount = -1;
             Information.studiedCourseCount = -1;
-            Information.examCount = 0;
+            Information.examCount = -1;
+            Information.ifLoggedIn = false;
             Intent intent = new Intent(getApplicationContext(), EduLoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

@@ -39,6 +39,7 @@ public class FeedbackFragment extends Fragment implements Connectable, View.OnCl
         myView = (View) inflater.inflate(R.layout.fragment_feedback, container, false);
         mCheckforUpdate = (Button) myView.findViewById(R.id.button_check_for_update);
         mFeedback = (Button) myView.findViewById(R.id.button_feedback);
+        mVersion = (TextView) myView.findViewById(R.id.version);
         mCheckforUpdate.setOnClickListener(FeedbackFragment.this);
         mFeedback.setOnClickListener(FeedbackFragment.this);
         try {
@@ -104,7 +105,8 @@ public class FeedbackFragment extends Fragment implements Connectable, View.OnCl
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Uri uri = Uri.parse(downloadLink);
-                                Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
+                                Intent intent =new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
                                 Toast.makeText(getActivity(), "更新开始下载...", Toast.LENGTH_SHORT).show();
                             }
                         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {

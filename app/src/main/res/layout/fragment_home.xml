@@ -51,7 +51,7 @@
                         android:gravity="start"
                         android:id="@+id/home_schedule_headline"
                         android:layout_weight="1"
-                        android:text="课程表" />
+                        android:text="@string/drawer_schedule" />
 
                     <TextView
                         android:paddingTop="10dp"
@@ -126,6 +126,7 @@
 
                 <TextView
                     android:text="课程表未更新"
+                    android:background="@color/white"
                     android:layout_marginBottom="1dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -135,7 +136,7 @@
                     android:id="@+id/home_schedule_text" />
 
                 <TextView
-                    android:text="查看详情"
+                    android:text="@string/details"
                     android:textColor="@color/colorPrimary"
                     android:background="@color/white"
                     android:paddingTop="5dp"
@@ -171,7 +172,7 @@
                         android:layout_width="30dp" />
 
                     <TextView
-                        android:text="考试信息"
+                        android:text="@string/drawer_exam"
                         android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
@@ -201,7 +202,7 @@
                     android:text="考试信息获取中..." />
 
                 <TextView
-                    android:text="查看详情"
+                    android:text="@string/details"
                     android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
@@ -237,7 +238,7 @@
                         android:layout_width="30dp" />
 
                     <TextView
-                        android:text="分数查询"
+                        android:text="@string/drawer_score"
                         android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
@@ -260,7 +261,7 @@
                     android:gravity="center"
                     android:id="@+id/home_score_text" />
                 <TextView
-                    android:text="查看详情"
+                    android:text="@string/details"
                     android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
@@ -297,7 +298,7 @@
                         android:layout_width="30dp" />
 
                     <TextView
-                        android:text="选课系统"
+                        android:text="@string/drawer_select"
                         android:background="@color/white"
                         android:textColor="#212121"
                         android:layout_width="0dp"
@@ -320,7 +321,7 @@
                     android:gravity="center"
                     android:id="@+id/home_select_text" />
                 <TextView
-                    android:text="查看详情"
+                    android:text="@string/details"
                     android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
@@ -358,7 +359,7 @@
                         android:layout_width="30dp" />
 
                     <TextView
-                        android:text="612快线"
+                        android:text="@string/drawer_612bus"
                         android:textColor="#212121"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -367,7 +368,7 @@
                         android:layout_weight="1" />
 
                     <TextView
-                        android:text="下一班"
+                        android:text="@string/next_bus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.02" />
@@ -383,7 +384,7 @@
                     android:layout_weight="0.02">
 
                     <TextView
-                        android:text="八里台 - 津南"
+                        android:text="@string/tab_tobalitai"
                         android:textColor="#424242"
                         android:layout_marginBottom="1dp"
                         android:layout_width="match_parent"
@@ -392,7 +393,7 @@
                         android:layout_weight="1" />
 
                     <TextView
-                        android:text="津南 - 八里台"
+                        android:text="@string/tab_tojinnan"
                         android:textColor="#424242"
                         android:layout_marginBottom="1dp"
                         android:layout_width="match_parent"
@@ -435,7 +436,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="start"
                             android:id="@+id/home_bus_balitai"
-                            android:text="无可用车辆"
+                            android:text="@string/no_available_buses"
                             android:layout_width="wrap_content" />
                     </LinearLayout>
 
@@ -465,13 +466,13 @@
                             android:layout_height="wrap_content"
                             android:gravity="start"
                             android:id="@+id/home_bus_jinnan"
-                            android:text="无可用车辆"
+                            android:text="@string/no_available_buses"
                             android:layout_width="wrap_content" />
                     </LinearLayout>
 
                 </LinearLayout>
                 <TextView
-                    android:text="(根据2016年11月数据)"
+                    android:text="@string/bus_schedule_sourse"
                     android:textSize="10dp"
                     android:background="@color/white"
                     android:textColor="@color/colorPrimary"
@@ -482,7 +483,7 @@
                     android:gravity="center"/>
 
                 <TextView
-                    android:text="查看详情"
+                    android:text="@string/details"
                     android:background="@color/white"
                     android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"

@@ -7,71 +7,71 @@
             android:icon="@drawable/ic_menu_home"
             android:checkable="true"
             android:checked="true"
-            android:title="主页" />
-        <item android:title="教务系统">
+            android:title="@string/drawer_home_page" />
+        <item android:title="@string/drawer_edu_system_divider">
             <menu>
             <item
                 android:id="@+id/nav_schedule"
                 android:icon="@drawable/ic_menu_schedule"
                 android:checkable="true"
                 android:checked="false"
-                android:title="课程表" />
+                android:title="@string/drawer_schedule" />
             <item
                 android:id="@+id/nav_score"
                 android:icon="@drawable/ic_menu_score"
                 android:checkable="true"
                 android:checked="false"
-                android:title="分数查询" />
+                android:title="@string/drawer_score" />
             <item
                 android:id="@+id/nav_curriculum"
                 android:icon="@drawable/ic_menu_curriculum"
                 android:checkable="true"
                 android:checked="false"
-                android:title="已选课程" />
+                android:title="@string/drawer_selected" />
             <item
                 android:id="@+id/nav_exam"
                 android:icon="@drawable/ic_menu_exam"
                 android:checkable="true"
                 android:checked="false"
-                android:title="考试时间" />
+                android:title="@string/drawer_exam" />
             <item
                 android:id="@+id/nav_select"
                 android:icon="@drawable/ic_menu_select"
                 android:checkable="true"
                 android:checked="false"
-                android:title="选课退课" />
+                android:title="@string/drawer_select" />
                 <item
                     android:visible="false"
                     android:id="@+id/menu_none" />
             </menu>
         </item>
 
-        <item android:title="信息查询">
+        <item android:title="@string/drawer_information_divider">
             <menu>
                 <item
                     android:id="@+id/nav_612bus"
                     android:icon="@drawable/ic_menu_bus"
                     android:checkable="true"
                     android:checked="false"
-                    android:title="612时间表" />
+                    android:title="@string/drawer_612bus" />
             </menu>
 
         </item>
 
-        <item android:title="关于">
+        <item android:title="@string/drawer_about_divider">
             <menu>
                 <item
                     android:id="@+id/nav_feedback"
                     android:icon="@drawable/ic_menu_about"
                     android:checkable="true"
                     android:checked="false"
-                    android:title="关于Project NKU" />
+                    android:title="@string/drawer_about_projectnku" />
                 <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_code_black_48dp"
                     android:checkable="true"
                     android:checked="false"
-                android:title="关于开发者" />
+                android:title="@string/drawer_about_developer" />
             </menu>
 
         </item>

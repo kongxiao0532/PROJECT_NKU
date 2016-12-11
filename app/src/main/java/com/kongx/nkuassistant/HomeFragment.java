@@ -155,14 +155,14 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(CurriculumFragment.dayOfWeek[dayOfWeek]);
-        if(Information.selectedCourseCount == -1){
+        if(Information.ifLoggedIn){
             onRefresh();
         } else{
             updateSchedule();
             updateExam();
             updateBus();
-            mScoreStatus.setText("下拉刷新");
-            mSelectStatus.setText("下拉刷新");
+            mScoreStatus.setText(getString(R.string.pull_to_refresh));
+            mSelectStatus.setText(getString(R.string.pull_to_refresh));
         }
         return myView;
     }
@@ -196,6 +196,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onTaskComplete(Object o, int type) {
         if(o.getClass() == BufferedInputStream.class) {
+            Information.ifLoggedIn = true;
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
             switch (type){
@@ -269,7 +270,8 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             return;
         }
         if(Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")){
-            mScheduleStatus.setText("今天没有课，记得找点事充实自己的生活哦~");
+            mScheduleStatus.setText(getString(R.string.no_course_today));
+            return;
         }
         courseToday.clear();
         courseTodayCount = 0;
@@ -286,7 +288,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             }
         }
         if (courseTodayCount == 0){
-            mScheduleStatus.setText("今天没有课哦");
+            mScheduleStatus.setText(getString(R.string.no_course_today));
         }
         else {
             mScheduleList.setVisibility(View.VISIBLE);
@@ -332,7 +334,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
                 mBusToJinnanWay.setVisibility(View.VISIBLE);
             }else{
-                mBusToJinnan.setText("无可用车辆");
+                mBusToJinnan.setText(getString(R.string.no_available_buses));
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToJinnanWay.setVisibility(View.GONE);
             }
@@ -342,7 +344,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
                 mBusToBalitaiWay.setVisibility(View.VISIBLE);
             }else{
-                mBusToBalitai.setText("无可用车辆");
+                mBusToBalitai.setText(getString(R.string.no_available_buses));
                 mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToBalitaiWay.setVisibility(View.GONE);
             }
@@ -373,7 +375,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 mBusToJinnanWay.setText(Information.weekends_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
                 mBusToJinnanWay.setVisibility(View.VISIBLE);
             }else{
-                mBusToJinnan.setText("无可用车辆");
+                mBusToJinnan.setText(getString(R.string.no_available_buses));
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToJinnanWay.setVisibility(View.GONE);
             }
@@ -383,7 +385,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
                 mBusToBalitaiWay.setVisibility(View.VISIBLE);
             }else{
-                mBusToBalitai.setText("无可用车辆");
+                mBusToBalitai.setText(getString(R.string.no_available_buses));
                 mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToBalitaiWay.setVisibility(View.GONE);
             }

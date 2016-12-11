@@ -207,7 +207,7 @@
 
 
             <Switch
-                android:text="记住密码"
+                android:text="@string/remember_pass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="30dp"

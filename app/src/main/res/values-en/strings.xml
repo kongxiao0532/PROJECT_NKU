@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NKU Assistant</string>
+    <string name="app_name">Project NKU</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Log in</string>
     <string name="action_sign_in_short">Log in</string>
@@ -23,8 +23,7 @@
     <string name="prompt_index">Course Number</string>
     <string name="not_Open_Warning">System Shut Down</string>
     <string name="FastLine">FastLine</string>
-    <string name="average_template">ABCD Average is %1$.2f \\n ABCDE Average is %2$.2f</string>
-    <string name="cdtext_sunrisefox">"         <p><h1>Sun Yi-Ran</h1></p>         <br />         Contact: sunrisefox@outlook.com         <br />         Github: <a href="https://github.com/SunriseFox">https://github.com/SunriseFox</a>     "</string>
+    <string name="average_template">ABCD Average is %1$.2f \n ABCDE Average is %2$.2f</string>
     <string name="course_template">%1$c Courses，%2$f Credits，Average score is %3$.2f</string>
     <string name="credits_template">Counted %1$.1f credits</string>
     <string name="error_number_required">Please enter the index of the course</string>
@@ -35,4 +34,35 @@
     <string name="tab_tobalitai">Jinnan to Balitai</string>
     <string name="tab_tojinnan">Balitai to Jinnan</string>
     <string name="winter_vacation">Winter Vacation</string>
+    <string name="action_share">Share Project NKU</string>
+    <string name="check_for_update">Check for update</string>
+    <string name="drawer_612bus">612 Schedule</string>
+    <string name="drawer_about_developer">About Developers</string>
+    <string name="drawer_about_divider">About</string>
+    <string name="drawer_about_projectnku">About Project NKU</string>
+    <string name="drawer_edu_system_divider">Edu System</string>
+    <string name="drawer_exam">Exam Arragement</string>
+    <string name="drawer_home_page">Home Page</string>
+    <string name="drawer_information_divider">Infomation</string>
+    <string name="drawer_schedule">Schedule</string>
+    <string name="drawer_score">Score</string>
+    <string name="drawer_select">Select</string>
+    <string name="drawer_selected">Selected Courses</string>
+    <string name="feedback">Feedback</string>
+    <string name="fox_info">Contact:\n  sunrisefox@qq.com \nGithub:\n  github.com/SunriseFox</string>
+    <string name="fox_name">Sun Yi-Ran</string>
+    <string name="kongx_info">Contact:\n  kongxiao0532@163.com \nGithub:\n  github.com/kongxiao0532 \nWeChat：\n kongxiaonku</string>
+    <string name="kongx_name">Little_孔子</string>
+    <string name="nku">Nankai University</string>
+    <string name="no_exam_info">No Exam Info</string>
+    <string name="remember_pass">Remember Password</string>
+    <string name="update_available">Updates Available</string>
+    <string name="details">Details</string>
+    <string name="next_bus">NEXT</string>
+    <string name="no_available_buses">N/A</string>
+    <string name="bus_schedule_sourse">Data in Oct. 2016</string>
+    <string name="no_course_today">No Courses Today</string>
+    <string name="pull_to_refresh">Pull down to refresh</string>
+
+
 </resources>

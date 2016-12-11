@@ -19,6 +19,7 @@ public class Information {
     static final String UPDATE_URL = "http://kongxiao0532.cf/projectnku/update/";
     static final String NOTICE_URL = "http://kongxiao0532.cf/projectnku/notice/";
     static int newestNotice;
+    static boolean ifLoggedIn = false;
 
     //related to Personal Information
     static String name;
@@ -32,7 +33,6 @@ public class Information {
     static String date;
 
     //related to Scores
-//    static String score_lastUpdate;
     static int studiedCourseCount;
     static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();

@@ -79,6 +79,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         mPasswordView = (EditText) findViewById(R.id.password);
         mValidateView = (EditText) findViewById(R.id.ValidateCode);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
+        mRemPass.setChecked(true);
         mLoginButton = (Button) findViewById(R.id.button_login);
         mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,6 +202,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                     editor.putString(Strings.setting_student_major, Information.majorName);
                     editor.apply();
 
+                    Information.ifLoggedIn = true;
                     Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);

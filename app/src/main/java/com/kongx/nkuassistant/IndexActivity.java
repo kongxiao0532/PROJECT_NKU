@@ -249,7 +249,11 @@ public class IndexActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_search) {
+        if (id == R.id.action_share) {
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_TEXT,"PROJECT NKU 做南开信息集中平台。下载地址：https://github.com/kongxiao0532/NKU_ASSISTANT/releases");
+            share.setType("text/plain");
+            startActivity(share);
             return true;
         }else
             return super.onOptionsItemSelected(item);
@@ -281,6 +285,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
             } else if (id == R.id.nav_612bus) {
                 fragmentTransaction.replace(R.id.fragment_container, new ShuttleBusFragment());
+            }else if (id == R.id.nav_feedback) {
+                fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

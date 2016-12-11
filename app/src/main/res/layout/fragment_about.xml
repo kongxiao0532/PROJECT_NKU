@@ -50,7 +50,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:text="Little_孔子"
+                            android:text="@string/kongx_name"
                             android:textSize="40sp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -58,12 +58,12 @@
                             android:layout_marginTop="40dp"
                             android:layout_marginRight="20dp" />
                         <TextView
-                            android:text="Nankai University"
+                            android:text="@string/nku"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="end" />
                         <TextView
-                            android:text="Contact:\n  kongxiao0532@163.com \nGithub:\n  github.com/kongxiao0532"
+                            android:text="@string/kongx_info"
                             android:textSize="17sp"
                             android:lineSpacingMultiplier="1.2"
                             android:layout_width="match_parent"
@@ -97,7 +97,7 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:text="Sun Yi-Ran"
+                                android:text="@string/fox_name"
                                 android:textSize="40sp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -108,9 +108,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="end"
-                                android:text="Nankai University" />
+                                android:text="@string/nku" />
                             <TextView
-                                android:text="Contact:\n  sunrisefox@qq.com \nGithub:\n  github.com/SunriseFox"
+                                android:text="@string/fox_info"
                                 android:textSize="17sp"
                                 android:lineSpacingMultiplier="1.2"
                                 android:layout_width="match_parent"

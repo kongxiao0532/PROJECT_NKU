@@ -93,8 +93,6 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         Information.average_abcde = Information.scores_All / Information.credits_All;
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
         mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
-        if(Information.average_abcd < 80)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.yellow));
-        if(Information.average_abcd < 60)   mAverageAll.setBackground(getResources().getDrawable(R.drawable.red));
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }

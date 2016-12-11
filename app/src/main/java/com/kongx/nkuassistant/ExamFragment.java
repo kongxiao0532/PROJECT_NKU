@@ -61,7 +61,7 @@ public class ExamFragment extends Fragment implements Connectable{
             if(matcher.find()){
                 if(matcher.group(1).equals("本学期考试安排未发布！")){
                     mExamList.setVisibility(View.INVISIBLE);
-                    mNoText.setText("暂无考试信息");
+                    mNoText.setText(getString(R.string.no_exam_info));
                 }
             }
             else {
