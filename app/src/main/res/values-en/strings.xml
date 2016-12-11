@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Project NKU</string>
+    <string name="app_name">Project NKU (Public Test)</string>
     <string name="action_settings">Settings</string>
     <string name="action_sign_in">Log in</string>
     <string name="action_sign_in_short">Log in</string>
