@@ -16,8 +16,8 @@ import java.util.Queue;
 public class Information {
     static String version = "";
     //related to Index Activity
-    static final String UPDATE_URL = "http://kongxiao0532.cf/projectnku/update/";
-    static final String NOTICE_URL = "http://kongxiao0532.cf/projectnku/notice/";
+    static final String UPDATE_URL = "http://kongxiao0532.cn/projectnku/update.html";
+    static final String NOTICE_URL = "http://kongxiao0532.cn/projectnku/notice.html";
     static int newestNotice;
     static boolean ifLoggedIn = false;
 

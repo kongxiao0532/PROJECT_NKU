@@ -384,7 +384,7 @@
                     android:layout_weight="0.02">
 
                     <TextView
-                        android:text="@string/tab_tobalitai"
+                        android:text="@string/tab_tojinnan"
                         android:textColor="#424242"
                         android:layout_marginBottom="1dp"
                         android:layout_width="match_parent"
@@ -393,7 +393,7 @@
                         android:layout_weight="1" />
 
                     <TextView
-                        android:text="@string/tab_tojinnan"
+                        android:text="@string/tab_tobalitai"
                         android:textColor="#424242"
                         android:layout_marginBottom="1dp"
                         android:layout_width="match_parent"

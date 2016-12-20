@@ -52,7 +52,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private Switch mRemPass;
     private WebView webView;
     private boolean useRememberedPWD;
-    static int lastHeightDiff = 0;
 
     @Override
     @SuppressLint("SetJavaScriptEnabled")

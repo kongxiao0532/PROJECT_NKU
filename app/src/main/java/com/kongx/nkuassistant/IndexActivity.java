@@ -133,7 +133,7 @@ public class IndexActivity extends AppCompatActivity
                     }
                     else {
                         new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
-                                .setMessage("更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
+                                .setMessage("新版本："+versionNew+"\n更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
                                 .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {

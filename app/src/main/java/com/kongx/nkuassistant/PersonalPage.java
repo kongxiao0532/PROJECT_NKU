@@ -1,6 +1,7 @@
 package com.kongx.nkuassistant;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,6 +17,11 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
             Information.studiedCourseCount = -1;
             Information.examCount = -1;
             Information.ifLoggedIn = false;
+            Information.ifRemPass = false;
+            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(Information.Strings.setting_remember_pwd,false);
+            editor.apply();
             Intent intent = new Intent(getApplicationContext(), EduLoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
