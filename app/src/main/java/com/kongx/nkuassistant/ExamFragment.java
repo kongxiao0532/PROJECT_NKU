@@ -57,7 +57,6 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
         super.onResume();
         m_activity = getActivity();
         if(Information.examCount == -1){
-            mExamList.setVisibility(View.GONE);
             onRefresh();
         }else {
             mNoText.setVisibility(View.GONE);
@@ -78,7 +77,7 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
         new Connect(ExamFragment.this,0,null).execute(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do");
     }
 
-    private void updateUI(){
+    private void update(){
         Information.exams = tmpExamList;
         Information.examCount = Information.exams.size();
         storeExams();
@@ -111,9 +110,9 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
                 }
             }
             else {
-                mNoText.setVisibility(View.INVISIBLE);
                 tmpExamList = new ArrayList<>();
                 mNoText.setVisibility(View.GONE);
+                mExamList.setVisibility(View.VISIBLE);
                 pattern = Pattern.compile("<td align=\"center\" class=\"NavText\">(.*)(</td>)");
                 matcher = pattern.matcher(returnString);
                 String tmpDate;
@@ -141,7 +140,7 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
                     matcher.find();
                     tmpExamList.add(map);
                 }
-                updateUI();
+                update();
             }
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
