@@ -251,7 +251,7 @@ public class IndexActivity extends AppCompatActivity
 
         if (id == R.id.action_share) {
             Intent share = new Intent(Intent.ACTION_SEND);
-            share.putExtra(Intent.EXTRA_TEXT,"PROJECT NKU 做南开信息集中平台。下载地址：https://github.com/kongxiao0532/NKU_ASSISTANT/releases");
+            share.putExtra(Intent.EXTRA_TEXT,"PROJECT NKU 南开信息集中平台。下载地址：http://kongxiao0532.cn/projectnku/");
             share.setType("text/plain");
             startActivity(share);
             return true;
@@ -287,6 +287,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new ShuttleBusFragment());
             }else if (id == R.id.nav_feedback) {
                 fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
+            }else if (id == R.id.nav_icHome) {
+                fragmentTransaction.replace(R.id.fragment_container, new ICFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

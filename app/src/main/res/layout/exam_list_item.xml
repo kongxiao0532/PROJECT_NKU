@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<LinearLayout
+    android:orientation="horizontal"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="@drawable/examitembg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_weight="0.7">
+
+        <TextView
+            android:text="1月4日"
+            android:textColor="@color/colorPrimary"
+            android:textSize="15sp"
+            android:gravity="center_horizontal|bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/examDateView"
+            android:paddingBottom="3dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:text="14:00-15:40"
+            android:textColor="@color/colorPrimary"
+            android:textSize="10sp"
+            android:gravity="center_horizontal|top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/examPeriodView"
+            android:paddingTop="3dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:id="@+id/examDividerView"
+        android:background="@color/colorPrimary"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="20dp"
+        android:weightSum="1"
+        android:gravity="center"
+        android:layout_weight="0.3">
+
+        <TextView
+            android:text="大学语文（理工类）"
+            android:textSize="18sp"
+            android:gravity="bottom|end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dp"
+            android:id="@+id/examNameView" />
+
+        <TextView
+            android:text="JN5B104"
+            android:textSize="12sp"
+            android:gravity="top|end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:id="@+id/examLocationView" />
+    </LinearLayout>
+
+</LinearLayout>
+</FrameLayout>
