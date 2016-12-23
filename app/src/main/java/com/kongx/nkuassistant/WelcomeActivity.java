@@ -105,6 +105,22 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
 
+        //get Exams Preferences
+        settings = getSharedPreferences(EXAM_PREFS_NAME,0);
+        examCount = settings.getInt(Strings.setting_exam_count, -1);
+        if(examCount != -1){
+            HashMap<String,String> map;
+            for(int i = 0;i < examCount;i++){
+                map = new HashMap<>();
+                map.put("name",settings.getString("name"+i,null));
+                map.put("startTime",settings.getString("startTime"+i,null));
+                map.put("endTime",settings.getString("endTime"+i,null));
+                map.put("classRoom",settings.getString("classRoom"+i,null));
+                map.put("date",settings.getString("date"+i,null));
+                exams.add(map);
+            }
+        }
+
         readBusFile();
         componentReady = true;
         synchronized (timerTask) {

@@ -3,11 +3,16 @@ package com.kongx.nkuassistant;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
@@ -72,7 +77,13 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
             }
         });
         webView.loadUrl(Strings.url_webview);
-
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            Information.version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         mValidateCode = (ImageView) findViewById(R.id.imageView_ValidateCode);
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -121,6 +132,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 mPasswordView.setSelection(mPasswordView.getText().length());
             }
         });
+        new Connect(this, RequestType.CHECK_FOR_UPDATE, null).execute(Information.UPDATE_URL);
     }
 
     @Override
@@ -208,6 +220,49 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                     finish();
                     break;
                 }
+                case RequestType.CHECK_FOR_UPDATE: {
+                    String retString = new Scanner(is).useDelimiter("\\A").next();
+                    String versionNew = "";
+                    String apkSize = "";
+                    String updateTime = "";
+                    String updateLog = "";
+                    pattern = Pattern.compile("<version>(.+)(</version>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  versionNew = matcher.group(1);
+                    pattern = Pattern.compile("<size>(.+)(</size>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  apkSize = matcher.group(1);
+                    pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  updateTime = matcher.group(1);
+                    pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
+                    matcher = pattern.matcher(retString);
+                    if(matcher.find())  updateLog = matcher.group(1);
+                    pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
+                    matcher = pattern.matcher(retString);
+                    matcher.find();
+                    final String downloadLink = matcher.group(1);
+                    if (Information.version.equals(versionNew)){
+                        break;
+                    }
+                    else {
+                        new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
+                                .setMessage("新版本："+versionNew+"\n更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
+                                .setPositiveButton("更新", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Uri uri = Uri.parse(downloadLink);
+                                        Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
+                                        Toast.makeText(EduLoginActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
+                    }
+                    break;
+                }
                 default:
                     break;
             }
@@ -280,6 +335,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         static final int VALIDATE_CODE = 0;
         static final int LOGIN = 1;
         static final int USER_INFO = 2;
+        static final int CHECK_FOR_UPDATE = 3;
     }
 }
 

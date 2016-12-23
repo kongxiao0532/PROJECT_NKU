@@ -25,6 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/home_schedule_layout">
+
                 <LinearLayout
                     android:background="@color/white"
                     android:orientation="horizontal"
@@ -114,15 +115,15 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_marginBottom="1dp"
-                    android:paddingBottom="20dp"
-                    android:orientation="vertical"
-                    android:paddingTop="10dp"
-                    android:id="@+id/home_schedule_list"/>
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginBottom="1dp"
+                android:paddingBottom="20dp"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:id="@+id/home_schedule_list"/>
 
                 <TextView
                     android:text="课程表未更新"
@@ -166,6 +167,7 @@
                         android:paddingTop="10dp"
                         android:paddingStart="20dp"
                         android:paddingEnd="20dp"
+                        android:paddingBottom="20dp"
                         android:scaleType="centerCrop"
                         android:layout_height="match_parent"
                         android:layout_weight="0.02"
@@ -179,15 +181,21 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:paddingTop="10dp"
+                        android:paddingBottom="20dp"
                         android:gravity="start"
                         android:id="@+id/home_exam_headline"
                         android:layout_weight="1" />
                 </LinearLayout>
 
-                <ListView
+                <LinearLayout
+                    android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:paddingBottom="20dp"
+                    android:orientation="vertical"
                     android:id="@+id/home_exam_list"/>
 
                 <TextView

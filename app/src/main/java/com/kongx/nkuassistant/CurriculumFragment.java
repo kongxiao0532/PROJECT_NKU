@@ -27,14 +27,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CurriculumFragment extends Fragment implements Connectable,SwipeRefreshLayout.OnRefreshListener {
-    public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
-    private static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
-    private static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
     private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ListView mlistView;
     private Activity m_activity;
-    private ArrayList<HashMap<String,String>> tmpCurriculum;
+    private ArrayList<HashMap<String,String>> tmpCurriculumList;
+    private TextView mNoCurrirulumView;
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +43,11 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
+        mNoCurrirulumView  = (TextView) myView.findViewById(R.id.textView_noCurriculum);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.curriculum_refresh);
         mRefresh.setOnRefreshListener(CurriculumFragment.this);
+        mNoCurrirulumView.setVisibility(View.GONE);
         return myView;
     }
 
@@ -57,7 +57,15 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         m_activity = getActivity();
         if(Information.selectedCourseCount == -1){
            onRefresh();
-        }else mlistView.setAdapter(new MyAdapter(m_activity));
+        }else if(Information.selectedCourseCount == 0){
+            mNoCurrirulumView.setVisibility(View.VISIBLE);
+            mlistView.setVisibility(View.GONE);
+        }
+        else {
+            mNoCurrirulumView.setVisibility(View.GONE);
+            mlistView.setVisibility(View.VISIBLE);
+            mlistView.setAdapter(new MyAdapter(m_activity));
+        }
     }
 
     @Override
@@ -67,7 +75,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     }
     public void onRefresh() {
         mRefresh.setRefreshing(true);
-        tmpCurriculum = new ArrayList<>();
+        tmpCurriculumList = new ArrayList<>();
         new Connect(CurriculumFragment.this,1,null).execute(Information.WEB_URL +"/xsxk/selectedAction.do");
     }
 
@@ -76,7 +84,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         int minute = calendar.get(Calendar.MINUTE);
         String time_now = String.format(Locale.US,"%2d:%2d",calendar.get(Calendar.HOUR_OF_DAY) ,minute);
         Information.curriculum_lastUpdate = Information.date + " " + time_now;
-        Information.selectedCourses = tmpCurriculum;
+        Information.selectedCourses = tmpCurriculumList;
         storeCourses();
         mRefresh.setRefreshing(false);
         mlistView.setAdapter(new MyAdapter(m_activity));
@@ -97,6 +105,14 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
                 matcher = pattern.matcher(returnString);
                 if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
+                if (numberOfPages == 0) {
+                    mNoCurrirulumView.setVisibility(View.VISIBLE);
+                    Information.selectedCourseCount = 0;
+                    storeCourses();
+                    mRefresh.setRefreshing(false);
+                    return;
+                }
+                mNoCurrirulumView.setVisibility(View.GONE);
                 pattern = Pattern.compile("(共 )(.+)( 条记录)");
                 matcher = pattern.matcher(returnString);
                 if (matcher.find())
@@ -130,7 +146,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
                 matcher.find();
                 map.put("endWeek", matcher.group(2));
                 matcher.find();
-                tmpCurriculum.add(map);
+                tmpCurriculumList.add(map);
             }
             if (type == numberOfPages) update();
             else
@@ -146,7 +162,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         }
     }
 
-    public boolean storeCourses() {
+    boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
@@ -204,10 +220,10 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
 //                    holder = (ViewHolder)convertView.getTag();
 //                }
                 holder.name.setText(Information.selectedCourses.get(position).get("name"));
-                holder.day.setText(dayOfWeek[Integer.parseInt(Information.selectedCourses.get(position).get("dayOfWeek"))]);
+                holder.day.setText(Information.dayOfWeek[Integer.parseInt(Information.selectedCourses.get(position).get("dayOfWeek"))]);
                 holder.index.setText(Information.selectedCourses.get(position).get("index"));
-                holder.time.setText(startTime[Integer.parseInt(Information.selectedCourses.get(position).get("startTime"))]+"-"+
-                        endTime[Integer.parseInt(Information.selectedCourses.get(position).get("endTime"))]);
+                holder.time.setText(Information.startTime[Integer.parseInt(Information.selectedCourses.get(position).get("startTime"))]+"-"+
+                        Information.endTime[Integer.parseInt(Information.selectedCourses.get(position).get("endTime"))]);
             }
             return convertView;
         }

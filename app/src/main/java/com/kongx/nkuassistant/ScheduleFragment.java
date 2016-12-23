@@ -22,6 +22,7 @@ import android.widget.TextView;
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +35,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     private int numberOfPages;
     private Activity m_activity;
     private SwipeRefreshLayout mRefresh;
+    private TextView mNoCurrirulumView;
     private String[] curriculumIndex= {"1","2","3","4","5","6","7","8","9","10","11","12","13","14"};
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_schedule, container, false);
         mReLayout = (RelativeLayout) myView.findViewById(R.id.schedule_relative_layout);
+        mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noSchedule);
         mListView = (ListViewNoScroll) myView.findViewById(R.id.list_schedule);
         mListView.setAdapter(new ArrayAdapter<String>(getActivity(),R.layout.schedule_index_item,curriculumIndex));
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.schedule_refresh);
@@ -79,15 +82,27 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
         if(m_activity == null) return;
         if(o == null){
         }else if(o.getClass() == BufferedInputStream.class) {
-
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
             Matcher matcher;
-            String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            String returnString = "";
+            try{
+                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            }catch (NoSuchElementException e){
+                e.printStackTrace();
+            }
+            if(returnString.equals("")) return;
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
                 matcher = pattern.matcher(returnString);
                 if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
+                if (numberOfPages == 0) {
+                    Information.selectedCourseCount = 0;
+                    mNoCurrirulumView.setVisibility(View.VISIBLE);
+                    loadCurriculum();
+                    mRefresh.setRefreshing(false);
+                    return;
+                }
                 pattern = Pattern.compile("(共 )(.+)( 条记录)");
                 matcher = pattern.matcher(returnString);
                 if (matcher.find())

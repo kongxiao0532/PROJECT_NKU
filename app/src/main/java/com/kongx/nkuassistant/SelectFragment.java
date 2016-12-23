@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,9 +114,20 @@ public class SelectFragment extends Fragment implements Connectable {
             Log.e("APP", "What the fuck?");
         }else if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream)o ;
-            String returnString = new Scanner(is,"GB2312").useDelimiter("\\A").next();
+            String returnString = "";
+            try{
+                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            }catch (NoSuchElementException e){
+                e.printStackTrace();
+            }
             switch (type){
                 case RequestType.CHECK_IF_OPEN:{
+                    if(returnString.equals("")){
+                        ifOpen = false;
+                        Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
+                        mNotOpenWarning.setVisibility(View.VISIBLE);
+                        return;
+                    }
                     Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
                     Matcher matcher = pattern.matcher(returnString);
                     if(matcher.find()){

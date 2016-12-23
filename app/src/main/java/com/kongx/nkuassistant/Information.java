@@ -15,6 +15,9 @@ import java.util.Queue;
 
 public class Information {
     static String version = "";
+    public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+    public static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
+    public static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
     //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cn/projectnku/update.html";
     static final String NOTICE_URL = "http://kongxiao0532.cn/projectnku/notice.html";
@@ -82,6 +85,7 @@ public class Information {
         final static String setting_password = "Password";
         final static String setting_studied_course_count = "studiedCourseCount";
         final static String setting_selected_course_count = "selectedCourseCount";
+        final static String setting_exam_count = "examCount";
         final static String setting_last_update_time = "curriculum_lastUpdate";
         final static String setting_student_name = "StudentName";
         final static String setting_student_faculty = "FacultyName";

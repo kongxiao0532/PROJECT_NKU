@@ -3,6 +3,7 @@ package com.kongx.nkuassistant;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +46,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     private ArrayList<HashMap<String,String>> courseToday;
     //Exam Module
     private TextView mExamStatus;
-    private ListView mExamList;
+    private LinearLayout mExamList;
     private TextView mExamDetail;
     //Score Module
     private TextView mScoreStatus;
@@ -85,7 +87,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mScheduleList = (LinearLayout) myView.findViewById(R.id.home_schedule_list);
         mScheduleDetail = (TextView) myView.findViewById(R.id.home_schedule_details);
         mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
-        mExamList = (ListView) myView.findViewById(R.id.home_exam_list);
+        mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
         mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
         mScoreStatus = (TextView) myView.findViewById(R.id.home_score_text);
         mScoreDetail = (TextView) myView.findViewById(R.id.home_score_details);
@@ -154,7 +156,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         }
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
-        mDay.setText(CurriculumFragment.dayOfWeek[dayOfWeek]);
+        mDay.setText(Information.dayOfWeek[dayOfWeek]);
         if(Information.ifLoggedIn){
             onRefresh();
         } else{
@@ -182,14 +184,14 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     public void onRefresh(){
         mReFresh.setRefreshing(true);
         new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
-        new Connect(HomeFragment.this, RequestType.getExamNumber,null).execute(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do");
         new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
         try{
             updateSchedule();
+            updateBus();
         }catch (IndexOutOfBoundsException e){
             Log.e("HomeFragment","Maybe you changed the fragment too quick.");
         }
-        updateBus();
+        updateExam();
         mReFresh.setRefreshing(false);
     }
 
@@ -198,7 +200,12 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         if(o.getClass() == BufferedInputStream.class) {
             Information.ifLoggedIn = true;
             BufferedInputStream is = (BufferedInputStream) o;
-            String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            String returnString = "";
+            try{
+                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+            }catch (NoSuchElementException e){
+                e.printStackTrace();
+            }
             switch (type){
                 case RequestType.getScoreNumber:{
                     pattern = Pattern.compile("(共 )(.+)( 条记录)");
@@ -212,24 +219,24 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                     }
                     break;
                 }
-
-                case RequestType.getExamNumber:{
-                    pattern = Pattern.compile("<strong>(.+)(<\\/strong>)");
-                    matcher = pattern.matcher(returnString);
-                    if(matcher.find()){
-                        if(matcher.group(1).equals("本学期考试安排未发布！")){
-                            mExamList.setVisibility(View.GONE);
-                            mExamStatus.setText("暂无考试信息");
-                        }
-                    }
-                    else {
-                        //TODO: wait until exam schedule shows up
-                        mExamList.setVisibility(View.VISIBLE);
-
-                    }
-                    updateExam();
-                    break;
-                }
+//
+//                case RequestType.getExamNumber:{
+//                    pattern = Pattern.compile("<strong>(.+)(<\\/strong>)");
+//                    matcher = pattern.matcher(returnString);
+//                    if(matcher.find()){
+//                        if(matcher.group(1).equals("本学期考试安排未发布！")){
+//                            mExamList.setVisibility(View.GONE);
+//                            mExamStatus.setText("暂无考试信息");
+//                        }
+//                    }
+//                    else {
+//                        //TODO: wait until exam schedule shows up
+//                        mExamList.setVisibility(View.VISIBLE);
+//
+//                    }
+//                    updateExam();
+//                    break;
+//                }
 
                 case RequestType.getSelectStatus:{
                     Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
@@ -240,7 +247,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                         }
                     }
                     //TODO:Selection Status
-                    else mSelectStatus.setText("选课状态");
+                    else mSelectStatus.setText("选课系统未开放");
                     break;
                 }
 
@@ -259,7 +266,28 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     }
 
     private void updateExam(){
-
+        mExamList.removeAllViews();
+        if(Information.examCount == -1){
+            mExamStatus.setText("考试安排未更新");
+            return;
+        }
+        if(Information.examCount == 0){
+            mExamStatus.setText("暂无考试信息");
+            return;
+        }
+        else {
+            mExamList.setVisibility(View.VISIBLE);
+            mExamStatus.setVisibility(View.GONE);
+            LayoutInflater mInflater = LayoutInflater.from(m_activity);
+            for(int i = 0; i< Information.examCount; i++) {
+                View view = mInflater.inflate(R.layout.home_schedule_item, null);
+                TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
+                TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
+                item_name.setText(Information.exams.get(i).get("name"));
+                item_classroom.setText(Information.exams.get(i).get("date"));
+                mExamList.addView(view);
+            }
+        }
     }
 
     private void updateSchedule() throws IndexOutOfBoundsException{
@@ -267,6 +295,10 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mScheduleList.removeAllViews();
         if(Information.selectedCourseCount == -1){
             mScheduleStatus.setText("课程表未更新");
+            return;
+        }
+        if(Information.selectedCourseCount == 0){
+            mScheduleStatus.setText("暂无课程信息");
             return;
         }
         if(Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")){
