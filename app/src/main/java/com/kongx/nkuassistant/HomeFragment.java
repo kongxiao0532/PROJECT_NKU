@@ -268,7 +268,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     private void updateExam(){
         mExamList.removeAllViews();
         if(Information.examCount == -1){
-            mExamStatus.setText("考试安排未更新");
+            mExamStatus.setText("点击“查看详情”更新");
             return;
         }
         if(Information.examCount == 0){
@@ -294,7 +294,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         courseToday.clear();
         mScheduleList.removeAllViews();
         if(Information.selectedCourseCount == -1){
-            mScheduleStatus.setText("课程表未更新");
+            mScheduleStatus.setText("点击“查看详情”更新");
             return;
         }
         if(Information.selectedCourseCount == 0){
