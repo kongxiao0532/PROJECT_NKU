@@ -1,12 +1,20 @@
 package com.kongx.nkuassistant;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.io.File;
+import java.net.CookieHandler;
 
 public class PersonalPage extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +30,9 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean(Information.Strings.setting_remember_pwd,false);
             editor.apply();
+            File file = new File(getApplicationContext().getApplicationInfo().dataDir,"app_webview/Cookies");
+            Log.e("APP",file.getAbsolutePath());
+            file.delete();
             Intent intent = new Intent(getApplicationContext(), EduLoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
