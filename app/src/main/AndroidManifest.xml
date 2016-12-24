@@ -15,6 +15,7 @@
         <activity
             android:name=".IndexActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
@@ -22,15 +23,18 @@
             android:label="@string/title_activity_edu_login"
             android:parentActivityName=".IndexActivity"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.TranslucentStatus"/>
         <activity
             android:name=".PersonalPage"
             android:label="个人信息"
             android:parentActivityName=".IndexActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WelcomeActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
