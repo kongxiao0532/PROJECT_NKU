@@ -7,6 +7,7 @@ import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -39,16 +40,18 @@ public class Information {
     static int studiedCourseCount;
     static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
-    static float[] credits = new float[5];
-    static float[] scores = new float[5];
-    static float[] averages = new float[5];
+    static Map<String,Float>  credits = new HashMap<>();
+    static Map<String,Float>   scores = new HashMap<>();
+    static Map<String,Float> averages = new HashMap<>();
     static float credits_All;
     static float scores_All;
     static float average_abcd;
     static float average_abcde;
     static public void resetScores(){
         for(int i = 0;i < 5;i++){
-            scores[i] = credits[i] = averages[i] = 0;
+            credits.clear();
+            scores.clear();
+            averages.clear();
         }
         credits_All = scores_All = average_abcd = average_abcde = 0;
     }

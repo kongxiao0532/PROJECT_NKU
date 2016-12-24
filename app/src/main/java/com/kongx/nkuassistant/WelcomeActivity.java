@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,14 +69,24 @@ public class WelcomeActivity extends AppCompatActivity {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(getApplication());
 
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
         System.setProperty("java.net.useSystemProxies", "true");
         CookieManager cookieManager = new CookieManager();
+        File bugCheckFile = new File(getExternalCacheDir(),new Date().getTime()+".txt");
+        try { bugCheckFile.createNewFile(); } catch (IOException e) { }
         Connect.initialize(cookieManager);
+        Connect.initializeBugCheck(bugCheckFile);
+        SharedPreferences.Editor editor = settings.edit();
+        String lastBugCheckFile = settings.getString("bugCheckFile",null);
+        editor.putString("lastBugCheckFile",lastBugCheckFile == null ? bugCheckFile.getAbsolutePath() : lastBugCheckFile);
+        editor.putString("bugCheckFile",bugCheckFile.getAbsolutePath());
+        editor.apply();
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        Connect.writeToBugCheck("Initialized with file "+bugCheckFile.getName());
+
         ifRemPass = settings.getBoolean(Strings.setting_remember_pwd, false);
         studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
-
         name = settings.getString(Strings.setting_student_name, "Name");
         facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
         id = settings.getString(Strings.setting_studentID, "ID");

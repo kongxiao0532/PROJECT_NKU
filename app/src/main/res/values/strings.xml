@@ -74,6 +74,7 @@
 
     <string name="title_activity_personal_page">个人主页</string>
     <string name="action_share">分享Project NKU</string>
+    <string name="action_bugreport">发送错误报告</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
     <string name="connection_error">网络无连接</string>

@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -20,12 +21,13 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
-    char lastType;
+    String lastType;
     private View myView = null;
     private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
@@ -40,7 +42,6 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Information.resetScores();
-
     }
 
     @Override
@@ -70,26 +71,37 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
 
     public void onRefresh() {
         mRefresh.setRefreshing(true);
-        lastType = 'A';
+        lastType = "A";
         Information.resetScores();
         tmpScore = new ArrayList<>();
         new Connect(this,1,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
     }
 
     private void update(){
+        if(m_activity == null) return;
         Information.studiedCourses = tmpScore;
         SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("studiedCourseCount",Information.studiedCourseCount);
         editor.apply();
-        for(int i = 0;i < 5;i++){
-            Information.averages[i] = Information.scores[i] / Information.credits[i];
-            Information.credits_All += Information.credits[i];
-            Information.scores_All += Information.scores[i];
-            if(i == 3){
-                Information.average_abcd = Information.scores_All / Information.credits_All;
-            }
+
+        Set<String> keySet = Information.scores.keySet();
+        //TODO: How to calculate XueFenJi?
+        for (String key : keySet){
+            Log.e("APP", key + "  " + Information.scores.get(key) + "/" + Information.credits.get(key));
+            Information.averages.put(key,Information.scores.get(key) / Information.credits.get(key));
+            Information.credits_All += Information.credits.get(key);
+            Information.scores_All += Information.scores.get(key);
+            if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All;
         }
+//        for(int i = 0;i < 5;i++){
+//            Information.averages[i] = Information.scores[i] / Information.credits[i];
+//            Information.credits_All += Information.credits[i];
+//            Information.scores_All += Information.scores[i];
+//            if(i == 3){
+//                Information.average_abcd = Information.scores_All / Information.credits_All;
+//            }
+//        }
         Information.average_abcde = Information.scores_All / Information.credits_All;
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
         mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
@@ -112,7 +124,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 matcher = pattern.matcher(returnString);
                 if (matcher.find())
                     Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
-                map.put("name", "dividerA");
+                map.put("name", "divider,A");
                 tmpScore.add(map);
             }
             pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r)");
@@ -137,24 +149,28 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 map.put("score", tmpS3);
                 map.put("credit", tmpS4 + "学分");
                 map.put("status", "good");
-                if (tmpS2.charAt(0) != lastType) {
+                if (!tmpS2.equals(lastType)) {
                     HashMap<String, String> divider = new HashMap<>();
-                    lastType = tmpS2.charAt(0);
-                    divider.put("name", "divider" + lastType);
+                    lastType = tmpS2;
+                    divider.put("name", "divider," + lastType);
                     tmpScore.add(divider);
                 }
                 if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
-                    Log.e("APP", String.valueOf(tmpS2.charAt(0)));
-                    Information.scores[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4);
-                    Information.credits[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS4);
+                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4));
+                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
+//                    Information.scores[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4);
+//                    Information.credits[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS4);
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
+                }else{
+                    //TODO: How to handle TongGuo?
+                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0);
+                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
                 }
                 tmpScore.add(map);
             }
             if (type == numberOfPages) update();
-            else
-                new Connect(ScoreFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/studiedPageAction.do");
+            else new Connect(ScoreFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/studiedPageAction.do");
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
@@ -210,10 +226,10 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
 //                holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
 //            }
             if(isDivider){
-                char type = Information.studiedCourses.get(position).get("name").charAt(7);
+                String type = Information.studiedCourses.get(position).get("name").split("\\,")[1];
                 holder.name.setText(type+"类课");
-                holder.credits.setText("共" + Information.credits[type - 'A'] + "学分");
-                holder.score.setText("学分绩" + Information.averages[type - 'A'] + "分");
+                holder.credits.setText("共" + Information.credits.get(type) + "学分");
+                holder.score.setText("学分绩" + Information.averages.get(type) + "分");
             }
             else{
                 holder.name.setText(Information.studiedCourses.get(position).get("name"));

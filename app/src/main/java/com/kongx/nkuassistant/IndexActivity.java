@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.Scanner;
@@ -259,8 +260,16 @@ public class IndexActivity extends AppCompatActivity
             share.setType("text/plain");
             startActivity(share);
             return true;
-        }else
-            return super.onOptionsItemSelected(item);
+        }else if(id == R.id.action_bugreport){
+            Intent share = new Intent(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_STREAM
+                    ,Uri.fromFile( new File(getSharedPreferences(Information.PREFS_NAME,0).getString("lastBugCheckFile","")))
+            );
+            share.setType("*/*");
+            startActivity(share);
+            return true;
+        }
+        else return super.onOptionsItemSelected(item);
     }
 
     @Override
