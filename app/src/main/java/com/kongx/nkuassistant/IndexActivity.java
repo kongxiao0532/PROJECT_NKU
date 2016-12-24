@@ -215,6 +215,10 @@ public class IndexActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         }
         else if(getFragmentManager().getBackStackEntryCount() > 1){
+            if(BrowserFragment.hasInstance()){
+                return;
+            }
+            navigationView.setCheckedItem(R.id.nav_home);
             getFragmentManager().popBackStack();
         }
         else {
@@ -263,6 +267,7 @@ public class IndexActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (getFragmentManager().getBackStackEntryCount() > 1) {
+            BrowserFragment.clearInstance();
             getFragmentManager().popBackStack();
         }
         navigationView.setCheckedItem(id);
@@ -288,10 +293,11 @@ public class IndexActivity extends AppCompatActivity
             }else if (id == R.id.nav_feedback) {
                 fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
             }else if (id == R.id.nav_icHome) {
-                fragmentTransaction.replace(R.id.fragment_container, new ICFragment());
+                fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
             }
             fragmentTransaction.addToBackStack(null);
         }
+
         fragmentTransaction.commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

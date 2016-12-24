@@ -1,51 +1,25 @@
-    <LinearLayout
+    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context="com.kongx.nkuassistant.WelcomeActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000"
         android:fitsSystemWindows="true"
-        android:id="@+id/layout_welcome"
-        android:weightSum="1"
-        android:orientation="vertical">
-
+        android:id="@+id/layout_welcome">
         <ImageView
+            android:id="@+id/startImg"
+            android:layout_alignParentTop="true"
             android:layout_width="match_parent"
-            android:src="@drawable/startpic"
-            android:id="@+id/imageView_start"
-            android:layout_weight="1"
-            android:scaleType="fitXY"
-            android:layout_height="0dp" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_weight="0.2"
-            android:weightSum="1"
-            android:layout_height="wrap_content">
-
-            <Space
-                android:layout_height="match_parent"
-                android:layout_weight="0.1"
-                android:layout_width="60dp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:src="@drawable/welcomepic2"
-                android:id="@+id/imageView5"
-                android:adjustViewBounds="false"
-                android:cropToPadding="false"
-                android:scaleType="fitCenter"
-                android:layout_weight="0.8"/>
-
-            <Space
-                android:layout_height="match_parent"
-                android:layout_weight="0.1"
-                android:layout_width="60dp" />
-        </LinearLayout>
-
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_above="@+id/startImg2"
+            android:scaleType="centerCrop"
+            android:src="@drawable/startpic" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:src="@drawable/welcomepic2"
+            android:scaleType="centerInside"
+            android:id="@+id/startImg2" />
+    </RelativeLayout>

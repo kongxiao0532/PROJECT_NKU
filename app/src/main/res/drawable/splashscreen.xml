@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <bitmap android:src="@drawable/welcomepic2"/>
-    <item
-        android:gravity="fill">
-        <shape>
-            <solid android:color="#000000"/>
-        </shape>
-    </item>
-    <!--<item>-->
-        <!--&lt;!&ndash;<scale android:scaleGravity="fill_horizontal|bottom" android:scaleHeight="50%" android:scaleWidth="50%">&ndash;&gt;-->
-            <!--<bitmap android:src="@drawable/welcomepic2" android:gravity="center"/>-->
-        <!--&lt;!&ndash;</scale>&ndash;&gt;-->
-    <!--</item>-->
+    <item android:gravity="fill" android:drawable="@color/black"/>
 </layer-list>
