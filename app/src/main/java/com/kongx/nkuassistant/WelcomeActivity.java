@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,12 +50,19 @@ public class WelcomeActivity extends AppCompatActivity {
             WelcomeActivity.this.startActivity(startIntent);
             WelcomeActivity.this.finish();
         }
-    };;
+    };
+
     protected void onCreate(Bundle paramBundle) {
         super.onCreate(paramBundle);
         View v = View.inflate(getApplicationContext(),R.layout.activity_welcome,null);
         setContentView(v);
         new Timer().schedule(timerTask, 2000);
+
+
+        ImageView startImg1 = (ImageView)v.findViewById(R.id.startImg);
+        ImageView startImg2 = (ImageView)v.findViewById(R.id.startImg2);
+        startImg1.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.splash_fade_in));
+        startImg2.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(),R.anim.splash_move_in));
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(getApplication());

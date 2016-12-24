@@ -16,6 +16,7 @@
     <string name="drawer_about_divider">关于</string>
     <string name="drawer_about_projectnku">关于Project NKU</string>
     <string name="drawer_about_developer">关于开发者</string>
+    <string name="drawer_icspace">IC空间</string>
 
 
     <!--Strings related to home page-->
@@ -77,5 +78,8 @@
     <string name="press_back_again_to_exit">再按返回键退出</string>
     <string name="connection_error">网络无连接</string>
     <string name="Unlogged">未登录</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -59,7 +59,7 @@
                     android:icon="@drawable/ic_library_books_white_48dp"
                     android:checkable="true"
                     android:checked="false"
-                    android:title="IC空间" />
+                    android:title="@string/drawer_icspace" />
             </menu>
 
         </item>
