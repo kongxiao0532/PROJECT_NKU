@@ -27,12 +27,9 @@ import java.util.regex.Pattern;
 
 public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
     String lastType;
-    private View myView = null;
     private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ArrayList<HashMap<String,String>> tmpScore;
-    private Pattern pattern;
-    private Matcher matcher;
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
@@ -46,7 +43,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.fragment_score, container, false);
+        View myView = inflater.inflate(R.layout.fragment_score, container, false);
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.score_refresh);
         mRefresh.setOnRefreshListener(this);
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
@@ -107,6 +104,8 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
             HashMap<String, String> map = new HashMap<String, String>();
+            Pattern pattern;
+            Matcher matcher;
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
                 matcher = pattern.matcher(returnString);
@@ -224,7 +223,9 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             }
             else{
                 holder.name.setText(Information.studiedCourses.get(position).get("name"));
-                holder.credits.setText(Information.studiedCourses.get(position).get("type")+"  "+Information.studiedCourses.get(position).get("credit"));
+                holder.credits.setText(
+                        Information.studiedCourses.get(position).get("type")+"  "+Information.studiedCourses.get(position).get("credit")
+                );
                 holder.score.setText(Information.studiedCourses.get(position).get("score"));
             }
             return convertView;
