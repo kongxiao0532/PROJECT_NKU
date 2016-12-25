@@ -85,11 +85,12 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         for (String key : keySet){
             Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
             Information.credits_All += Information.credits.get(key);
+            Information.credits_All_counted += Information.credits_counted.get(key);
             Information.scores_All += Information.scores.get(key);
-            if(key.startsWith("C")) Information.average_abc = Information.scores_All / Information.credits_All;
-            if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All;
+            if(key.startsWith("C")) Information.average_abc = Information.scores_All / Information.credits_All_counted;
+            if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All_counted;
         }
-        Information.average_abcde = Information.scores_All / Information.credits_All;
+        Information.average_abcde = Information.scores_All / Information.credits_All_counted;
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
         mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abc,Information.average_abcd,Information.average_abcde));
         mRefresh.setRefreshing(false);
@@ -156,6 +157,14 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                     );
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
+                }else{
+                    Information.scores.put(
+                            tmpS2
+                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0
+                    );
+                    Information.credits_counted.put(
+                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+0
+                    );
                 }
                 tmpScore.add(map);
             }

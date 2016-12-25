@@ -62,7 +62,7 @@
                     android:title="@string/drawer_icspace" />
                 <item
                     android:id="@+id/nav_tycg"
-                    android:icon="@drawable/ic_library_books_white_48dp"
+                    android:icon="@drawable/ic_directions_run_black_48dp"
                     android:checkable="true"
                     android:checked="false"
                     android:title="@string/drawer_tycg" />

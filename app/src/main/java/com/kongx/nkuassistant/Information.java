@@ -39,6 +39,7 @@ public class Information {
     static Map<String,Float>  scores          = new HashMap<>();
     static Map<String,Float>  averages        = new HashMap<>();
     static float credits_All;
+    static float credits_All_counted;
     static float scores_All;
     static float average_abc;
     static float average_abcd;
@@ -47,7 +48,8 @@ public class Information {
         credits.clear();
         scores.clear();
         averages.clear();
-        credits_All = scores_All = average_abcd = average_abcde = 0;
+        credits_counted.clear();
+        credits_All_counted = credits_All = scores_All = average_abc = average_abcd = average_abcde = 0;
     }
     //related to Curriculum
     static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
