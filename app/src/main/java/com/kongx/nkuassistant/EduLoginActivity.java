@@ -40,7 +40,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.kongx.nkuassistant.Information.*;
+import static com.kongx.nkuassistant.Information.Strings;
 
 public class EduLoginActivity extends AppCompatActivity implements Connectable {
     private static final long mBackPressThreshold = 3500;
@@ -314,7 +314,8 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         m_validateCode = validateCode;
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         if (useRememberedPWD) {
-            String strToPost = String.format(Strings.url_template, m_username, settings.getString(Strings.setting_password, null), m_validateCode);
+            m_encryptedPassword = settings.getString(Strings.setting_password, null);
+            String strToPost = String.format(Strings.url_template, m_username, m_encryptedPassword, m_validateCode);
             new Connect(EduLoginActivity.this, RequestType.LOGIN, strToPost).execute(Information.WEB_URL + "/stdloginAction.do");
         } else webView.loadUrl("javascript:encryption(\"" + password + "\")");
         showProgress(true);
