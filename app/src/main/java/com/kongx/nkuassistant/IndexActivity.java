@@ -303,6 +303,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
             }else if (id == R.id.nav_icHome) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
+            }else if (id == R.id.nav_tycg) {
+                fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://tycg.nankai.edu.cn/"));
             }
             fragmentTransaction.addToBackStack(null);
         }
