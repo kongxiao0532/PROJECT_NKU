@@ -1,7 +1,6 @@
 package com.kongx.nkuassistant;
 
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -44,7 +43,6 @@ public class BrowserFragment extends Fragment {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
