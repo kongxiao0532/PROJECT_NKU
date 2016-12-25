@@ -1,14 +1,8 @@
 package com.kongx.nkuassistant;
 
-import android.support.annotation.NonNull;
-
-import java.nio.Buffer;
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 /**
  * Created by kongx on 2016/11/17 0017.
@@ -40,19 +34,19 @@ public class Information {
     static int studiedCourseCount;
     static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
-    static Map<String,Float>  credits = new HashMap<>();
-    static Map<String,Float>   scores = new HashMap<>();
-    static Map<String,Float> averages = new HashMap<>();
+    static Map<String,Float>  credits         = new HashMap<>();
+    static Map<String,Float>  credits_counted = new HashMap<>();
+    static Map<String,Float>  scores          = new HashMap<>();
+    static Map<String,Float>  averages        = new HashMap<>();
     static float credits_All;
     static float scores_All;
+    static float average_abc;
     static float average_abcd;
     static float average_abcde;
     static public void resetScores(){
-        for(int i = 0;i < 5;i++){
-            credits.clear();
-            scores.clear();
-            averages.clear();
-        }
+        credits.clear();
+        scores.clear();
+        averages.clear();
         credits_All = scores_All = average_abcd = average_abcde = 0;
     }
     //related to Curriculum

@@ -52,7 +52,7 @@
     <string name="not_Open_Warning">选课系统关闭</string>
     <!--String related to Score-->
     <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$.2f分</string>
-    <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分</string>
+    <string name="average_template">ABC学分绩%1$.2f分 \nABCD学分绩%2$.2f分 \nABCDE学分绩%3$.2f分</string>
     <string name="credits_template">总学分%1$.1f分</string>
     <!--String related to Exams-->
     <string name="no_exam_info">暂无考试信息</string>

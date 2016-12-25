@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -86,29 +85,21 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         editor.apply();
 
         Set<String> keySet = Information.scores.keySet();
-        //TODO: How to calculate XueFenJi?
         for (String key : keySet){
-            Log.e("APP", key + "  " + Information.scores.get(key) + "/" + Information.credits.get(key));
-            Information.averages.put(key,Information.scores.get(key) / Information.credits.get(key));
+            Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
             Information.credits_All += Information.credits.get(key);
             Information.scores_All += Information.scores.get(key);
+            if(key.startsWith("C")) Information.average_abc = Information.scores_All / Information.credits_All;
             if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All;
         }
-//        for(int i = 0;i < 5;i++){
-//            Information.averages[i] = Information.scores[i] / Information.credits[i];
-//            Information.credits_All += Information.credits[i];
-//            Information.scores_All += Information.scores[i];
-//            if(i == 3){
-//                Information.average_abcd = Information.scores_All / Information.credits_All;
-//            }
-//        }
         Information.average_abcde = Information.scores_All / Information.credits_All;
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
-        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
+        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abc,Information.average_abcd,Information.average_abcde));
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onTaskComplete(Object o, int type) {
         if(m_activity == null)return;
@@ -155,17 +146,17 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                     divider.put("name", "divider," + lastType);
                     tmpScore.add(divider);
                 }
+                Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
                 if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
-                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4));
-                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
-//                    Information.scores[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4);
-//                    Information.credits[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS4);
+                    Information.scores.put(
+                            tmpS2
+                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4)
+                    );
+                    Information.credits_counted.put(
+                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+Float.parseFloat(tmpS4)
+                    );
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
-                }else{
-                    //TODO: How to handle TongGuo?
-                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0);
-                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
                 }
                 tmpScore.add(map);
             }
