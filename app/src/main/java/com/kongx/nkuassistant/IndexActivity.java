@@ -28,13 +28,16 @@ import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.jpush.android.api.JPushInterface;
+
+import static com.kongx.nkuassistant.Information.PREFS_NAME;
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connectable{
@@ -43,6 +46,7 @@ public class IndexActivity extends AppCompatActivity
     private static final long mBackPressThreshold = 3500;
     private HomeFragment homeFragment;
     private NavigationView navigationView;
+
     private static class RequestType{
         static final int CHECK_FOR_UPDATE = 0;
         static final int CHECK_FOR_NOTICE = 1;
@@ -54,7 +58,6 @@ public class IndexActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -247,11 +250,15 @@ public class IndexActivity extends AppCompatActivity
         TextView idTextView = (TextView) findViewById(R.id.drawer_ID);
         idTextView.setText(Information.id);
 
+        if(Information.bugCheckFile != null){
+            MenuItem menuItem = menu.findItem(R.id.action_bugreport);
+            menuItem.setTitle(R.string.action_report_bug);
+        }
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_share) {
@@ -261,12 +268,39 @@ public class IndexActivity extends AppCompatActivity
             startActivity(share);
             return true;
         }else if(id == R.id.action_bugreport){
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.putExtra(Intent.EXTRA_STREAM
-                    ,Uri.fromFile( new File(getSharedPreferences(Information.PREFS_NAME,0).getString("lastBugCheckFile","")))
-            );
-            share.setType("*/*");
-            startActivity(share);
+            if(Information.bugCheckFile == null) {
+                new AlertDialog.Builder(this).setTitle(getString(R.string.action_start_record))
+                        .setMessage("启用日志记录后，程序将开始记录运行状态，如果程序崩溃或得到非预期结果，再次点击此按钮可发送日志内容给开发者")
+                        .setPositiveButton("嗯=w=", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                File bugCheckFile = new File(getExternalCacheDir(), new Date().getTime() + ".txt");
+                                try {
+                                    bugCheckFile.createNewFile();
+                                } catch (IOException e) {
+                                }
+                                Connect.initializeBugCheck(bugCheckFile);
+                                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                                SharedPreferences.Editor editor = settings.edit();
+                                Information.bugCheckFile = bugCheckFile.getAbsolutePath();
+                                editor.putString("lastBugCheckFile", Information.bugCheckFile);
+                                editor.apply();
+                                Connect.writeToBugCheck("Initialized with file " + bugCheckFile.getName());
+                                item.setTitle(R.string.action_report_bug);
+                            }
+                        }).setNegativeButton("取消", null).show();
+            }else {
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.remove("lastBugCheckFile");
+                editor.apply();
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.putExtra(Intent.EXTRA_STREAM
+                        , Uri.fromFile(new File(Information.bugCheckFile))
+                );
+                share.setType("*/*");
+                startActivity(share);
+            }
             return true;
         }
         else return super.onOptionsItemSelected(item);

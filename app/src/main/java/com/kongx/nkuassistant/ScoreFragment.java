@@ -18,7 +18,9 @@ import android.widget.TextView;
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -82,16 +84,38 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         editor.apply();
 
         Set<String> keySet = Information.scores.keySet();
-        for (String key : keySet){
+        List<String> keyList = new ArrayList<String>(keySet);
+        Collections.sort(keyList);
+        for (String key : keyList){
             Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
             Information.credits_All += Information.credits.get(key);
+            Information.credits_All_counted += Information.credits_counted.get(key);
             Information.scores_All += Information.scores.get(key);
-            if(key.startsWith("C")) Information.average_abc = Information.scores_All / Information.credits_All;
-            if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All;
         }
-        Information.average_abcde = Information.scores_All / Information.credits_All;
+        Float A = Information.scores.get("A");
+        Float B = Information.scores.get("B");
+        Float C = Information.scores.get("C");
+        Float D = Information.scores.get("D");
+        Float E = Information.scores.get("E");
+
+        Float cA = Information.credits_counted.get("A");
+        Float cB = Information.credits_counted.get("B");
+        Float cC = Information.credits_counted.get("C");
+        Float cD = Information.credits_counted.get("D");
+        Float cE = Information.credits_counted.get("E");
+
+        Float sumABCD = ((A==null?0:A)+(B==null?0:B)+(C==null?0:C)+(D==null?0:D));
+        Float sumcABCD = ((cA==null?0:cA)+(cB==null?0:cB)+(cC==null?0:cC)+(cD==null?0:cD));
+        Information.average_abcd = sumABCD / sumcABCD;
+        Information.average_abcde = (sumABCD+E) / (sumcABCD+cE);
+
+        Float FC = Information.scores.get("FC");
+        Float FD = Information.scores.get("FD");
+        Float cFC = Information.credits_counted.get("FC");
+        Float cFD = Information.credits_counted.get("FD");
+        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
-        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abc,Information.average_abcd,Information.average_abcde));
+        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
@@ -156,6 +180,14 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                     );
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
+                }else{
+                    Information.scores.put(
+                            tmpS2
+                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0
+                    );
+                    Information.credits_counted.put(
+                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+0
+                    );
                 }
                 tmpScore.add(map);
             }

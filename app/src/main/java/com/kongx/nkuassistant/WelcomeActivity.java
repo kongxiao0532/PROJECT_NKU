@@ -9,32 +9,50 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.CookieManager;
-import java.net.HttpCookie;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import java.util.ArrayList;
-
 import cn.jpush.android.api.JPushInterface;
 
-import static com.kongx.nkuassistant.Information.*;
+import static com.kongx.nkuassistant.Information.COURSE_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.EXAM_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.PREFS_NAME;
+import static com.kongx.nkuassistant.Information.Strings;
+import static com.kongx.nkuassistant.Information.WEB_URL;
+import static com.kongx.nkuassistant.Information.bugCheckFile;
+import static com.kongx.nkuassistant.Information.curriculum_lastUpdate;
+import static com.kongx.nkuassistant.Information.examCount;
+import static com.kongx.nkuassistant.Information.exams;
+import static com.kongx.nkuassistant.Information.facultyName;
+import static com.kongx.nkuassistant.Information.id;
+import static com.kongx.nkuassistant.Information.ifRemPass;
+import static com.kongx.nkuassistant.Information.majorName;
+import static com.kongx.nkuassistant.Information.name;
+import static com.kongx.nkuassistant.Information.selectedCourseCount;
+import static com.kongx.nkuassistant.Information.selectedCourses;
+import static com.kongx.nkuassistant.Information.studiedCourseCount;
+import static com.kongx.nkuassistant.Information.weekdays_tobalitai;
+import static com.kongx.nkuassistant.Information.weekdays_tojinnan;
+import static com.kongx.nkuassistant.Information.weekends_tobalitai;
+import static com.kongx.nkuassistant.Information.weekends_tojinnan;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -73,17 +91,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         System.setProperty("java.net.useSystemProxies", "true");
         CookieManager cookieManager = new CookieManager();
-        File bugCheckFile = new File(getExternalCacheDir(),new Date().getTime()+".txt");
-        try { bugCheckFile.createNewFile(); } catch (IOException e) { }
         Connect.initialize(cookieManager);
-        Connect.initializeBugCheck(bugCheckFile);
-        SharedPreferences.Editor editor = settings.edit();
-        String lastBugCheckFile = settings.getString("bugCheckFile",null);
-        editor.putString("lastBugCheckFile",lastBugCheckFile == null ? bugCheckFile.getAbsolutePath() : lastBugCheckFile);
-        editor.putString("bugCheckFile",bugCheckFile.getAbsolutePath());
-        editor.apply();
-
-        Connect.writeToBugCheck("Initialized with file "+bugCheckFile.getName());
+        bugCheckFile = getSharedPreferences(Information.PREFS_NAME,0).getString("lastBugCheckFile",null);
 
         ifRemPass = settings.getBoolean(Strings.setting_remember_pwd, false);
         studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);

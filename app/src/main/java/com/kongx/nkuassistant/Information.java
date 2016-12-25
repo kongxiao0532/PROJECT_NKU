@@ -13,6 +13,9 @@ public class Information {
     public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
     public static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
     public static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
+
+    static String bugCheckFile;
+
     //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cn/projectnku/update.html";
     static final String NOTICE_URL = "http://kongxiao0532.cn/projectnku/notice.html";
@@ -39,15 +42,17 @@ public class Information {
     static Map<String,Float>  scores          = new HashMap<>();
     static Map<String,Float>  averages        = new HashMap<>();
     static float credits_All;
+    static float credits_All_counted;
     static float scores_All;
-    static float average_abc;
     static float average_abcd;
     static float average_abcde;
+    static float average_f;
     static public void resetScores(){
         credits.clear();
         scores.clear();
         averages.clear();
-        credits_All = scores_All = average_abcd = average_abcde = 0;
+        credits_counted.clear();
+        credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
     }
     //related to Curriculum
     static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
