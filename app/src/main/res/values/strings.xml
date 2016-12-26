@@ -53,7 +53,7 @@
     <string name="not_Open_Warning">选课系统关闭</string>
     <!--String related to Score-->
     <string name="course_template">%1$c类课，共%2$f学分，学分绩%3$.2f分</string>
-    <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分</string>
+    <string name="average_template">ABCD学分绩%1$.2f分 \nABCDE学分绩%2$.2f分 \n双辅修学分绩%3$.2f分</string>
     <string name="credits_template">总学分%1$.1f分</string>
     <!--String related to Exams-->
     <string name="no_exam_info">暂无考试信息</string>
@@ -75,7 +75,8 @@
 
     <string name="title_activity_personal_page">个人主页</string>
     <string name="action_share">分享Project NKU</string>
-    <string name="action_bugreport">发送错误报告</string>
+    <string name="action_start_record">启用日志记录</string>
+    <string name="action_report_bug">发送日志…</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
     <string name="connection_error">网络无连接</string>

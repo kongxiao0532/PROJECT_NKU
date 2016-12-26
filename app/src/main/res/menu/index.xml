@@ -4,11 +4,10 @@
     <item
         android:id="@+id/action_share"
         android:title="@string/action_share"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_name"/>
     <item
-        app:showAsAction="never"
         android:id="@+id/action_bugreport"
-        android:title="@string/action_bugreport"
+        android:title="@string/action_start_record"
         android:icon="@drawable/ic_action_name"/>
 </menu>

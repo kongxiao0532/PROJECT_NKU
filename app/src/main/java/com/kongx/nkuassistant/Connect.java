@@ -1,7 +1,6 @@
 package com.kongx.nkuassistant;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
@@ -20,8 +19,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-import cn.jpush.android.api.JPushInterface;
-
 /**
  * This is the interface to handle all the classes's network requests.
  */
@@ -31,7 +28,7 @@ class Connect extends AsyncTask<String, Integer, Object> {
     private int type;
     private String postMessage;
     private static int timeoutTime = 3000;
-    public static boolean debug_output = true;
+    public static boolean debug_output = false;
     public Connect(Connectable parent, int type, @Nullable String post) {
         this.parent = parent;
         this.type = type;
@@ -43,12 +40,12 @@ class Connect extends AsyncTask<String, Integer, Object> {
     }
     public static void initializeBugCheck(File file){
         try { bugCheckFileWriter = new FileWriter(file); } catch (IOException e) { }
+        debug_output = true;
     }
     public static void writeToBugCheck(String str){
         if(debug_output)
             try { bugCheckFileWriter.write(str+"\n"); bugCheckFileWriter.flush(); } catch (IOException e) { }
     }
-
     public static void serTimeout(int time){
         timeoutTime = time;
     }

@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -19,7 +18,9 @@ import android.widget.TextView;
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,12 +29,9 @@ import java.util.regex.Pattern;
 
 public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
     String lastType;
-    private View myView = null;
     private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ArrayList<HashMap<String,String>> tmpScore;
-    private Pattern pattern;
-    private Matcher matcher;
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
@@ -47,7 +45,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.fragment_score, container, false);
+        View myView = inflater.inflate(R.layout.fragment_score, container, false);
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.score_refresh);
         mRefresh.setOnRefreshListener(this);
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
@@ -86,29 +84,43 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         editor.apply();
 
         Set<String> keySet = Information.scores.keySet();
-        //TODO: How to calculate XueFenJi?
-        for (String key : keySet){
-            Log.e("APP", key + "  " + Information.scores.get(key) + "/" + Information.credits.get(key));
-            Information.averages.put(key,Information.scores.get(key) / Information.credits.get(key));
+        List<String> keyList = new ArrayList<String>(keySet);
+        Collections.sort(keyList);
+        for (String key : keyList){
+            Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
             Information.credits_All += Information.credits.get(key);
+            Information.credits_All_counted += Information.credits_counted.get(key);
             Information.scores_All += Information.scores.get(key);
-            if(key.startsWith("D")) Information.average_abcd = Information.scores_All / Information.credits_All;
         }
-//        for(int i = 0;i < 5;i++){
-//            Information.averages[i] = Information.scores[i] / Information.credits[i];
-//            Information.credits_All += Information.credits[i];
-//            Information.scores_All += Information.scores[i];
-//            if(i == 3){
-//                Information.average_abcd = Information.scores_All / Information.credits_All;
-//            }
-//        }
-        Information.average_abcde = Information.scores_All / Information.credits_All;
+        Float A = Information.scores.get("A");
+        Float B = Information.scores.get("B");
+        Float C = Information.scores.get("C");
+        Float D = Information.scores.get("D");
+        Float E = Information.scores.get("E");
+
+        Float cA = Information.credits_counted.get("A");
+        Float cB = Information.credits_counted.get("B");
+        Float cC = Information.credits_counted.get("C");
+        Float cD = Information.credits_counted.get("D");
+        Float cE = Information.credits_counted.get("E");
+
+        Float sumABCD = ((A==null?0:A)+(B==null?0:B)+(C==null?0:C)+(D==null?0:D));
+        Float sumcABCD = ((cA==null?0:cA)+(cB==null?0:cB)+(cC==null?0:cC)+(cD==null?0:cD));
+        Information.average_abcd = sumABCD / sumcABCD;
+        Information.average_abcde = (sumABCD+E) / (sumcABCD+cE);
+
+        Float FC = Information.scores.get("FC");
+        Float FD = Information.scores.get("FD");
+        Float cFC = Information.credits_counted.get("FC");
+        Float cFD = Information.credits_counted.get("FD");
+        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
-        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde));
+        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onTaskComplete(Object o, int type) {
         if(m_activity == null)return;
@@ -116,6 +128,8 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             BufferedInputStream is = (BufferedInputStream) o;
             String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
             HashMap<String, String> map = new HashMap<String, String>();
+            Pattern pattern;
+            Matcher matcher;
             if (type == 1) {
                 pattern = Pattern.compile("(共 )(\\d)( 页,第)");
                 matcher = pattern.matcher(returnString);
@@ -155,17 +169,25 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                     divider.put("name", "divider," + lastType);
                     tmpScore.add(divider);
                 }
+                Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
                 if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
-                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4));
-                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
-//                    Information.scores[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4);
-//                    Information.credits[tmpS2.charAt(0) - 'A'] += Float.parseFloat(tmpS4);
+                    Information.scores.put(
+                            tmpS2
+                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4)
+                    );
+                    Information.credits_counted.put(
+                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+Float.parseFloat(tmpS4)
+                    );
                     if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
                     if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
                 }else{
-                    //TODO: How to handle TongGuo?
-                    Information.scores.put(tmpS2, (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0);
-                    Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
+                    Information.scores.put(
+                            tmpS2
+                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0
+                    );
+                    Information.credits_counted.put(
+                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+0
+                    );
                 }
                 tmpScore.add(map);
             }
@@ -233,7 +255,9 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             }
             else{
                 holder.name.setText(Information.studiedCourses.get(position).get("name"));
-                holder.credits.setText(Information.studiedCourses.get(position).get("type")+"  "+Information.studiedCourses.get(position).get("credit"));
+                holder.credits.setText(
+                        Information.studiedCourses.get(position).get("type")+"  "+Information.studiedCourses.get(position).get("credit")
+                );
                 holder.score.setText(Information.studiedCourses.get(position).get("score"));
             }
             return convertView;
