@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -173,13 +174,23 @@ public class IndexActivity extends AppCompatActivity
                         matcher = pattern.matcher(retString);
                         matcher.find();
                         String tmpContent = matcher.group(1);
-                        new AlertDialog.Builder(this).setTitle(tmpHeadline)
-                                .setMessage(tmpContent)
-                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }).show();
+                        pattern = Pattern.compile("<target>(.+)(</target>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpTarget = matcher.group(1);
+                        pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpTargetVersion = matcher.group(1);
+                        if(tmpTarget.equals("all") || (tmpTarget.equals("specific") && tmpTargetVersion.equals(Information.version))){
+                            new AlertDialog.Builder(this).setTitle(tmpHeadline)
+                                    .setMessage(tmpContent)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }).show();
+                        }
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString("newestNotice", String.valueOf(Information.newestNotice));
                         editor.apply();
@@ -274,7 +285,7 @@ public class IndexActivity extends AppCompatActivity
                         .setPositiveButton("嗯=w=", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                File bugCheckFile = new File(getExternalCacheDir(), new Date().getTime() + ".txt");
+                                File bugCheckFile = new File(Environment.getExternalStorageDirectory(), new Date().getTime() + ".txt");
                                 try {
                                     bugCheckFile.createNewFile();
                                 } catch (IOException e) {
