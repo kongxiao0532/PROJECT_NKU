@@ -27,12 +27,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CurriculumFragment extends Fragment implements Connectable,SwipeRefreshLayout.OnRefreshListener {
-    private int numberOfPages;
+//    private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ListView mlistView;
     private Activity m_activity;
     private ArrayList<HashMap<String,String>> tmpCurriculumList;
     private TextView mNoCurrirulumView;
+    private String stringToPost;
    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
+        stringToPost = String.format(Information.Strings.currriculum_string_template,"31", Information.ids);
         mNoCurrirulumView  = (TextView) myView.findViewById(R.id.textView_noCurriculum);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.curriculum_refresh);
@@ -76,7 +78,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public void onRefresh() {
         mRefresh.setRefreshing(true);
         tmpCurriculumList = new ArrayList<>();
-        new Connect(CurriculumFragment.this,1,null).execute(Information.WEB_URL +"/xsxk/selectedAction.do");
+        new Connect(CurriculumFragment.this,1, stringToPost).execute(Information.WEB_URL + Information.Strings.url_curriculum);
     }
 
     void update(){
@@ -118,39 +120,61 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
 //                if (matcher.find())
 //                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
 //            }
-            pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r\\n)");
-            matcher = pattern.matcher(returnString);
             HashMap<String, String> map = new HashMap<String, String>();
-            for (int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++) {
-                map = new HashMap<String, String>();
-                matcher.find();
-                matcher.find();
-                map.put("index", matcher.group(2));
-                matcher.find();
-                matcher.find();
-                map.put("name", matcher.group(2));
-                matcher.find();
-                map.put("dayOfWeek", matcher.group(2));
-                matcher.find();
-                map.put("startTime", matcher.group(2));
-                matcher.find();
-                map.put("endTime", matcher.group(2));
-                matcher.find();
-                map.put("classRoom", matcher.group(2));
-                matcher.find();
-                map.put("classType", matcher.group(2));
-                matcher.find();
-                map.put("teacherName", matcher.group(2));
-                matcher.find();
-                map.put("startWeek", matcher.group(2));
-                matcher.find();
-                map.put("endWeek", matcher.group(2));
-                matcher.find();
-                tmpCurriculumList.add(map);
+            int startPoint = 0;
+            while (true){
+                pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
+                matcher = pattern.matcher(returnString);
+                if(matcher.find(startPoint)){
+                    map = new HashMap<String, String>();
+                    startPoint = matcher.end();
+                    if (matcher.find(startPoint)){
+                        map.put("teacherName",matcher.group(2));
+                        startPoint = matcher.end();
+                    }
+                    pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("name",matcher.group(1));
+                        map.put("classID",matcher.group(2));
+                        map.put("classRoom",matcher.group(3));
+                        startPoint = matcher.end();
+                    }
+                    tmpCurriculumList.add(map);
+                }else break;
+                Information.selectedCourseCount = tmpCurriculumList.size();
+                update();
             }
-            if (type == numberOfPages) update();
-            else
-                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
+//            for (int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++) {
+//                map = new HashMap<String, String>();
+//                matcher.find();
+//                matcher.find();
+//                map.put("index", matcher.group(2));
+//                matcher.find();
+//                matcher.find();
+//                map.put("name", matcher.group(2));
+//                matcher.find();
+//                map.put("dayOfWeek", matcher.group(2));
+//                matcher.find();
+//                map.put("startTime", matcher.group(2));
+//                matcher.find();
+//                map.put("endTime", matcher.group(2));
+//                matcher.find();
+//                map.put("classRoom", matcher.group(2));
+//                matcher.find();
+//                map.put("classType", matcher.group(2));
+//                matcher.find();
+//                map.put("teacherName", matcher.group(2));
+//                matcher.find();
+//                map.put("startWeek", matcher.group(2));
+//                matcher.find();
+//                map.put("endWeek", matcher.group(2));
+//                matcher.find();
+//                tmpCurriculumList.add(map);
+//            }
+//            if (type == numberOfPages) update();
+//            else
+//                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
