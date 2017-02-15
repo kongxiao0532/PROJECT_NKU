@@ -27,6 +27,7 @@ public class Information {
     static String facultyName;
     static String majorName;
     static String id;
+    static String ids;
 
     //related to Home Page
     static int weekCount;
@@ -77,7 +78,7 @@ public class Information {
     static final String PREFS_NAME = "NKUFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
-    static final String WEB_URL = "http://222.30.49.10";
+    static final String WEB_URL = "http://222.30.45.122";
     public final static class Strings {
         final static String str_pwd_not_changed = "<Not Changed>";
         final static String str_socket_time_out = "请求超时，请重试";
@@ -92,9 +93,13 @@ public class Information {
         final static String setting_student_name = "StudentName";
         final static String setting_student_faculty = "FacultyName";
         final static String setting_student_major = "MajorName";
-        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-        final static String url_validate_code = "/ValidateCode";
-        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
-        final static String url_webview = "file:///android_asset/encryptpwd.html";
+        final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
+//        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+//        final static String url_validate_code = "/ValidateCode";
+        final static String url_login = "/eams/login.action";
+        //TODO:时间戳
+        final static String url_student_info = "/eams/stdDetail.action?_=1487161906356";
+        final static String url_student_ids = "/eams/courseTableForStd.action?_=1487164533686";
+//        final static String url_webview = "file:///android_asset/encryptpwd.html";
     }
 }

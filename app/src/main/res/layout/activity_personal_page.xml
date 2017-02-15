@@ -13,6 +13,17 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <Button
+    android:text="退出登录"
+        android:layout_marginTop="50dp"
+    android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+    android:id="@+id/button_logOut"
+        android:textColor="#FAFAFA"
+        android:background="#F44336"
+        android:layout_height="50dp" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -91,15 +102,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-    android:text="退出登录"
-        android:layout_marginTop="50dp"
-    android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-    android:id="@+id/button_logOut"
-        android:textColor="#FAFAFA"
-        android:background="#F44336"
-        android:layout_height="50dp" />
 
 </RelativeLayout>

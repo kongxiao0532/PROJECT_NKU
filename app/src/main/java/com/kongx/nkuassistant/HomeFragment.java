@@ -183,15 +183,15 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
-        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
-        try{
-            updateSchedule();
-            updateBus();
-        }catch (IndexOutOfBoundsException e){
-            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
-        }
-        updateExam();
+//        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
+//        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
+//        try{
+//            updateSchedule();
+//            updateBus();
+//        }catch (IndexOutOfBoundsException e){
+//            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
+//        }
+//        updateExam();
         mReFresh.setRefreshing(false);
     }
 

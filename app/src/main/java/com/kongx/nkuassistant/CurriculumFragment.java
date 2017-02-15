@@ -100,24 +100,24 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
             Matcher matcher;
-            String returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            if (type == 1) {
-                pattern = Pattern.compile("(共 )(\\d)( 页,第)");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
-                if (numberOfPages == 0) {
-                    mNoCurrirulumView.setVisibility(View.VISIBLE);
-                    Information.selectedCourseCount = 0;
-                    storeCourses();
-                    mRefresh.setRefreshing(false);
-                    return;
-                }
-                mNoCurrirulumView.setVisibility(View.GONE);
-                pattern = Pattern.compile("(共 )(.+)( 条记录)");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find())
-                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
-            }
+            String returnString = new Scanner(is).useDelimiter("\\A").next();
+//            if (type == 1) {
+//                pattern = Pattern.compile("(共 )(\\d)( 页,第)");
+//                matcher = pattern.matcher(returnString);
+//                if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
+//                if (numberOfPages == 0) {
+//                    mNoCurrirulumView.setVisibility(View.VISIBLE);
+//                    Information.selectedCourseCount = 0;
+//                    storeCourses();
+//                    mRefresh.setRefreshing(false);
+//                    return;
+//                }
+//                mNoCurrirulumView.setVisibility(View.GONE);
+//                pattern = Pattern.compile("(共 )(.+)( 条记录)");
+//                matcher = pattern.matcher(returnString);
+//                if (matcher.find())
+//                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
+//            }
             pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r\\n)");
             matcher = pattern.matcher(returnString);
             HashMap<String, String> map = new HashMap<String, String>();
