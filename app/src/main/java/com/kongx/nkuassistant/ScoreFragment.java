@@ -107,7 +107,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         Float sumABCD = ((A==null?0:A)+(B==null?0:B)+(C==null?0:C)+(D==null?0:D));
         Float sumcABCD = ((cA==null?0:cA)+(cB==null?0:cB)+(cC==null?0:cC)+(cD==null?0:cD));
         Information.average_abcd = sumABCD / sumcABCD;
-        Information.average_abcde = (sumABCD+E) / (sumcABCD+cE);
+        Information.average_abcde = (sumABCD+(E==null?0:E)) / (sumcABCD+(cE==null?0:cE));
 
         Float FC = Information.scores.get("FC");
         Float FD = Information.scores.get("FD");
