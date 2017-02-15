@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             }
         }
         else if(year == 2016){
-            if(weekOfYear >= 38 || weekOfYear <= 53){
+            if(weekOfYear >= 38 && weekOfYear <= 53){
                 Information.weekCount = weekOfYear - 37;
                 Information.semester = "2016-2017 第一学期";
             }
