@@ -184,6 +184,10 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
                 pattern = Pattern.compile("(bg.form.addInput\\(form,\"ids\",\")(.+)(\"\\);)");
                 matcher = pattern.matcher(returnString);
                 if (matcher.find()) Information.ids = matcher.group(2);
+                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(Strings.setting_studentIDs,Information.ids);
+                editor.apply();
                 break;
             }
             case RequestType.USER_INFO: {

@@ -87,14 +87,6 @@
         android:id="@+id/schedule_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:text="@string/no_curriculum_info"
-            android:background="#A0FFFFFF"
-            android:textSize="50sp"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/textView_noSchedule" />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -111,5 +103,13 @@
                 </com.kongx.nkuassistant.ListViewNoScroll>
         </RelativeLayout>
     </ScrollView>
+        <TextView
+            android:text="@string/no_curriculum_info"
+            android:background="#A0FFFFFF"
+            android:textSize="50sp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/textView_noSchedule" />
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

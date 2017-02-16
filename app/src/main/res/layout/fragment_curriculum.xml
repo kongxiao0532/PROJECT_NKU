@@ -9,6 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/curriculum_refresh">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/list_curriculum"/>
         <TextView
             android:text="@string/no_curriculum_info"
             android:textSize="50sp"
@@ -16,10 +21,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/textView_noCurriculum" />
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/list_curriculum"/>
-
     </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

@@ -43,6 +43,7 @@ import static com.kongx.nkuassistant.Information.examCount;
 import static com.kongx.nkuassistant.Information.exams;
 import static com.kongx.nkuassistant.Information.facultyName;
 import static com.kongx.nkuassistant.Information.id;
+import static com.kongx.nkuassistant.Information.ids;
 import static com.kongx.nkuassistant.Information.ifRemPass;
 import static com.kongx.nkuassistant.Information.majorName;
 import static com.kongx.nkuassistant.Information.name;
@@ -99,6 +100,7 @@ public class WelcomeActivity extends AppCompatActivity {
         name = settings.getString(Strings.setting_student_name, "Name");
         facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
         id = settings.getString(Strings.setting_studentID, "ID");
+        ids = settings.getString(Strings.setting_studentIDs,"IDs");
         majorName = settings.getString(Strings.setting_student_major, "Major");
         if(ifRemPass) {
             startIntent = new Intent(WelcomeActivity.this, IndexActivity.class);
@@ -117,6 +119,7 @@ public class WelcomeActivity extends AppCompatActivity {
         settings = getSharedPreferences(COURSE_PREFS_NAME,0);
         selectedCourseCount = settings.getInt(Strings.setting_selected_course_count, -1);
         curriculum_lastUpdate = settings.getString(Strings.setting_last_update_time, null);
+        selectedCourses = new ArrayList<>();
         if(selectedCourseCount != -1){
             HashMap<String,String> map;
             for(int i = 0;i < selectedCourseCount;i++){
@@ -127,7 +130,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 map.put("startTime",settings.getString("startTime"+i,null));
                 map.put("endTime",settings.getString("endTime"+i,null));
                 map.put("classRoom",settings.getString("classRoom"+i,null));
-                map.put("classType",settings.getString("classType"+i,null));
+//                map.put("classType",settings.getString("classType"+i,null));
                 map.put("teacherName",settings.getString("teacherName"+i,null));
                 map.put("startWeek",settings.getString("startWeek"+i,null));
                 map.put("endWeek",settings.getString("endWeek"+i,null));

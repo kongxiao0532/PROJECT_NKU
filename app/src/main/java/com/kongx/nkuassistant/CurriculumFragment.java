@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -19,7 +20,11 @@ import android.widget.TextView;
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
@@ -86,6 +91,16 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         int minute = calendar.get(Calendar.MINUTE);
         String time_now = String.format(Locale.US,"%2d:%2d",calendar.get(Calendar.HOUR_OF_DAY) ,minute);
         Information.curriculum_lastUpdate = Information.date + " " + time_now;
+        Collections.sort(tmpCurriculumList, new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> t1, HashMap<String, String> t2) {
+                if(Integer.valueOf(t1.get("dayOfWeek")).equals(Integer.valueOf(t2.get("dayOfWeek")))){
+                    return Integer.valueOf(t1.get("startTime")) - Integer.valueOf(t2.get("startTime"));
+                }else {
+                    return Integer.valueOf(t1.get("dayOfWeek")) - Integer.valueOf(t2.get("dayOfWeek"));
+                }
+            }
+        });
         Information.selectedCourses = tmpCurriculumList;
         storeCourses();
         mRefresh.setRefreshing(false);
@@ -98,29 +113,12 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         if(m_activity == null) return;
         if(o == null){
         }else if(o.getClass() == BufferedInputStream.class) {
-
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
             Matcher matcher;
             String returnString = new Scanner(is).useDelimiter("\\A").next();
-//            if (type == 1) {
-//                pattern = Pattern.compile("(共 )(\\d)( 页,第)");
-//                matcher = pattern.matcher(returnString);
-//                if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
-//                if (numberOfPages == 0) {
-//                    mNoCurrirulumView.setVisibility(View.VISIBLE);
-//                    Information.selectedCourseCount = 0;
-//                    storeCourses();
-//                    mRefresh.setRefreshing(false);
-//                    return;
-//                }
-//                mNoCurrirulumView.setVisibility(View.GONE);
-//                pattern = Pattern.compile("(共 )(.+)( 条记录)");
-//                matcher = pattern.matcher(returnString);
-//                if (matcher.find())
-//                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
-//            }
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map;
+            mNoCurrirulumView.setVisibility(View.GONE);
             int startPoint = 0;
             while (true){
                 pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
@@ -130,51 +128,43 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
                     startPoint = matcher.end();
                     if (matcher.find(startPoint)){
                         map.put("teacherName",matcher.group(2));
-                        startPoint = matcher.end();
                     }
-                    pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"");
+                    pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                     matcher = pattern.matcher(returnString);
                     if(matcher.find(startPoint)){
                         map.put("name",matcher.group(1));
-                        map.put("classID",matcher.group(2));
+                        map.put("index",matcher.group(2));
                         map.put("classRoom",matcher.group(3));
+                        String tmpString = matcher.group(4);
+                        int duration = 0, startWeek = 1;
+                        for(int i = 0;i < tmpString.length();i++){
+                            if(tmpString.charAt(i) == '1'){
+                                if(duration == 0)  startWeek = i + 1;
+                                duration++;
+                            }
+                        }
+                        map.put("startWeek",String.valueOf(startWeek));
+                        map.put("endWeek",String.valueOf(startWeek + duration - 1));
+                    }
+                    pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("dayOfWeek",String.valueOf(Integer.parseInt(matcher.group(1)) + 1));
+                        map.put("startTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
+                    }
+                    pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("endTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
                         startPoint = matcher.end();
                     }
                     tmpCurriculumList.add(map);
-                }else break;
-                Information.selectedCourseCount = tmpCurriculumList.size();
-                update();
+                }else {
+                    break;
+                }
             }
-//            for (int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++) {
-//                map = new HashMap<String, String>();
-//                matcher.find();
-//                matcher.find();
-//                map.put("index", matcher.group(2));
-//                matcher.find();
-//                matcher.find();
-//                map.put("name", matcher.group(2));
-//                matcher.find();
-//                map.put("dayOfWeek", matcher.group(2));
-//                matcher.find();
-//                map.put("startTime", matcher.group(2));
-//                matcher.find();
-//                map.put("endTime", matcher.group(2));
-//                matcher.find();
-//                map.put("classRoom", matcher.group(2));
-//                matcher.find();
-//                map.put("classType", matcher.group(2));
-//                matcher.find();
-//                map.put("teacherName", matcher.group(2));
-//                matcher.find();
-//                map.put("startWeek", matcher.group(2));
-//                matcher.find();
-//                map.put("endWeek", matcher.group(2));
-//                matcher.find();
-//                tmpCurriculumList.add(map);
-//            }
-//            if (type == numberOfPages) update();
-//            else
-//                new Connect(CurriculumFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
+            Information.selectedCourseCount = tmpCurriculumList.size();
+            update();
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
@@ -197,7 +187,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
             editor.putString("startTime" + i, Information.selectedCourses.get(i).get("startTime"));
             editor.putString("endTime" + i, Information.selectedCourses.get(i).get("endTime"));
             editor.putString("classRoom" + i, Information.selectedCourses.get(i).get("classRoom"));
-            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
+//            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
             editor.putString("teacherName" + i, Information.selectedCourses.get(i).get("teacherName"));
             editor.putString("startWeek" + i, Information.selectedCourses.get(i).get("startWeek"));
             editor.putString("endWeek" + i, Information.selectedCourses.get(i).get("endWeek"));
@@ -212,7 +202,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
             this.mInflater = LayoutInflater.from(context);
         }
         @Override
-        public int getCount() { return Information.selectedCourseCount + 1;}
+        public int getCount() {  return Information.selectedCourseCount + 1;}
         @Override
         public Object getItem(int position) {
             return Information.selectedCourses.get(position);
@@ -225,7 +215,7 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         @SuppressLint("InflateParams")
         public View getView(int position, View convertView, ViewGroup parent) {
             if(position == Information.selectedCourseCount){
-                convertView = mInflater.inflate(R.layout.listview_lastupdate,null);
+                convertView = mInflater.inflate(R.layout.listview_lastupdate, null);
                 TextView last_update_view = (TextView) convertView.findViewById(R.id.last_update);
                 last_update_view.setText("最后更新：" + ((Information.curriculum_lastUpdate == null) ? "从未更新" : Information.curriculum_lastUpdate));
             }

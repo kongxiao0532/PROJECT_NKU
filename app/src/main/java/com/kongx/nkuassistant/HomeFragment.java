@@ -157,15 +157,15 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(Information.dayOfWeek[dayOfWeek]);
-        if(Information.ifLoggedIn){
-            onRefresh();
-        } else{
-            updateSchedule();
-            updateExam();
-            updateBus();
-            mScoreStatus.setText(getString(R.string.pull_to_refresh));
-            mSelectStatus.setText(getString(R.string.pull_to_refresh));
-        }
+//        if(Information.ifLoggedIn){
+//            onRefresh();
+//        } else{
+//            updateSchedule();
+//            updateExam();
+//            updateBus();
+//            mScoreStatus.setText(getString(R.string.pull_to_refresh));
+//            mSelectStatus.setText(getString(R.string.pull_to_refresh));
+//        }
         return myView;
     }
 
@@ -183,15 +183,15 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-//        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
+        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL + Information.Strings.url_score);
 //        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
-//        try{
-//            updateSchedule();
-//            updateBus();
-//        }catch (IndexOutOfBoundsException e){
-//            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
-//        }
-//        updateExam();
+        try{
+            updateSchedule();
+            updateBus();
+        }catch (IndexOutOfBoundsException e){
+            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
+        }
+        updateExam();
         mReFresh.setRefreshing(false);
     }
 
@@ -239,18 +239,18 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
 //                    break;
 //                }
 
-                case RequestType.getSelectStatus:{
-                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
-                    Matcher matcher = pattern.matcher(returnString);
-                    if(matcher.find()){
-                        if(matcher.group(1).equals("选课系统关闭")){
-                           mSelectStatus.setText("选课系统未开放");
-                        }
-                    }
-                    //TODO:Selection Status
-                    else mSelectStatus.setText("选课系统未开放");
-                    break;
-                }
+//                case RequestType.getSelectStatus:{
+//                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
+//                    Matcher matcher = pattern.matcher(returnString);
+//                    if(matcher.find()){
+//                        if(matcher.group(1).equals("选课系统关闭")){
+//                           mSelectStatus.setText("选课系统未开放");
+//                        }
+//                    }
+//                    //TODO:Selection Status
+//                    else mSelectStatus.setText("选课系统未开放");
+//                    break;
+//                }
 
                 default:
                     break;

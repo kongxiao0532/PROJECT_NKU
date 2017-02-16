@@ -34,12 +34,12 @@
                 <!--android:checkable="true"-->
                 <!--android:checked="false"-->
                 <!--android:title="@string/drawer_exam" />-->
-            <item
-                android:id="@+id/nav_select"
-                android:icon="@drawable/ic_menu_select"
-                android:checkable="true"
-                android:checked="false"
-                android:title="@string/drawer_select" />
+            <!--<item-->
+                <!--android:id="@+id/nav_select"-->
+                <!--android:icon="@drawable/ic_menu_select"-->
+                <!--android:checkable="true"-->
+                <!--android:checked="false"-->
+                <!--android:title="@string/drawer_select" />-->
                 <item
                     android:visible="false"
                     android:id="@+id/menu_none" />
