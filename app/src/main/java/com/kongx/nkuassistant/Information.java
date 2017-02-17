@@ -74,9 +74,10 @@ public class Information {
     static final String FEEDBACK_EMAIL = "mailto:kongxiao0532@163.com";
     static final String FEEDBACK_SUBJECT = "[Project NKU] 用户意见反馈";
 
+
     //related to Internet Connection
     static boolean ifRemPass;
-    static final String PREFS_NAME = "NKUFile";
+    static final String PREFS_NAME = "PersonalFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
     static final String WEB_URL = "http://222.30.45.122";
@@ -106,8 +107,11 @@ public class Information {
         final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
         final static String url_logout = "/eams/logout.action";
         //TODO:时间戳
-        final static String url_student_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=1487161906357";
-        final static String url_student_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=1487334572374";
+        final static String url_student_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=";
+        final static String url_student_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
 //        final static String url_webview = "file:///android_asset/encryptpwd.html";
+    }
+    static long getTimeStamp(){
+        return System.currentTimeMillis();
     }
 }

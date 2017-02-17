@@ -81,6 +81,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 }
             }
         });
+        onRefresh();
         return myView;
     }
 
@@ -88,7 +89,6 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        onRefresh();
     }
 
     @Override

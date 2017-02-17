@@ -9,4 +9,6 @@
     <color name="grey">#E0E0E0</color>
     <color name="black_overlay">#66000000</color>
     <color name="black">#000000</color>
+    <color name="zhou_normal">#00000000</color>
+    <color name="zhou_pressed">#03a9f4</color>
 </resources>

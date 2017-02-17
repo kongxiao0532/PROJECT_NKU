@@ -9,5 +9,5 @@
     <dimen name="fragment_class_course_margin1dp">1dp</dimen>
     <dimen name="fragment_class_month_num_width">20dp</dimen>
     <dimen name="fragment_class_list_item_height">40dp</dimen>
-    <dimen name="course_text_today_size">10sp</dimen>
+    <dimen name="course_text_today_size">9sp</dimen>
 </resources>
