@@ -170,13 +170,23 @@ public class IndexActivity extends AppCompatActivity
                         matcher = pattern.matcher(retString);
                         matcher.find();
                         String tmpContent = matcher.group(1);
-                        new AlertDialog.Builder(this).setTitle(tmpHeadline)
-                                .setMessage(tmpContent)
-                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }).show();
+                        pattern = Pattern.compile("<target>(.+)(</target>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpTarget = matcher.group(1);
+                        pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
+                        matcher = pattern.matcher(retString);
+                        matcher.find();
+                        String tmpTargetVersion = matcher.group(1);
+                        if(tmpTarget.equals("all") || (tmpTarget.equals("specific") && tmpTargetVersion.equals(Information.version))){
+                            new AlertDialog.Builder(this).setTitle(tmpHeadline)
+                                    .setMessage(tmpContent)
+                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }).show();
+                        }
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putString("newestNotice", String.valueOf(Information.newestNotice));
                         editor.apply();
