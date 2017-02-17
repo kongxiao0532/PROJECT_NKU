@@ -37,7 +37,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     private RelativeLayout mReLayout;
     private Activity m_activity;
     private SwipeRefreshLayout mRefresh;
-    private ArrayList<HashMap<String,String>> tmpCurriculumList = null;
+    private ArrayList<CourseSelected> tmpCurriculumList = null;
     private TextView mNoCurrirulumView;
     private String[] curriculumIndex= {"1","2","3","4","5","6","7","8","9","10","11","12","13","14"};
     private String stringToPost;
@@ -93,23 +93,24 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
             Pattern pattern;
             Matcher matcher;
             String returnString = new Scanner(is).useDelimiter("\\A").next();
-            HashMap<String, String> map;
+            CourseSelected tmpCourse;
+            mNoCurrirulumView.setVisibility(View.GONE);
             int startPoint = 0;
             while (true){
                 pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
                 matcher = pattern.matcher(returnString);
                 if(matcher.find(startPoint)){
-                    map = new HashMap<String, String>();
+                    tmpCourse = new CourseSelected();
                     startPoint = matcher.end();
                     if (matcher.find(startPoint)){
-                        map.put("teacherName",matcher.group(2));
+                        tmpCourse.teacherName = matcher.group(2);
                     }
                     pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                     matcher = pattern.matcher(returnString);
                     if(matcher.find(startPoint)){
-                        map.put("name",matcher.group(1));
-                        map.put("index",matcher.group(2));
-                        map.put("classRoom",matcher.group(3));
+                        tmpCourse.name = matcher.group(1);
+                        tmpCourse.index = matcher.group(2);
+                        tmpCourse.classRoom = matcher.group(3);
                         String tmpString = matcher.group(4);
                         int duration = 0, startWeek = 1;
                         for(int i = 0;i < tmpString.length();i++){
@@ -118,28 +119,28 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
                                 duration++;
                             }
                         }
-                        map.put("startWeek",String.valueOf(startWeek));
-                        map.put("endWeek",String.valueOf(startWeek + duration - 1));
+                        tmpCourse.startWeek = startWeek;
+                        tmpCourse.endWeek = startWeek + duration - 1;
                     }
                     pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
                     matcher = pattern.matcher(returnString);
                     if(matcher.find(startPoint)){
-                        map.put("dayOfWeek",String.valueOf(Integer.parseInt(matcher.group(1)) + 1));
-                        map.put("startTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
+                        tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
+                        tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
                     }
                     pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
                     matcher = pattern.matcher(returnString);
                     if(matcher.find(startPoint)){
-                        map.put("endTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
+                        tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                         startPoint = matcher.end();
                     }
-                    tmpCurriculumList.add(map);
+                    tmpCurriculumList.add(tmpCourse);
                 }else {
                     break;
                 }
             }
             Information.selectedCourseCount = tmpCurriculumList.size();
-            loadCurriculum();
+            update();
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
@@ -152,13 +153,13 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     }
 
     void update(){
-        Collections.sort(tmpCurriculumList, new Comparator<HashMap<String, String>>() {
+        Collections.sort(tmpCurriculumList, new Comparator<CourseSelected>() {
             @Override
-            public int compare(HashMap<String, String> t1, HashMap<String, String> t2) {
-                if(Integer.valueOf(t1.get("dayOfWeek")).equals(Integer.valueOf(t2.get("dayOfWeek")))){
-                    return Integer.valueOf(t1.get("startTime")) - Integer.valueOf(t2.get("startTime"));
+            public int compare(CourseSelected t1,CourseSelected t2) {
+                if(t1.dayOfWeek == t2.dayOfWeek){
+                    return t1.startTime - t2.startTime;
                 }else {
-                    return Integer.valueOf(t1.get("dayOfWeek")) - Integer.valueOf(t2.get("dayOfWeek"));
+                    return t1.dayOfWeek - t2.dayOfWeek;
                 }
             }
         });
@@ -166,24 +167,26 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
         storeCourses();
         loadCurriculum();
     }
-    public boolean storeCourses() {
+    boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
-            editor.putString("index" + i, Information.selectedCourses.get(i).get("index"));
-            editor.putString("name" + i, Information.selectedCourses.get(i).get("name"));
-            editor.putString("dayOfWeek" + i, Information.selectedCourses.get(i).get("dayOfWeek"));
-            editor.putString("startTime" + i, Information.selectedCourses.get(i).get("startTime"));
-            editor.putString("endTime" + i, Information.selectedCourses.get(i).get("endTime"));
-            editor.putString("classRoom" + i, Information.selectedCourses.get(i).get("classRoom"));
-//            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
-            editor.putString("teacherName" + i, Information.selectedCourses.get(i).get("teacherName"));
-            editor.putString("startWeek" + i, Information.selectedCourses.get(i).get("startWeek"));
-            editor.putString("endWeek" + i, Information.selectedCourses.get(i).get("endWeek"));
+            editor.putString("index" + i, Information.selectedCourses.get(i).index);
+            editor.putString("name" + i, Information.selectedCourses.get(i).name);
+            editor.putString("dayOfWeek" + i, String.valueOf(Information.selectedCourses.get(i).dayOfWeek));
+            editor.putString("startTime" + i, String.valueOf(Information.selectedCourses.get(i).startTime));
+            editor.putString("endTime" + i, String.valueOf(Information.selectedCourses.get(i).endTime));
+            editor.putString("classRoom" + i, Information.selectedCourses.get(i).classRoom);
+//            editor.putString("classType" + i, Information.selectedCourses.get(i).classType);
+            editor.putString("teacherName" + i, Information.selectedCourses.get(i).teacherName);
+            editor.putString("startWeek" + i, String.valueOf(Information.selectedCourses.get(i).startWeek));
+            editor.putString("endWeek" + i, String.valueOf(Information.selectedCourses.get(i).endWeek));
         }
+        editor.putString("curriculum_lastUpdate",Information.curriculum_lastUpdate);
         return editor.commit();
     }
+
     private void loadCurriculum(){
         mReLayout.removeAllViewsInLayout();
         mReLayout.addView(mListView);
@@ -201,11 +204,11 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
         int courseHeight, courseWidth;
         for(int i = 0; i < Information.selectedCourseCount; i++){
             courseParent = new RelativeLayout(getActivity());
-            courseHeight = lessonHeight * (Integer.parseInt(Information.selectedCourses.get(i).get("endTime")) - Integer.parseInt(Information.selectedCourses.get(i).get("startTime")) + 1) - 2 * margin1Px;
+            courseHeight = lessonHeight * (Information.selectedCourses.get(i).endTime - Information.selectedCourses.get(i).startTime + 1) - 2 * margin1Px;
             courseWidth = lessonWidth - 2 * margin1Px;
             layoutParams = new RelativeLayout.LayoutParams(courseWidth, courseHeight);
-            layoutParams.setMargins(marginLessonPx + lessonWidth * (Integer.parseInt(Information.selectedCourses.get(i).get("dayOfWeek")) - 1) + margin1Px,
-                    ((Integer.parseInt(Information.selectedCourses.get(i).get("startTime")) - 1) * (lessonHeight +  margin1Px)) + margin1Px, 0, 0);
+            layoutParams.setMargins(marginLessonPx + lessonWidth * (Information.selectedCourses.get(i).dayOfWeek - 1) + margin1Px,
+                    ((Information.selectedCourses.get(i).startTime - 1) * (lessonHeight +  margin1Px)) + margin1Px, 0, 0);
             courseParent.setLayoutParams(layoutParams);
 //            switch (bgImg) {
 //                case 1:
@@ -228,7 +231,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
             courseText = new TextView(getActivity());
             courseText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
             courseText.setGravity(Gravity.CENTER);
-            courseText.setText(Information.selectedCourses.get(i).get("name") + "@" + Information.selectedCourses.get(i).get("classRoom"));
+            courseText.setText(Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "@" + Information.selectedCourses.get(i).classRoom);
             float textSize;
             textSize=getResources().getDimensionPixelSize(R.dimen.course_text_today_size);
 
@@ -242,7 +245,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
              * getResources().getColorStateList()和getColor()读取资源文件设置颜色过时
              * 用如下方法从资源文件设置颜色*/
             courseText.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-            if(Information.weekCount >= Integer.valueOf(Information.selectedCourses.get(i).get("startWeek")) && Information.weekCount <= Integer.valueOf(Information.selectedCourses.get(i).get("endWeek"))){
+            if(Information.weekCount >= Information.selectedCourses.get(i).startWeek && Information.weekCount <= Information.selectedCourses.get(i).endWeek){
                 courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSchedule));
             }else               courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorNotThisWeekSchedule));
             /** 加入视图*/

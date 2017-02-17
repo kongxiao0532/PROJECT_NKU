@@ -36,8 +36,7 @@ public class Information {
 
     //related to Scores
     static int studiedCourseCount;
-    static int selectedCourseCount;
-    static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
+    static ArrayList<CourseStudied> studiedCourses = new ArrayList<>();
     static Map<String,Float>  credits         = new HashMap<>();
     static Map<String,Float>  credits_counted = new HashMap<>();
     static Map<String,Float>  scores          = new HashMap<>();
@@ -47,6 +46,7 @@ public class Information {
     static float scores_All;
     static float average_abcd;
     static float average_abcde;
+    static float[] gpaABCED;
     static float average_f;
     static public void resetScores(){
         credits.clear();
@@ -56,7 +56,8 @@ public class Information {
         credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
     }
     //related to Curriculum
-    static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
+    static int selectedCourseCount;
+    static ArrayList<CourseSelected> selectedCourses = new ArrayList<>();
     static String curriculum_lastUpdate;
 
 
@@ -83,6 +84,8 @@ public class Information {
         final static String str_pwd_not_changed = "<Not Changed>";
         final static String str_socket_time_out = "请求超时，请重试";
         final static String str_gateway_redirected = "似乎未登录校园网网关？";
+        final static String str_logout_suc = "退出成功";
+        final static String str_logout_failed = "退出失败，请重试";
         final static String setting_remember_pwd = "ifRemPass";
         final static String setting_studentIDs = "StudentIDs";
         final static String setting_studentID = "StudentID";
@@ -101,9 +104,10 @@ public class Information {
         final static String url_login = "/eams/login.action";
         final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
         final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
+        final static String url_logout = "/eams/logout.action";
         //TODO:时间戳
-        final static String url_student_info = "/eams/stdDetail.action?_=1487161906356";
-        final static String url_student_ids = "/eams/courseTableForStd.action?_=1487164533686";
+        final static String url_student_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=1487161906357";
+        final static String url_student_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=1487334572374";
 //        final static String url_webview = "file:///android_asset/encryptpwd.html";
     }
 }
