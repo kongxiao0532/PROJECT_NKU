@@ -154,12 +154,12 @@ public class EduLoginActivity extends AppCompatActivity implements Connectable {
         switch (type){
             case RequestType.LOGIN: {
                 if(o.getClass() == BufferedInputStream.class){      //LOGIN FAILED
-                    Toast.makeText(getApplicationContext(), "登录失败，", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "密码错误，连续错误两次后请重新打开应用尝试", Toast.LENGTH_SHORT).show();
                     showProgress(false);
 
                 }else if(o.getClass() == Integer.class){//LOGIN SUCCESSFULLY
-                    new Connect(this, RequestType.USER_IDS, null).execute(Information.WEB_URL + Strings.url_student_ids);
-                    new Connect(this, RequestType.USER_INFO, null).execute(Information.WEB_URL + Strings.url_student_info);
+                    new Connect(this, RequestType.USER_IDS, null).execute(Information.WEB_URL + Strings.url_student_ids + Information.getTimeStamp());
+                    new Connect(this, RequestType.USER_INFO, null).execute(Information.WEB_URL + Strings.url_student_info + Information.getTimeStamp());
                     SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
                     SharedPreferences.Editor settingEditor = settings.edit();
                     CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();

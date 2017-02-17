@@ -11,7 +11,7 @@
     <string name="error_validate_required">Please enter the validate code</string>
     <string name="error_invalid_validate">Invalid Validate Code</string>
     <string name="prompt_email">Student ID</string>
-    <string name="prompt_password">Password</string>
+    <string name="prompt_password">URP System Password</string>
     <string name="title_activity_edu_login">Log in</string>
     <string name="press_back_again_to_exit">Press Back again to exit</string>
     <string name="prompt_validate">Validate Code</string>

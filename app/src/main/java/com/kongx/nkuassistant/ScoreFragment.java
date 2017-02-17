@@ -47,7 +47,6 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_score, container, false);
-        onRefresh();
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.score_refresh);
         mRefresh.setOnRefreshListener(this);
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
@@ -82,6 +81,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 }
             }
         });
+        onRefresh();
         return myView;
     }
 
