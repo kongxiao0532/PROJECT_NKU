@@ -36,7 +36,6 @@ public class Information {
 
     //related to Scores
     static int studiedCourseCount;
-    static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
     static Map<String,Float>  credits         = new HashMap<>();
     static Map<String,Float>  credits_counted = new HashMap<>();
@@ -56,7 +55,8 @@ public class Information {
         credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
     }
     //related to Curriculum
-    static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
+    static int selectedCourseCount;
+    static ArrayList<CourseSelected> selectedCourses = new ArrayList<>();
     static String curriculum_lastUpdate;
 
 

@@ -157,15 +157,15 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(Information.dayOfWeek[dayOfWeek]);
-//        if(Information.ifLoggedIn){
-//            onRefresh();
-//        } else{
-//            updateSchedule();
+        if(Information.ifLoggedIn){
+            onRefresh();
+        } else{
+            updateSchedule();
 //            updateExam();
-//            updateBus();
-//            mScoreStatus.setText(getString(R.string.pull_to_refresh));
-//            mSelectStatus.setText(getString(R.string.pull_to_refresh));
-//        }
+            updateBus();
+            mScoreStatus.setText(getString(R.string.pull_to_refresh));
+            mSelectStatus.setText(getString(R.string.pull_to_refresh));
+        }
         return myView;
     }
 
@@ -209,9 +209,11 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             Connect.writeToBugCheck(returnString);
             switch (type){
                 case RequestType.getScoreNumber:{
-                    pattern = Pattern.compile("(共 )(.+)( 条记录)");
+                    pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
                     matcher = pattern.matcher(returnString);
-                    if (matcher.find()) newStudiedCourseCount = Integer.parseInt(matcher.group(2));
+                    if (matcher.find()) {
+                        newStudiedCourseCount = Integer.parseInt(matcher.group(2));
+                    }
                     if(newStudiedCourseCount == Information.studiedCourseCount){
                         mScoreStatus.setText("暂无成绩更新");
                     }
@@ -310,13 +312,13 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         courseTodayCount = 0;
         HashMap<String,String> map;
         for(int i = 0;i < Information.selectedCourseCount;i++){
-            if(Integer.parseInt(Information.selectedCourses.get(i).get("dayOfWeek")) == dayOfWeek &&
-                    Information.weekCount >= Integer.parseInt(Information.selectedCourses.get(i).get("startWeek")) &&
-                    Information.weekCount <= Integer.parseInt(Information.selectedCourses.get(i).get("endWeek"))){
+            if(Information.selectedCourses.get(i).dayOfWeek == dayOfWeek &&
+                    Information.weekCount >= Information.selectedCourses.get(i).startWeek &&
+                    Information.weekCount <= Information.selectedCourses.get(i).endWeek){
                 map = new HashMap<>();
                 courseTodayCount++;
-                map.put("name",Information.selectedCourses.get(i).get("name"));
-                map.put("classRoom",Information.selectedCourses.get(i).get("classRoom"));
+                map.put("name",Information.selectedCourses.get(i).name);
+                map.put("classRoom",Information.selectedCourses.get(i).classRoom);
                 courseToday.add(map);
             }
         }

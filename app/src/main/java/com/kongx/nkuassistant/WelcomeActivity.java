@@ -121,20 +121,20 @@ public class WelcomeActivity extends AppCompatActivity {
         curriculum_lastUpdate = settings.getString(Strings.setting_last_update_time, null);
         selectedCourses = new ArrayList<>();
         if(selectedCourseCount != -1){
-            HashMap<String,String> map;
+            CourseSelected tmpCourse;
             for(int i = 0;i < selectedCourseCount;i++){
-                map = new HashMap<>();
-                map.put("index",settings.getString("index"+i,null));
-                map.put("name",settings.getString("name"+i,null));
-                map.put("dayOfWeek",settings.getString("dayOfWeek"+i,null));
-                map.put("startTime",settings.getString("startTime"+i,null));
-                map.put("endTime",settings.getString("endTime"+i,null));
-                map.put("classRoom",settings.getString("classRoom"+i,null));
-//                map.put("classType",settings.getString("classType"+i,null));
-                map.put("teacherName",settings.getString("teacherName"+i,null));
-                map.put("startWeek",settings.getString("startWeek"+i,null));
-                map.put("endWeek",settings.getString("endWeek"+i,null));
-                selectedCourses.add(map);
+                tmpCourse = new CourseSelected();
+                tmpCourse.index = settings.getString("index"+i,null);
+                tmpCourse.name = settings.getString("name"+i,null);
+                tmpCourse.dayOfWeek = Integer.parseInt(settings.getString("dayOfWeek"+i,null));
+                tmpCourse.startTime  = Integer.parseInt(settings.getString("startTime"+i,null));
+                tmpCourse.endTime = Integer.parseInt(settings.getString("endTime"+i,null));
+                tmpCourse.classRoom = settings.getString("classRoom"+i,null);
+//                tmpCourse.classType = settings.getString("classType"+i,null));
+                tmpCourse.teacherName = settings.getString("teacherName"+i,null);
+                tmpCourse.startWeek = Integer.parseInt(settings.getString("startWeek"+i,null));
+                tmpCourse.endWeek = Integer.parseInt(settings.getString("endWeek"+i,null));
+                selectedCourses.add(tmpCourse);
             }
         }
 
