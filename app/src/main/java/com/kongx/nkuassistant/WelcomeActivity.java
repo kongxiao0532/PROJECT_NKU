@@ -195,6 +195,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("hour",Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute",Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
                     weekdays_tojinnan.add(tmpMap);
+                    Log.e("BUS",tmpMap.get("id")+"");
                 }
             }
             for(int i = 0;i<weekdays_tobalitai_list.getLength();i++){
