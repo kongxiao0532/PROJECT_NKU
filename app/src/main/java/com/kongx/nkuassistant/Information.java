@@ -1,14 +1,8 @@
 package com.kongx.nkuassistant;
 
-import android.support.annotation.NonNull;
-
-import java.nio.Buffer;
-import java.sql.Struct;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 /**
  * Created by kongx on 2016/11/17 0017.
@@ -19,6 +13,9 @@ public class Information {
     public static final String[] dayOfWeek = new String[]{"","星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
     public static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
     public static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
+
+    static String bugCheckFile;
+
     //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cn/projectnku/update.html";
     static final String NOTICE_URL = "http://kongxiao0532.cn/projectnku/notice.html";
@@ -30,6 +27,7 @@ public class Information {
     static String facultyName;
     static String majorName;
     static String id;
+    static String ids;
 
     //related to Home Page
     static int weekCount;
@@ -40,20 +38,22 @@ public class Information {
     static int studiedCourseCount;
     static int selectedCourseCount;
     static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
-    static Map<String,Float>  credits = new HashMap<>();
-    static Map<String,Float>   scores = new HashMap<>();
-    static Map<String,Float> averages = new HashMap<>();
+    static Map<String,Float>  credits         = new HashMap<>();
+    static Map<String,Float>  credits_counted = new HashMap<>();
+    static Map<String,Float>  scores          = new HashMap<>();
+    static Map<String,Float>  averages        = new HashMap<>();
     static float credits_All;
+    static float credits_All_counted;
     static float scores_All;
     static float average_abcd;
     static float average_abcde;
+    static float average_f;
     static public void resetScores(){
-        for(int i = 0;i < 5;i++){
-            credits.clear();
-            scores.clear();
-            averages.clear();
-        }
-        credits_All = scores_All = average_abcd = average_abcde = 0;
+        credits.clear();
+        scores.clear();
+        averages.clear();
+        credits_counted.clear();
+        credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
     }
     //related to Curriculum
     static ArrayList<HashMap<String,String>> selectedCourses = new ArrayList<>();
@@ -78,12 +78,13 @@ public class Information {
     static final String PREFS_NAME = "NKUFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
-    static final String WEB_URL = "http://222.30.49.10";
+    static final String WEB_URL = "http://222.30.45.122";
     public final static class Strings {
         final static String str_pwd_not_changed = "<Not Changed>";
         final static String str_socket_time_out = "请求超时，请重试";
         final static String str_gateway_redirected = "似乎未登录校园网网关？";
         final static String setting_remember_pwd = "ifRemPass";
+        final static String setting_studentIDs = "StudentIDs";
         final static String setting_studentID = "StudentID";
         final static String setting_password = "Password";
         final static String setting_studied_course_count = "studiedCourseCount";
@@ -93,9 +94,16 @@ public class Information {
         final static String setting_student_name = "StudentName";
         final static String setting_student_faculty = "FacultyName";
         final static String setting_student_major = "MajorName";
-        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-        final static String url_validate_code = "/ValidateCode";
-        final static String url_student_info = "/studymanager/stdbaseinfo/queryAction.do";
-        final static String url_webview = "file:///android_asset/encryptpwd.html";
+        final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
+        final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
+//        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
+//        final static String url_validate_code = "/ValidateCode";
+        final static String url_login = "/eams/login.action";
+        final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
+        final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
+        //TODO:时间戳
+        final static String url_student_info = "/eams/stdDetail.action?_=1487161906356";
+        final static String url_student_ids = "/eams/courseTableForStd.action?_=1487164533686";
+//        final static String url_webview = "file:///android_asset/encryptpwd.html";
     }
 }

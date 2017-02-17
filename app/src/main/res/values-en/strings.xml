@@ -23,7 +23,7 @@
     <string name="prompt_index">Course Number</string>
     <string name="not_Open_Warning">System Shut Down</string>
     <string name="FastLine">FastLine</string>
-    <string name="average_template">ABCD Average is %1$.2f \n ABCDE Average is %2$.2f</string>
+    <string name="average_template">ABCD Average is %1$.2f \nABCDE Average is %2$.2f \nF-Type Average is %3$.2f</string>
     <string name="course_template">%1$c Courses，%2$f Credits，Average score is %3$.2f</string>
     <string name="credits_template">Counted %1$.1f credits</string>
     <string name="error_number_required">Please enter the index of the course</string>
@@ -64,6 +64,11 @@
     <string name="no_course_today">No Courses Today</string>
     <string name="pull_to_refresh">Pull down to refresh</string>
     <string name="no_curriculum_info">No Curriculum Info</string>
+    <string name="action_report_bug">Send Log...</string>
+    <string name="action_start_record">Enable Logging...</string>
+    <string name="drawer_icspace">IC Space</string>
+    <string name="drawer_tycg">Gym Reserving</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

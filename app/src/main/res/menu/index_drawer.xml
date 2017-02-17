@@ -28,18 +28,18 @@
                 android:checkable="true"
                 android:checked="false"
                 android:title="@string/drawer_selected" />
-            <item
-                android:id="@+id/nav_exam"
-                android:icon="@drawable/ic_menu_exam"
-                android:checkable="true"
-                android:checked="false"
-                android:title="@string/drawer_exam" />
-            <item
-                android:id="@+id/nav_select"
-                android:icon="@drawable/ic_menu_select"
-                android:checkable="true"
-                android:checked="false"
-                android:title="@string/drawer_select" />
+            <!--<item-->
+                <!--android:id="@+id/nav_exam"-->
+                <!--android:icon="@drawable/ic_menu_exam"-->
+                <!--android:checkable="true"-->
+                <!--android:checked="false"-->
+                <!--android:title="@string/drawer_exam" />-->
+            <!--<item-->
+                <!--android:id="@+id/nav_select"-->
+                <!--android:icon="@drawable/ic_menu_select"-->
+                <!--android:checkable="true"-->
+                <!--android:checked="false"-->
+                <!--android:title="@string/drawer_select" />-->
                 <item
                     android:visible="false"
                     android:id="@+id/menu_none" />
@@ -62,7 +62,7 @@
                     android:title="@string/drawer_icspace" />
                 <item
                     android:id="@+id/nav_tycg"
-                    android:icon="@drawable/ic_library_books_white_48dp"
+                    android:icon="@drawable/ic_directions_run_black_48dp"
                     android:checkable="true"
                     android:checked="false"
                     android:title="@string/drawer_tycg" />

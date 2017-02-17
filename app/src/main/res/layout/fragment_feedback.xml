@@ -7,8 +7,14 @@
     android:background="@color/colorPrimary"
     tools:context="com.kongx.nkuassistant.FeedbackFragment">
 
-    <!-- TODO: Update blank fragment layout -->
 
+    <TextView
+        android:textSize="10sp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:id="@+id/version" />
     <ImageView
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"
@@ -37,11 +43,12 @@
         android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
         android:paddingStart="60dp"
         android:paddingEnd="60dp" />
+
 
     <TextView
         android:text="https://github.com/kongxiao0532/NKU_ASSISTANT"
@@ -52,13 +59,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/github" />
-
-    <TextView
-        android:layout_gravity="center|bottom"
-        android:gravity="bottom"
-        android:textColor="@color/grey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/version"/>
 
 </LinearLayout>

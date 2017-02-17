@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -42,14 +43,7 @@ public class FeedbackFragment extends Fragment implements Connectable, View.OnCl
         mVersion = (TextView) myView.findViewById(R.id.version);
         mCheckforUpdate.setOnClickListener(FeedbackFragment.this);
         mFeedback.setOnClickListener(FeedbackFragment.this);
-        try {
-            PackageManager manager = getActivity().getPackageManager();
-            PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
-            version = info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        mVersion.setText(version);
+        mVersion.setText(Information.version);
         return myView;
     }
 

@@ -117,29 +117,29 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
                 Information.weekCount = 0;
                 Information.semester = "2016-2017 第一学期";
             }
-            if(weekOfYear > 2 || weekOfYear <= 6){
+            if(weekOfYear > 2 && weekOfYear <= 6){
                 Information.weekCount = weekOfYear - 2;
                 Information.semester = getString(R.string.winter_vacation);
             }
-            if(weekOfYear > 6 || weekOfYear <= 22){
+            if(weekOfYear > 6 && weekOfYear <= 22){
                 Information.weekCount = weekOfYear - 6;
                 Information.semester = "2016-2017 第二学期";
             }
-            if(weekOfYear > 22 || weekOfYear <= 24){
+            if(weekOfYear > 22 && weekOfYear <= 24){
                 Information.weekCount = 0;
                 Information.semester = "2016-2017 第二学期";
             }
-            if(weekOfYear > 24|| weekOfYear <= 28){
+            if(weekOfYear > 24 && weekOfYear <= 28){
                 Information.weekCount = weekOfYear - 24;
                 Information.semester = "2016-2017 夏季学期";
             }
-            if(weekOfYear > 28 || weekOfYear <= 36){
+            if(weekOfYear > 28 && weekOfYear <= 36){
                 Information.weekCount = weekOfYear - 28;
                 Information.semester = getString(R.string.summber_vacation);
             }
         }
         else if(year == 2016){
-            if(weekOfYear >= 38 || weekOfYear <= 53){
+            if(weekOfYear >= 38 && weekOfYear <= 53){
                 Information.weekCount = weekOfYear - 37;
                 Information.semester = "2016-2017 第一学期";
             }
@@ -157,15 +157,15 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(Information.dayOfWeek[dayOfWeek]);
-        if(Information.ifLoggedIn){
-            onRefresh();
-        } else{
-            updateSchedule();
-            updateExam();
-            updateBus();
-            mScoreStatus.setText(getString(R.string.pull_to_refresh));
-            mSelectStatus.setText(getString(R.string.pull_to_refresh));
-        }
+//        if(Information.ifLoggedIn){
+//            onRefresh();
+//        } else{
+//            updateSchedule();
+//            updateExam();
+//            updateBus();
+//            mScoreStatus.setText(getString(R.string.pull_to_refresh));
+//            mSelectStatus.setText(getString(R.string.pull_to_refresh));
+//        }
         return myView;
     }
 
@@ -183,8 +183,8 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL +"/xsxk/studiedAction.do");
-        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
+        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL + Information.Strings.url_score);
+//        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
         try{
             updateSchedule();
             updateBus();
@@ -206,6 +206,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             }catch (NoSuchElementException e){
                 e.printStackTrace();
             }
+            Connect.writeToBugCheck(returnString);
             switch (type){
                 case RequestType.getScoreNumber:{
                     pattern = Pattern.compile("(共 )(.+)( 条记录)");
@@ -238,18 +239,18 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
 //                    break;
 //                }
 
-                case RequestType.getSelectStatus:{
-                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
-                    Matcher matcher = pattern.matcher(returnString);
-                    if(matcher.find()){
-                        if(matcher.group(1).equals("选课系统关闭")){
-                           mSelectStatus.setText("选课系统未开放");
-                        }
-                    }
-                    //TODO:Selection Status
-                    else mSelectStatus.setText("选课系统未开放");
-                    break;
-                }
+//                case RequestType.getSelectStatus:{
+//                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
+//                    Matcher matcher = pattern.matcher(returnString);
+//                    if(matcher.find()){
+//                        if(matcher.group(1).equals("选课系统关闭")){
+//                           mSelectStatus.setText("选课系统未开放");
+//                        }
+//                    }
+//                    //TODO:Selection Status
+//                    else mSelectStatus.setText("选课系统未开放");
+//                    break;
+//                }
 
                 default:
                     break;

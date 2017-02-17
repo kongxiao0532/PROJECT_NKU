@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#009688</color>
     <color name="colorAccent">#009688</color>
     <color name="colorSchedule">#009688</color>
+    <color name="colorNotThisWeekSchedule">#E0E0E0</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#E0E0E0</color>
     <color name="black_overlay">#66000000</color>

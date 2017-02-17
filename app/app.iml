@@ -115,7 +115,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
@@ -156,6 +155,5 @@
     <orderEntry type="library" exported="" name="support-vector-drawable-25.1.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-25.1.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-25.1.0" level="project" />
-    <orderEntry type="library" exported="" name="android-android-25" level="project" />
   </component>
 </module>

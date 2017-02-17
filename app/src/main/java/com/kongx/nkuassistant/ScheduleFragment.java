@@ -21,6 +21,9 @@ import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -32,11 +35,12 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     private View myView = null;
     private ListViewNoScroll mListView;
     private RelativeLayout mReLayout;
-    private int numberOfPages;
     private Activity m_activity;
     private SwipeRefreshLayout mRefresh;
+    private ArrayList<HashMap<String,String>> tmpCurriculumList = null;
     private TextView mNoCurrirulumView;
     private String[] curriculumIndex= {"1","2","3","4","5","6","7","8","9","10","11","12","13","14"};
+    private String stringToPost;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +51,14 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_schedule, container, false);
+        stringToPost = String.format(Information.Strings.currriculum_string_template,"31", Information.ids);
         mReLayout = (RelativeLayout) myView.findViewById(R.id.schedule_relative_layout);
         mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noSchedule);
         mListView = (ListViewNoScroll) myView.findViewById(R.id.list_schedule);
         mListView.setAdapter(new ArrayAdapter<String>(getActivity(),R.layout.schedule_index_item,curriculumIndex));
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.schedule_refresh);
-        mRefresh.setOnRefreshListener(this);
+        mRefresh.setOnRefreshListener(this);;
+        mNoCurrirulumView.setVisibility(View.GONE);
         return myView;
     }
 
@@ -74,7 +80,8 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
 
     public void onRefresh(){
         mRefresh.setRefreshing(true);
-        new Connect(this,1,null).execute(Information.WEB_URL +"/xsxk/selectedAction.do");
+        tmpCurriculumList = new ArrayList<>();
+        new Connect(ScheduleFragment.this,1, stringToPost).execute(Information.WEB_URL + Information.Strings.url_curriculum);
     }
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -85,62 +92,54 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
             BufferedInputStream is = (BufferedInputStream) o;
             Pattern pattern;
             Matcher matcher;
-            String returnString = "";
-            try{
-                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            }catch (NoSuchElementException e){
-                e.printStackTrace();
-            }
-            if(returnString.equals("")) return;
-            if (type == 1) {
-                pattern = Pattern.compile("(共 )(\\d)( 页,第)");
+            String returnString = new Scanner(is).useDelimiter("\\A").next();
+            HashMap<String, String> map;
+            int startPoint = 0;
+            while (true){
+                pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
                 matcher = pattern.matcher(returnString);
-                if (matcher.find()) numberOfPages = Integer.parseInt(matcher.group(2));
-                if (numberOfPages == 0) {
-                    Information.selectedCourseCount = 0;
-                    mNoCurrirulumView.setVisibility(View.VISIBLE);
-                    loadCurriculum();
-                    mRefresh.setRefreshing(false);
-                    return;
+                if(matcher.find(startPoint)){
+                    map = new HashMap<String, String>();
+                    startPoint = matcher.end();
+                    if (matcher.find(startPoint)){
+                        map.put("teacherName",matcher.group(2));
+                    }
+                    pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("name",matcher.group(1));
+                        map.put("index",matcher.group(2));
+                        map.put("classRoom",matcher.group(3));
+                        String tmpString = matcher.group(4);
+                        int duration = 0, startWeek = 1;
+                        for(int i = 0;i < tmpString.length();i++){
+                            if(tmpString.charAt(i) == '1'){
+                                if(duration == 0)  startWeek = i + 1;
+                                duration++;
+                            }
+                        }
+                        map.put("startWeek",String.valueOf(startWeek));
+                        map.put("endWeek",String.valueOf(startWeek + duration - 1));
+                    }
+                    pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("dayOfWeek",String.valueOf(Integer.parseInt(matcher.group(1)) + 1));
+                        map.put("startTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
+                    }
+                    pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
+                    matcher = pattern.matcher(returnString);
+                    if(matcher.find(startPoint)){
+                        map.put("endTime",String.valueOf(Integer.parseInt(matcher.group(2)) + 1));
+                        startPoint = matcher.end();
+                    }
+                    tmpCurriculumList.add(map);
+                }else {
+                    break;
                 }
-                pattern = Pattern.compile("(共 )(.+)( 条记录)");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find())
-                    Information.selectedCourseCount = Integer.parseInt(matcher.group(2));
             }
-            pattern = Pattern.compile("(<td align=\"center\" class=\"NavText\">)(.*)(\\r\\n)");
-            matcher = pattern.matcher(returnString);
-            HashMap<String, String> map = new HashMap<String, String>();
-            for (int i = 0; i < (type < numberOfPages ? 12 : (Information.selectedCourseCount - (type - 1) * 12)); i++) {
-                map = new HashMap<String, String>();
-                matcher.find();
-                matcher.find();
-                map.put("index", matcher.group(2));
-                matcher.find();
-                matcher.find();
-                map.put("name", matcher.group(2));
-                matcher.find();
-                map.put("dayOfWeek", matcher.group(2));
-                matcher.find();
-                map.put("startTime", matcher.group(2));
-                matcher.find();
-                map.put("endTime", matcher.group(2));
-                matcher.find();
-                map.put("classRoom", matcher.group(2));
-                matcher.find();
-                map.put("classType", matcher.group(2));
-                matcher.find();
-                map.put("teacherName", matcher.group(2));
-                matcher.find();
-                map.put("startWeek", matcher.group(2));
-                matcher.find();
-                map.put("endWeek", matcher.group(2));
-                matcher.find();
-                Information.selectedCourses.add(map);
-            }
-            if (type == numberOfPages) loadCurriculum();
-            else
-                new Connect(ScheduleFragment.this, ++type, "index=" + type).execute(Information.WEB_URL + "/xsxk/selectedPageAction.do");
+            Information.selectedCourseCount = tmpCurriculumList.size();
+            loadCurriculum();
         }else if(o.getClass() == Integer.class){
             Integer code = (Integer)o;
             if(code == 302){
@@ -152,6 +151,21 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
         }
     }
 
+    void update(){
+        Collections.sort(tmpCurriculumList, new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> t1, HashMap<String, String> t2) {
+                if(Integer.valueOf(t1.get("dayOfWeek")).equals(Integer.valueOf(t2.get("dayOfWeek")))){
+                    return Integer.valueOf(t1.get("startTime")) - Integer.valueOf(t2.get("startTime"));
+                }else {
+                    return Integer.valueOf(t1.get("dayOfWeek")) - Integer.valueOf(t2.get("dayOfWeek"));
+                }
+            }
+        });
+        Information.selectedCourses = tmpCurriculumList;
+        storeCourses();
+        loadCurriculum();
+    }
     public boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
@@ -163,7 +177,7 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
             editor.putString("startTime" + i, Information.selectedCourses.get(i).get("startTime"));
             editor.putString("endTime" + i, Information.selectedCourses.get(i).get("endTime"));
             editor.putString("classRoom" + i, Information.selectedCourses.get(i).get("classRoom"));
-            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
+//            editor.putString("classType" + i, Information.selectedCourses.get(i).get("classType"));
             editor.putString("teacherName" + i, Information.selectedCourses.get(i).get("teacherName"));
             editor.putString("startWeek" + i, Information.selectedCourses.get(i).get("startWeek"));
             editor.putString("endWeek" + i, Information.selectedCourses.get(i).get("endWeek"));
@@ -173,7 +187,6 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     private void loadCurriculum(){
         mReLayout.removeAllViewsInLayout();
         mReLayout.addView(mListView);
-        storeCourses();
         WindowManager manager = getActivity().getWindowManager();
         DisplayMetrics outMetrics = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(outMetrics);
@@ -229,7 +242,9 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
              * getResources().getColorStateList()和getColor()读取资源文件设置颜色过时
              * 用如下方法从资源文件设置颜色*/
             courseText.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-            courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSchedule));
+            if(Information.weekCount >= Integer.valueOf(Information.selectedCourses.get(i).get("startWeek")) && Information.weekCount <= Integer.valueOf(Information.selectedCourses.get(i).get("endWeek"))){
+                courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSchedule));
+            }else               courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorNotThisWeekSchedule));
             /** 加入视图*/
             courseParent.addView(courseText);
             mReLayout.addView(courseParent);
