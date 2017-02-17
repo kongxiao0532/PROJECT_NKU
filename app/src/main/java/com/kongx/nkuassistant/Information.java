@@ -36,7 +36,7 @@ public class Information {
 
     //related to Scores
     static int studiedCourseCount;
-    static ArrayList<HashMap<String,String>> studiedCourses = new ArrayList<>();
+    static ArrayList<CourseStudied> studiedCourses = new ArrayList<>();
     static Map<String,Float>  credits         = new HashMap<>();
     static Map<String,Float>  credits_counted = new HashMap<>();
     static Map<String,Float>  scores          = new HashMap<>();

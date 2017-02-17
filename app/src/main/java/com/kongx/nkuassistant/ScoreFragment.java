@@ -32,7 +32,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
     String lastType;
     private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
-    private ArrayList<HashMap<String,String>> tmpScore;
+    private ArrayList<CourseStudied> tmpScore;
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
@@ -84,8 +84,8 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         editor.putInt("studiedCourseCount",Information.studiedCourseCount);
         editor.apply();
         float sumABCDE = 0;
-        for(HashMap<String, String> tmp : Information.studiedCourses){
-            sumABCDE += Float.parseFloat(tmp.get("credit")) * Float.parseFloat(tmp.get("score"));
+        for(CourseStudied tmp : Information.studiedCourses){
+            sumABCDE += tmp.score * tmp.credit;
         }
         Information.average_abcde = sumABCDE / Information.credits_All;
 //        Set<String> keySet = Information.scores.keySet();
@@ -126,13 +126,17 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
 
+
+
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void onTaskComplete(Object o, int type) {
         if(m_activity == null)return;
         if(o.getClass() == BufferedInputStream.class) {
             BufferedInputStream is = (BufferedInputStream) o;
-            String returnString = new Scanner(is).useDelimiter("\\A").next();HashMap<String, String> map = new HashMap<String, String>();
+            String returnString = new Scanner(is).useDelimiter("\\A").next();
+            CourseStudied tmpCourse;
             Pattern pattern;
             Matcher matcher;
             int startPoint = 0;
@@ -144,31 +148,31 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
             }
             startPoint = matcher.end();
             for(int i = 0;i < Information.studiedCourseCount;i++){
-                map = new HashMap<>();
+                tmpCourse = new CourseStudied();
                 pattern = Pattern.compile("<td>(.+)</td>");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  map.put("semester",matcher.group(1));
+                if(matcher.find(startPoint))  tmpCourse.setSemester(matcher.group(1));
                 startPoint = matcher.end();
 
                 pattern = Pattern.compile("<td>(.+)\\t(.+)\\n(.+)</td>");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  map.put("name",matcher.group(1));
+                if(matcher.find(startPoint))  tmpCourse.name = matcher.group(1);
                 startPoint = matcher.end();
 
                 pattern = Pattern.compile("<td>(.+)<\\/td>.+");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  map.put("type",matcher.group(1));
+                if(matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
 
                 pattern = Pattern.compile("\\n.+</td>.+<td>(.+)</td>\\n");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  map.put("credit",matcher.group(1));
+                if(matcher.find(startPoint))  tmpCourse.credit = Float.parseFloat(matcher.group(1));
                 startPoint = matcher.end();
 
                 pattern = Pattern.compile("</td><td style=\"\">.+\\t(\\d+)\\n");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  map.put("score",matcher.group(1));
+                if(matcher.find(startPoint))  tmpCourse.setScore(Float.parseFloat(matcher.group(1)));
                 startPoint = matcher.end();
-                tmpScore.add(map);
+                tmpScore.add(tmpCourse);
             }
             update();
 
@@ -253,12 +257,12 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
 //                holder.score.setText("学分绩" + Information.averages.get(type) + "分");
 //            }
 //            else{
-                holder.name.setText(Information.studiedCourses.get(position).get("name"));
+                holder.name.setText(Information.studiedCourses.get(position).name);
                 holder.credits.setText(
-                        Information.studiedCourses.get(position).get("semester")+"学期  "+
-                                Information.studiedCourses.get(position).get("credit")+"学分"
+                        Information.studiedCourses.get(position).semester+"学期  "+
+                                Information.studiedCourses.get(position).credit+"学分"
                 );
-                holder.score.setText(Information.studiedCourses.get(position).get("score"));
+                holder.score.setText(String.valueOf(Information.studiedCourses.get(position).score));
 //            }
             return convertView;
         }
