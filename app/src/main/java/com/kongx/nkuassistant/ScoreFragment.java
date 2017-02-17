@@ -30,13 +30,13 @@ import java.util.regex.Pattern;
 
 public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
     String lastType;
-    private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ArrayList<CourseStudied> tmpScore;
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
     private Activity m_activity;
+    private int showAverageMethod = 0;
     @Override
         public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +52,35 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         mScoreList = (ListView) myView.findViewById(R.id.score_list);
         mCreditsAll = (TextView) myView.findViewById(R.id.score_credits);
         mAverageAll = (TextView) myView.findViewById(R.id.score_average);
+        mAverageAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Information.studiedCourseCount != -1){
+                    showAverageMethod = (++showAverageMethod)%6;
+                    switch (showAverageMethod){
+                        case 0:
+                            mAverageAll.setText("ABCDE百分制学分绩 "+Information.average_abcde+"分");
+                            break;
+                        case 1:
+                            mAverageAll.setText("标准GPA "+Information.gpaABCED[0]+"分");
+                            break;
+                        case 2:
+                            mAverageAll.setText("改进型GPA(1) "+Information.gpaABCED[1]+"分");
+                            break;
+                        case 3:
+                            mAverageAll.setText("改进型GPA(2) "+Information.gpaABCED[2]+"分");
+                            break;
+                        case 4:
+                            mAverageAll.setText("北大GPA "+Information.gpaABCED[3]+"分");
+                            break;
+                        case 5:
+                            mAverageAll.setText("加拿大GPA(满分4.3) "+Information.gpaABCED[4]+"分");
+                            break;
+                        default:break;
+                    }
+                }
+            }
+        });
         return myView;
     }
 
@@ -83,11 +112,20 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("studiedCourseCount",Information.studiedCourseCount);
         editor.apply();
-        float sumABCDE = 0;
+        float sumABCDE = 0, creditABCDE = 0;
+        float[] gpaSumABCDE = new float[]{0,0,0,0,0};
+        Information.gpaABCED = new float[5];
         for(CourseStudied tmp : Information.studiedCourses){
-            sumABCDE += tmp.score * tmp.credit;
+            sumABCDE += tmp.score * tmp.creditCalculated;
+            for(int i = 0;i < 5;i++){
+                gpaSumABCDE[i] += tmp.gpas[i] * tmp.creditCalculated;
+            }
+            creditABCDE += tmp.creditCalculated;
         }
-        Information.average_abcde = sumABCDE / Information.credits_All;
+        for(int i = 0;i < 5;i++){
+            Information.gpaABCED[i] = gpaSumABCDE[i] / creditABCDE;
+        }
+        Information.average_abcde = sumABCDE / creditABCDE;
 //        Set<String> keySet = Information.scores.keySet();
 //        List<String> keyList = new ArrayList<String>(keySet);
 //        Collections.sort(keyList);
@@ -121,7 +159,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
 //        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
         mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
 //        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
-        mAverageAll.setText("ABCDE学分绩"+Information.average_abcde+"分");
+        mAverageAll.setText("ABCDE百分制学分绩"+Information.average_abcde+"分");
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
     }
@@ -159,7 +197,7 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 if(matcher.find(startPoint))  tmpCourse.name = matcher.group(1);
                 startPoint = matcher.end();
 
-                pattern = Pattern.compile("<td>(.+)<\\/td>.+");
+                pattern = Pattern.compile("<td>(.+)</td>.+");
                 matcher = pattern.matcher(returnString);
                 if(matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
 
@@ -168,9 +206,12 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
                 if(matcher.find(startPoint))  tmpCourse.credit = Float.parseFloat(matcher.group(1));
                 startPoint = matcher.end();
 
-                pattern = Pattern.compile("</td><td style=\"\">.+\\t(\\d+)\\n");
+
+                //TODO:解决 通过 的情况
+                //TODO：解决 双修 的情况
+                pattern = Pattern.compile("</td><td style=\"\">.+\\t(.+)\\n");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  tmpCourse.setScore(Float.parseFloat(matcher.group(1)));
+                if(matcher.find(startPoint))  tmpCourse.setScore(matcher.group(1));
                 startPoint = matcher.end();
                 tmpScore.add(tmpCourse);
             }
@@ -259,10 +300,10 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
 //            else{
                 holder.name.setText(Information.studiedCourses.get(position).name);
                 holder.credits.setText(
-                        Information.studiedCourses.get(position).semester+"学期  "+
+                        Information.studiedCourses.get(position).semester+ "  " +
                                 Information.studiedCourses.get(position).credit+"学分"
                 );
-                holder.score.setText(String.valueOf(Information.studiedCourses.get(position).score));
+                holder.score.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? "通过" : String.valueOf(Information.studiedCourses.get(position).score));
 //            }
             return convertView;
         }
