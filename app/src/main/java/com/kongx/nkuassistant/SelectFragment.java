@@ -20,7 +20,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SelectFragment extends Fragment implements Connectable {
+import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Response;
+
+public class SelectFragment extends Fragment implements Connect.Callback {
     private View myView = null;
     private boolean ifOpen = false;
     private EditText mIndex_1;
@@ -43,6 +46,16 @@ public class SelectFragment extends Fragment implements Connectable {
     }
 
     @Override
+    public void onNetworkComplete(Response response) {
+
+    }
+
+    @Override
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -57,7 +70,7 @@ public class SelectFragment extends Fragment implements Connectable {
         mDrop = (Button) myView.findViewById(R.id.button_Drop);
         mNotOpenWarning = (TextView) myView.findViewById(R.id.textView_notOpenWarning);
         mNotOpenWarning.setVisibility(View.GONE);
-        new Connect(SelectFragment.this, RequestType.CHECK_IF_OPEN,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
+//        new Connect(SelectFragment.this, RequestType.CHECK_IF_OPEN,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
         mSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +91,7 @@ public class SelectFragment extends Fragment implements Connectable {
                                 mIndex_4.getText().toString().isEmpty()?"":mIndex_4.getText().toString(),
                                 mReRead.isChecked()?"selected":"",
                                 mMinor.isChecked()?"selected":"");
-                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
+//                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
             }
         });
         mSelect.setOnClickListener(new View.OnClickListener() {
@@ -102,66 +115,64 @@ public class SelectFragment extends Fragment implements Connectable {
                                 mIndex_4.getText().toString().isEmpty()?"":mIndex_4.getText().toString(),
                                 mReRead.isChecked()?"selected":"",
                                 mMinor.isChecked()?"selected":"");
-                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
+//                new Connect(SelectFragment.this,RequestType.POST,strToPost).execute(Information.WEB_URL +"/xsxk/swichAction.do");
             }
         });
         return myView;
     }
 
-    @Override
-    public void onTaskComplete(Object o, int type) {
-        if(o == null){
-            Log.e("APP", "What the fuck?");
-        }else if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream)o ;
-            String returnString = "";
-            try{
-                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            }catch (NoSuchElementException e){
-                e.printStackTrace();
-            }
-            switch (type){
-                case RequestType.CHECK_IF_OPEN:{
-                    if(returnString.equals("")){
-                        ifOpen = false;
-                        Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
-                        mNotOpenWarning.setVisibility(View.VISIBLE);
-                        return;
-                    }
-                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
-                    Matcher matcher = pattern.matcher(returnString);
-                    if(matcher.find()){
-                        if(matcher.group(1).equals("选课系统关闭")){
-                            ifOpen = false;
-                            Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
-                            mNotOpenWarning.setVisibility(View.VISIBLE);
-                        }else {
-                            mNotOpenWarning.setVisibility(View.GONE);
-                            ifOpen = true;
-                        }
-                    }
-                    else mNotOpenWarning.setVisibility(View.GONE);
-                    break;
-                }
-                case RequestType.POST:{
-                    //TODO: deal with the return data
-                    break;
-                }
-                default:
-                    break;
-            }
-        }else if(o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
-                getActivity().finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
-        }
-
-
-    }
+//    @Override
+//    public void onTaskComplete(Object o, int type) {
+//        if(o == null){
+//            Log.e("APP", "What the fuck?");
+//        }else if(o.getClass() == BufferedInputStream.class) {
+//            BufferedInputStream is = (BufferedInputStream)o ;
+//            String returnString = "";
+//            try{
+//                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
+//            }catch (NoSuchElementException e){
+//                e.printStackTrace();
+//            }
+//            switch (type){
+//                case RequestType.CHECK_IF_OPEN:{
+//                    if(returnString.equals("")){
+//                        ifOpen = false;
+//                        Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
+//                        mNotOpenWarning.setVisibility(View.VISIBLE);
+//                        return;
+//                    }
+//                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
+//                    Matcher matcher = pattern.matcher(returnString);
+//                    if(matcher.find()){
+//                        if(matcher.group(1).equals("选课系统关闭")){
+//                            ifOpen = false;
+//                            Toast.makeText(getActivity(), "选课系统关闭", Toast.LENGTH_SHORT).show();
+//                            mNotOpenWarning.setVisibility(View.VISIBLE);
+//                        }else {
+//                            mNotOpenWarning.setVisibility(View.GONE);
+//                            ifOpen = true;
+//                        }
+//                    }
+//                    else mNotOpenWarning.setVisibility(View.GONE);
+//                    break;
+//                }
+//                case RequestType.POST:{
+//                    //TODO: deal with the return data
+//                    break;
+//                }
+//                default:
+//                    break;
+//            }
+//        }else if(o.getClass() == Integer.class){
+//            Integer code = (Integer)o;
+//            if(code == 302){
+//                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
+//                getActivity().finish();
+//            }
+//        }else if(o.getClass() == SocketTimeoutException.class){
+//            Log.e("APP","SocketTimeoutException!");
+//        }
+//    }
 }
 
 

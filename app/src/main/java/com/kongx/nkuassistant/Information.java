@@ -100,16 +100,13 @@ public class Information {
         final static String setting_student_major = "MajorName";
         final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
         final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
-//        final static String url_template = "operation=&usercode_text=%s&userpwd_text=%s&checkcode_text=%s&submittype=%%C8%%B7+%%C8%%CF";
-//        final static String url_validate_code = "/ValidateCode";
+
         final static String url_login = "/eams/login.action";
         final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
         final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
         final static String url_logout = "/eams/logout.action";
-        //TODO:时间戳
         final static String url_student_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=";
         final static String url_student_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
-//        final static String url_webview = "file:///android_asset/encryptpwd.html";
     }
     static long getTimeStamp(){
         return System.currentTimeMillis();

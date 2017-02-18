@@ -15,17 +15,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HomeFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
+import tk.sunrisefox.httprequest.*;
+
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback{
     private SwipeRefreshLayout mReFresh;
     private Activity m_activity;
     //Schedule Module
@@ -110,7 +114,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
         Information.date = dateFormat.format(calendar.getTime());
         if(year == 2017){
             if(weekOfYear == 1 || weekOfYear == 2){
@@ -161,12 +165,39 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
             onRefresh();
         } else{
             updateSchedule();
-//            updateExam();
             updateBus();
             mScoreStatus.setText(getString(R.string.pull_to_refresh));
             mSelectStatus.setText(getString(R.string.pull_to_refresh));
         }
         return myView;
+    }
+
+    @Override
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    @Override
+    public void onNetworkComplete(Response response) {
+        if (response.code() == 200) {
+            if(response.tag().equals(RequestType.SCORE_COUNT)) {
+                Information.ifLoggedIn = true;
+                String returnString = response.body();
+                pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find()) {
+                    newStudiedCourseCount = Integer.parseInt(matcher.group(2));
+                }
+                if (newStudiedCourseCount == Information.studiedCourseCount) {
+                    mScoreStatus.setText("暂无成绩更新");
+                } else {
+                    mScoreStatus.setText("有" + Math.abs(newStudiedCourseCount - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
+                }
+            }
+        }else if(response.code() == 302) {
+            startActivity(new Intent(m_activity,EduLoginActivity.class));
+            m_activity.finish();
+        }
     }
 
     @Override
@@ -183,8 +214,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        new Connect(HomeFragment.this, RequestType.getScoreNumber,null).execute(Information.WEB_URL + Information.Strings.url_score);
-//        new Connect(HomeFragment.this, RequestType.getSelectStatus,null).execute(Information.WEB_URL +"/xsxk/selectMianInitAction.do");
+        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_score).tag(RequestType.SCORE_COUNT).build().send(this);
         try{
             updateSchedule();
             updateBus();
@@ -195,78 +225,6 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
         mReFresh.setRefreshing(false);
     }
 
-    @Override
-    public void onTaskComplete(Object o, int type) {
-        if(o.getClass() == BufferedInputStream.class) {
-            Information.ifLoggedIn = true;
-            BufferedInputStream is = (BufferedInputStream) o;
-            String returnString = "";
-            try{
-                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            }catch (NoSuchElementException e){
-                e.printStackTrace();
-            }
-            Connect.writeToBugCheck(returnString);
-            switch (type){
-                case RequestType.getScoreNumber:{
-                    pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
-                    matcher = pattern.matcher(returnString);
-                    if (matcher.find()) {
-                        newStudiedCourseCount = Integer.parseInt(matcher.group(2));
-                    }
-                    if(newStudiedCourseCount == Information.studiedCourseCount){
-                        mScoreStatus.setText("暂无成绩更新");
-                    }
-                    else {
-                        mScoreStatus.setText("有"+Math.abs(newStudiedCourseCount - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount))+"条成绩更新");
-                    }
-                    break;
-                }
-//
-//                case RequestType.getExamNumber:{
-//                    pattern = Pattern.compile("<strong>(.+)(<\\/strong>)");
-//                    matcher = pattern.matcher(returnString);
-//                    if(matcher.find()){
-//                        if(matcher.group(1).equals("本学期考试安排未发布！")){
-//                            mExamList.setVisibility(View.GONE);
-//                            mExamStatus.setText("暂无考试信息");
-//                        }
-//                    }
-//                    else {
-//                        //TODO: wait until exam schedule shows up
-//                        mExamList.setVisibility(View.VISIBLE);
-//
-//                    }
-//                    updateExam();
-//                    break;
-//                }
-
-//                case RequestType.getSelectStatus:{
-//                    Pattern pattern = Pattern.compile("<strong>(.+)(</strong>)");
-//                    Matcher matcher = pattern.matcher(returnString);
-//                    if(matcher.find()){
-//                        if(matcher.group(1).equals("选课系统关闭")){
-//                           mSelectStatus.setText("选课系统未开放");
-//                        }
-//                    }
-//                    //TODO:Selection Status
-//                    else mSelectStatus.setText("选课系统未开放");
-//                    break;
-//                }
-
-                default:
-                    break;
-            }
-        }else if(type == RequestType.getScoreNumber && o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
-                m_activity.finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("HomeFragment","SocketTimeoutException!");
-        }
-    }
 
     private void updateExam(){
         mExamList.removeAllViews();
@@ -429,9 +387,7 @@ public class HomeFragment extends Fragment implements Connectable, SwipeRefreshL
     }
 
     private static class RequestType {
-        static final int getScoreNumber = 1;
-        static final int getExamNumber = 2;
-        static final int getSelectStatus = 3;
+        static final String SCORE_COUNT = "Get score count";
     }
 
 } 

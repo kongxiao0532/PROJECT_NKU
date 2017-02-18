@@ -14,7 +14,7 @@ import android.webkit.WebViewClient;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrowserFragment extends Fragment {
+public class  BrowserFragment extends Fragment {
     private static final String URL = "URL";
     private static List<BrowserFragment> list = new ArrayList<>();
     private String mUrl;

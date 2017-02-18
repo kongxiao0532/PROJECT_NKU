@@ -24,8 +24,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tk.sunrisefox.httprequest.*;
 
-public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLayout.OnRefreshListener{
+
+public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback{
     private View myView = null;
     private ListView mExamList;
     private SwipeRefreshLayout mRefresh;
@@ -74,7 +76,7 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
     public void onRefresh() {
         mRefresh.setRefreshing(true);
         tmpExamList = new ArrayList<>();
-        new Connect(ExamFragment.this,0,null).execute(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do");
+        new Request.Builder().url(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do").build().send(this);
     }
 
     private void update(){
@@ -86,30 +88,25 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
     }
 
     @Override
-    public void onTaskComplete(Object o, int type) {
-        if(o == null){
-            Log.e("APP", "What the fuck?");
-        }else if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream)o ;
-            String returnString = "";
-            try{
-                returnString = new Scanner(is, "GB2312").useDelimiter("\\A").next();
-            }catch (NoSuchElementException e){
-                e.printStackTrace();
-            }
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    @Override
+    public void onNetworkComplete(Response response) {
+        if(response.code() == 200) {
+            String returnString = response.body();
             pattern = Pattern.compile("<strong>(.+)(<\\/strong>)");
             matcher = pattern.matcher(returnString);
-            if(returnString.equals("")){
+            if (returnString.equals("")) {
                 mExamList.setVisibility(View.INVISIBLE);
                 mNoText.setText(getString(R.string.no_exam_info));
-            }
-            else if(matcher.find()){
-                if(matcher.group(1).equals("本学期考试安排未发布！")){
+            } else if (matcher.find()) {
+                if (matcher.group(1).equals("本学期考试安排未发布！")) {
                     mExamList.setVisibility(View.INVISIBLE);
                     mNoText.setText(getString(R.string.no_exam_info));
                 }
-            }
-            else {
+            } else {
                 tmpExamList = new ArrayList<>();
                 mNoText.setVisibility(View.GONE);
                 mExamList.setVisibility(View.VISIBLE);
@@ -118,38 +115,33 @@ public class ExamFragment extends Fragment implements Connectable,SwipeRefreshLa
                 String tmpDate;
                 Pattern datePattern = Pattern.compile("\\d\\d\\d\\d-(\\d\\d)-(\\d\\d)");
                 Matcher dateMather;
-                HashMap<String,String> map;
-                while(matcher.find()){
+                HashMap<String, String> map;
+                while (matcher.find()) {
                     map = new HashMap<>();
-                    map.put("name",matcher.group(1));
+                    map.put("name", matcher.group(1));
                     matcher.find();
                     matcher.find();
                     matcher.find();
                     matcher.find();
-                    map.put("startTime",matcher.group(1));
+                    map.put("startTime", matcher.group(1));
                     matcher.find();
-                    map.put("endTime",matcher.group(1));
+                    map.put("endTime", matcher.group(1));
                     matcher.find();
-                    map.put("classRoom",matcher.group(1));
+                    map.put("classRoom", matcher.group(1));
                     matcher.find();
                     dateMather = datePattern.matcher(matcher.group(1));
                     dateMather.find();
-                    tmpDate = dateMather.group(1)+"月"+dateMather.group(2)+"日";
-                    map.put("date",tmpDate);
+                    tmpDate = dateMather.group(1) + "月" + dateMather.group(2) + "日";
+                    map.put("date", tmpDate);
                     matcher.find();
                     matcher.find();
                     tmpExamList.add(map);
                 }
                 update();
             }
-        }else if(o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(getActivity(),EduLoginActivity.class));
-                getActivity().finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+        }else if (response.code() == 302){
+            startActivity(new Intent(m_activity,EduLoginActivity.class));
+            m_activity.finish();
         }
     }
 

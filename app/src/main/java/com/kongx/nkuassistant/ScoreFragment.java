@@ -27,8 +27,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.httprequest.Response;
 
-public class ScoreFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener{
+
+public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback{
     String lastType;
     private SwipeRefreshLayout mRefresh;
     private ArrayList<CourseStudied> tmpScore;
@@ -102,7 +106,67 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         lastType = "A";
         Information.resetScores();
         tmpScore = new ArrayList<>();
-        new Connect(this,1,"").execute(Information.WEB_URL + Information.Strings.url_score);
+        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_score).method("POST").build().send(this);
+    }
+
+    @Override
+    public void onNetworkComplete(Response response) {
+        if(response.code() == 200) {
+            String returnString = response.body();
+            CourseStudied tmpCourse;
+            Pattern pattern;
+            Matcher matcher;
+            int startPoint = 0;
+            pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
+            matcher = pattern.matcher(returnString);
+            if (matcher.find()) {
+                Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
+                Information.credits_All = Float.parseFloat(matcher.group(4));
+            }
+            startPoint = matcher.end();
+            for (int i = 0; i < Information.studiedCourseCount; i++) {
+                tmpCourse = new CourseStudied();
+                pattern = Pattern.compile("<td>(.+)</td>");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find(startPoint)) tmpCourse.setSemester(matcher.group(1));
+                try {
+                    startPoint = matcher.end();
+                }catch (IllegalStateException e) {
+                    break;
+                }
+
+                pattern = Pattern.compile("<td>(.+)\\t(.+)\\n(.+)</td>");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find(startPoint)) tmpCourse.name = matcher.group(1);
+                startPoint = matcher.end();
+
+                pattern = Pattern.compile("<td>(.+)</td>.+");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
+
+                pattern = Pattern.compile("\\n.+</td>.+<td>(.+)</td>\\n");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find(startPoint)) tmpCourse.credit = Float.parseFloat(matcher.group(1));
+                startPoint = matcher.end();
+
+                //TODO:解决 通过 的情况
+                //TODO：解决 双修 的情况
+                pattern = Pattern.compile("</td><td style=\"\">.+\\t(.+)\\n");
+                matcher = pattern.matcher(returnString);
+                if (matcher.find(startPoint)) tmpCourse.setScore(matcher.group(1));
+                startPoint = matcher.end();
+                tmpScore.add(tmpCourse);
+            }
+            update();
+        }else if (response.code() == 302){
+            startActivity(new Intent(m_activity,EduLoginActivity.class));
+            m_activity.finish();
+        }
+    }
+
+    @Override
+    public void onNetworkError(Exception exception) {
+
     }
 
     private void update(){
@@ -162,96 +226,6 @@ public class ScoreFragment extends Fragment implements Connectable, SwipeRefresh
         mAverageAll.setText("ABCDE百分制学分绩"+Information.average_abcde+"分");
         mRefresh.setRefreshing(false);
         mScoreList.setAdapter(new MyAdapter(m_activity));
-    }
-
-
-
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Override
-    public void onTaskComplete(Object o, int type) {
-        if(m_activity == null)return;
-        if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream) o;
-            String returnString = new Scanner(is).useDelimiter("\\A").next();
-            CourseStudied tmpCourse;
-            Pattern pattern;
-            Matcher matcher;
-            int startPoint = 0;
-            pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
-            matcher = pattern.matcher(returnString);
-            if (matcher.find()) {
-                Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
-                Information.credits_All = Float.parseFloat(matcher.group(4));
-            }
-            startPoint = matcher.end();
-            for(int i = 0;i < Information.studiedCourseCount;i++){
-                tmpCourse = new CourseStudied();
-                pattern = Pattern.compile("<td>(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  tmpCourse.setSemester(matcher.group(1));
-                startPoint = matcher.end();
-
-                pattern = Pattern.compile("<td>(.+)\\t(.+)\\n(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  tmpCourse.name = matcher.group(1);
-                startPoint = matcher.end();
-
-                pattern = Pattern.compile("<td>(.+)</td>.+");
-                matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
-
-                pattern = Pattern.compile("\\n.+</td>.+<td>(.+)</td>\\n");
-                matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  tmpCourse.credit = Float.parseFloat(matcher.group(1));
-                startPoint = matcher.end();
-
-
-                //TODO:解决 通过 的情况
-                //TODO：解决 双修 的情况
-                pattern = Pattern.compile("</td><td style=\"\">.+\\t(.+)\\n");
-                matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint))  tmpCourse.setScore(matcher.group(1));
-                startPoint = matcher.end();
-                tmpScore.add(tmpCourse);
-            }
-            update();
-
-//                if (!tmpS2.equals(lastType)) {
-//                    HashMap<String, String> divider = new HashMap<>();
-//                    lastType = tmpS2;
-//                    divider.put("name", "divider," + lastType);
-//                    tmpScore.add(divider);
-//                }
-//                Information.credits.put(tmpS2,(Information.credits.get(tmpS2)==null?0:Information.credits.get(tmpS2))+Float.parseFloat(tmpS4));
-//                if (tmpS3.charAt(0) >= '0' && tmpS3.charAt(0) <= '9' && !tmpS3.equals("0")) {
-//                    Information.scores.put(
-//                            tmpS2
-//                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+Float.parseFloat(tmpS3) * Float.parseFloat(tmpS4)
-//                    );
-//                    Information.credits_counted.put(
-//                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+Float.parseFloat(tmpS4)
-//                    );
-//                    if (Float.parseFloat(tmpS3) < 80) map.put("status", "pass");
-//                    if (Float.parseFloat(tmpS3) < 60) map.put("status", "failed");
-//                }else{
-//                    Information.scores.put(
-//                            tmpS2
-//                            , (Information.scores.get(tmpS2)==null?0:Information.scores.get(tmpS2))+0
-//                    );
-//                    Information.credits_counted.put(
-//                            tmpS2,(Information.credits_counted.get(tmpS2)==null?0:Information.credits_counted.get(tmpS2))+0
-//                    );
-//                }
-        }else if(o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
-                m_activity.finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("ScoreFragment","SocketTimeoutException!");
-        }
     }
 
     private class MyAdapter extends BaseAdapter {

@@ -6,10 +6,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,29 +15,28 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CurriculumFragment extends Fragment implements Connectable,SwipeRefreshLayout.OnRefreshListener {
-//    private int numberOfPages;
+import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.httprequest.Response;
+
+public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback {
+    //    private int numberOfPages;
     private SwipeRefreshLayout mRefresh;
     private ListView mlistView;
     private Activity m_activity;
     private ArrayList<CourseSelected> tmpCurriculumList;
     private TextView mNoCurrirulumView;
     private String stringToPost;
-   @Override
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -49,12 +46,13 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_curriculum, container, false);
-        stringToPost = String.format(Information.Strings.currriculum_string_template,"31", Information.ids);
-        mNoCurrirulumView  = (TextView) myView.findViewById(R.id.textView_noCurriculum);
+        stringToPost = String.format(Information.Strings.currriculum_string_template, "31", Information.ids);
+        mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noCurriculum);
         mlistView = (ListView) myView.findViewById(R.id.list_curriculum);
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.curriculum_refresh);
         mRefresh.setOnRefreshListener(CurriculumFragment.this);
         mNoCurrirulumView.setVisibility(View.GONE);
+        m_activity = getActivity();
         return myView;
     }
 
@@ -62,13 +60,12 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        if(Information.selectedCourseCount == -1){
-           onRefresh();
-        }else if(Information.selectedCourseCount == 0){
+        if (Information.selectedCourseCount == -1) {
+            onRefresh();
+        } else if (Information.selectedCourseCount == 0) {
             mNoCurrirulumView.setVisibility(View.VISIBLE);
             mlistView.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             mNoCurrirulumView.setVisibility(View.GONE);
             mlistView.setVisibility(View.VISIBLE);
             mlistView.setAdapter(new MyAdapter(m_activity));
@@ -80,66 +77,43 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
         super.onPause();
         m_activity = null;
     }
+
     public void onRefresh() {
         mRefresh.setRefreshing(true);
         tmpCurriculumList = new ArrayList<>();
-        new Connect(CurriculumFragment.this,1, stringToPost).execute(Information.WEB_URL + Information.Strings.url_curriculum);
-    }
-
-    void update(){
-        Calendar calendar = Calendar.getInstance();
-        int minute = calendar.get(Calendar.MINUTE);
-        String time_now = String.format(Locale.US,"%2d:%2d",calendar.get(Calendar.HOUR_OF_DAY) ,minute);
-        Information.curriculum_lastUpdate = Information.date + " " + time_now;
-        Collections.sort(tmpCurriculumList, new Comparator<CourseSelected>() {
-            @Override
-            public int compare(CourseSelected t1,CourseSelected t2) {
-                if(t1.dayOfWeek == t2.dayOfWeek){
-                    return t1.startTime - t2.startTime;
-                }else {
-                    return t1.dayOfWeek - t2.dayOfWeek;
-                }
-            }
-        });
-        Information.selectedCourses = tmpCurriculumList;
-        storeCourses();
-        mRefresh.setRefreshing(false);
-        mlistView.setAdapter(new MyAdapter(m_activity));
+        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_curriculum).requestBody(stringToPost).build().send(this);
     }
 
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void onTaskComplete(Object o, int type) {
-        if(m_activity == null) return;
-        if(o == null){
-        }else if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream) o;
+    public void onNetworkComplete(Response response) {
+        final String returnString = response.body();
+        if (m_activity == null) return;
+        if (response.code() == 200 || response.code() == 206) {
             Pattern pattern;
             Matcher matcher;
-            String returnString = new Scanner(is).useDelimiter("\\A").next();
             CourseSelected tmpCourse;
             mNoCurrirulumView.setVisibility(View.GONE);
             int startPoint = 0;
-            while (true){
+            while (true) {
                 pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint)){
+                if (matcher.find(startPoint)) {
                     tmpCourse = new CourseSelected();
                     startPoint = matcher.end();
-                    if (matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.teacherName = matcher.group(2);
                     }
                     pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.name = matcher.group(1);
                         tmpCourse.index = matcher.group(2);
                         tmpCourse.classRoom = matcher.group(3);
                         String tmpString = matcher.group(4);
                         int duration = 0, startWeek = 1;
-                        for(int i = 0;i < tmpString.length();i++){
-                            if(tmpString.charAt(i) == '1'){
-                                if(duration == 0)  startWeek = i + 1;
+                        for (int i = 0; i < tmpString.length(); i++) {
+                            if (tmpString.charAt(i) == '1') {
+                                if (duration == 0) startWeek = i + 1;
                                 duration++;
                             }
                         }
@@ -148,32 +122,53 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
                     }
                     pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
                         tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
                     }
                     pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                         startPoint = matcher.end();
                     }
                     tmpCurriculumList.add(tmpCourse);
-                }else {
+                } else {
                     break;
                 }
             }
             Information.selectedCourseCount = tmpCurriculumList.size();
             update();
-        }else if(o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
-                m_activity.finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+        } else if(response.code() == 302){
+            startActivity(new Intent(m_activity,EduLoginActivity.class));
+            m_activity.finish();
         }
+    }
+
+    @Override
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    void update() {
+        Calendar calendar = Calendar.getInstance();
+        int minute = calendar.get(Calendar.MINUTE);
+        String time_now = String.format(Locale.US, "%2d:%2d", calendar.get(Calendar.HOUR_OF_DAY), minute);
+        Information.curriculum_lastUpdate = Information.date + " " + time_now;
+        Collections.sort(tmpCurriculumList, new Comparator<CourseSelected>() {
+            @Override
+            public int compare(CourseSelected t1, CourseSelected t2) {
+                if (t1.dayOfWeek == t2.dayOfWeek) {
+                    return t1.startTime - t2.startTime;
+                } else {
+                    return t1.dayOfWeek - t2.dayOfWeek;
+                }
+            }
+        });
+        Information.selectedCourses = tmpCurriculumList;
+        storeCourses();
+        mRefresh.setRefreshing(false);
+        mlistView.setAdapter(new MyAdapter(m_activity));
     }
 
     boolean storeCourses() {
@@ -192,62 +187,68 @@ public class CurriculumFragment extends Fragment implements Connectable,SwipeRef
             editor.putString("startWeek" + i, String.valueOf(Information.selectedCourses.get(i).startWeek));
             editor.putString("endWeek" + i, String.valueOf(Information.selectedCourses.get(i).endWeek));
         }
-        editor.putString("curriculum_lastUpdate",Information.curriculum_lastUpdate);
+        editor.putString("curriculum_lastUpdate", Information.curriculum_lastUpdate);
         return editor.commit();
     }
 
-    private class MyAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-        MyAdapter(Context context) {
-            this.mInflater = LayoutInflater.from(context);
-        }
-        @Override
-        public int getCount() {  return Information.selectedCourseCount + 1;}
-        @Override
-        public Object getItem(int position) {
-            return Information.selectedCourses.get(position);
-        }
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-        @Override
-        @SuppressLint("InflateParams")
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if(position == Information.selectedCourseCount){
-                convertView = mInflater.inflate(R.layout.listview_lastupdate, null);
-                TextView last_update_view = (TextView) convertView.findViewById(R.id.last_update);
-                last_update_view.setText("最后更新：" + ((Information.curriculum_lastUpdate == null) ? "从未更新" : Information.curriculum_lastUpdate));
-            }
-            else {
-                ViewHolder holder;
+private class MyAdapter extends BaseAdapter {
+    private LayoutInflater mInflater;
+
+    MyAdapter(Context context) {
+        this.mInflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public int getCount() {
+        return Information.selectedCourseCount + 1;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return Information.selectedCourses.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    @SuppressLint("InflateParams")
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (position == Information.selectedCourseCount) {
+            convertView = mInflater.inflate(R.layout.listview_lastupdate, null);
+            TextView last_update_view = (TextView) convertView.findViewById(R.id.last_update);
+            last_update_view.setText("最后更新：" + ((Information.curriculum_lastUpdate == null) ? "从未更新" : Information.curriculum_lastUpdate));
+        } else {
+            ViewHolder holder;
 //                if(convertView == null){
-                    convertView = mInflater.inflate(R.layout.selected_list_item, null);
-                    holder = new ViewHolder();
-                    holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
-                    holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
-                    holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
-                    holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
+            convertView = mInflater.inflate(R.layout.selected_list_item, null);
+            holder = new ViewHolder();
+            holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
+            holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
+            holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
+            holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
 //                    convertView.setTag(holder);
 //                }
 //                else{
 //                    holder = (ViewHolder)convertView.getTag();
 //                }
-                holder.name.setText(Information.selectedCourses.get(position).name+"（"+Information.selectedCourses.get(position).teacherName+"）");
-                holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).dayOfWeek]);
-                holder.index.setText(Information.selectedCourses.get(position).index);
-                holder.time.setText(Information.startTime[Information.selectedCourses.get(position).startTime]+"-"+
-                        Information.endTime[Information.selectedCourses.get(position).endTime]);
-            }
-            return convertView;
+            holder.name.setText(Information.selectedCourses.get(position).name + "（" + Information.selectedCourses.get(position).teacherName + "）");
+            holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).dayOfWeek]);
+            holder.index.setText(Information.selectedCourses.get(position).index);
+            holder.time.setText(Information.startTime[Information.selectedCourses.get(position).startTime] + "-" +
+                    Information.endTime[Information.selectedCourses.get(position).endTime]);
         }
-
+        return convertView;
     }
 
-    class ViewHolder{
-        TextView name;
-        TextView day;
-        TextView index;
-        TextView time;
-    }
+}
+
+class ViewHolder {
+    TextView name;
+    TextView day;
+    TextView index;
+    TextView time;
+}
 }

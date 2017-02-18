@@ -17,7 +17,9 @@ import android.widget.Toast;
 import java.io.File;
 import java.net.CookieHandler;
 
-public class PersonalPage extends AppCompatActivity implements View.OnClickListener,Connectable {
+import tk.sunrisefox.httprequest.*;
+
+public class PersonalPage extends AppCompatActivity implements View.OnClickListener, Connect.Callback {
 
     @Override
     public void onClick(View view) {
@@ -27,16 +29,15 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
             Information.examCount = -1;
             Information.ifLoggedIn = false;
             Information.ifRemPass = false;
-            new Connect(this,0,null).execute(Information.WEB_URL + Information.Strings.url_logout);
+            new Request.Builder().url(Information.WEB_URL + Information.Strings.url_logout).build().send(this);
 //            java.net.CookieManager cookieManager = new java.net.CookieManager();
 //            Connect.initialize(cookieManager);
         } else finish();
     }
 
     @Override
-    public void onTaskComplete(Object o, int type) {
-        if(o.getClass() == Integer.class){
-            Log.e("EXIT",(Integer)o + "");
+    public void onNetworkComplete(Response response) {
+        if(response.code() == 302){
             SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
             SharedPreferences.Editor editor = settings.edit();
             Toast.makeText(getApplicationContext(), Information.Strings.str_logout_suc , Toast.LENGTH_SHORT).show();
@@ -49,7 +50,14 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finishAffinity();
-        }else   Toast.makeText(getApplicationContext(), Information.Strings.str_logout_failed , Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getApplicationContext(), Information.Strings.str_logout_failed , Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onNetworkError(Exception exception) {
+
     }
 
     @Override

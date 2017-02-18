@@ -19,34 +19,29 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.jpush.android.api.JPushInterface;
+import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.httprequest.Response;
 
 public class IndexActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connectable{
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connect.Callback {
+    private static final long mBackPressThreshold = 3500;
     private Toast mPressBackToast;
     private long mLastBackPress;
-    private static final long mBackPressThreshold = 3500;
     private HomeFragment homeFragment;
     private NavigationView navigationView;
-    private static class RequestType{
-        static final int CHECK_FOR_UPDATE = 0;
-        static final int CHECK_FOR_NOTICE = 1;
-    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +61,7 @@ public class IndexActivity extends AppCompatActivity
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         homeFragment = new HomeFragment();
-        fragmentTransaction.add(R.id.fragment_container,homeFragment,"HomeFragment");
+        fragmentTransaction.add(R.id.fragment_container, homeFragment, "HomeFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
@@ -82,17 +77,21 @@ public class IndexActivity extends AppCompatActivity
 
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if(networkInfo == null) Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT).show();
+        if (networkInfo == null)
+            Toast.makeText(getApplicationContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
         else {
-            new Connect(this, RequestType.CHECK_FOR_UPDATE, null).execute(Information.UPDATE_URL);
-            new Connect(this, RequestType.CHECK_FOR_NOTICE, null).execute(Information.NOTICE_URL);
+            //TODO: 检查更新前你自己也要判断这个程序检查了几次更新对吧。。（第三次写这个Connect了）
+            new Request.Builder().url(Information.UPDATE_URL).tag(RequestType.CHECK_FOR_UPDATE).build().send(this);
+            new Request.Builder().url(Information.NOTICE_URL).tag(RequestType.CHECK_FOR_NOTICE).build().send(this);
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -100,123 +99,111 @@ public class IndexActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskComplete(Object o, int type) {
-        if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream) o;
-            String retString;
-            Pattern pattern;
-            Matcher matcher;
-            switch (type) {
-                case RequestType.CHECK_FOR_UPDATE: {
-                    retString = new Scanner(is).useDelimiter("\\A").next();
-                    String versionNew = "";
-                    String apkSize = "";
-                    String updateTime = "";
-                    String updateLog = "";
-                    pattern = Pattern.compile("<version>(.+)(</version>)");
-                    matcher = pattern.matcher(retString);
-                    if(matcher.find())  versionNew = matcher.group(1);
-                    pattern = Pattern.compile("<size>(.+)(</size>)");
-                    matcher = pattern.matcher(retString);
-                    if(matcher.find())  apkSize = matcher.group(1);
-                    pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
-                    matcher = pattern.matcher(retString);
-                    if(matcher.find())  updateTime = matcher.group(1);
-                    pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
-                    matcher = pattern.matcher(retString);
-                    if(matcher.find())  updateLog = matcher.group(1);
-                    pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
-                    matcher = pattern.matcher(retString);
-                    matcher.find();
-                    final String downloadLink = matcher.group(1);
-                    if (Information.version.equals(versionNew)){
-                        break;
-                    }
-                    else {
-                        new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
-                                .setMessage("新版本："+versionNew+"\n更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
-                                .setPositiveButton("更新", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        Uri uri = Uri.parse(downloadLink);
-                                        Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
-                                        Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Override
+    public void onNetworkComplete(Response response) {
+        if (response.code() != 200) ; //TODO: Why not 200?
+        String retString = response.body();
+        Pattern pattern;
+        Matcher matcher;
+        if (response.tag().equals(RequestType.CHECK_FOR_UPDATE)) {
+            String versionNew = "";
+            String apkSize = "";
+            String updateTime = "";
+            String updateLog = "";
+            pattern = Pattern.compile("<version>(.+)(</version>)");
+            matcher = pattern.matcher(retString);
+            if (matcher.find()) versionNew = matcher.group(1);
+            pattern = Pattern.compile("<size>(.+)(</size>)");
+            matcher = pattern.matcher(retString);
+            if (matcher.find()) apkSize = matcher.group(1);
+            pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
+            matcher = pattern.matcher(retString);
+            if (matcher.find()) updateTime = matcher.group(1);
+            pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
+            matcher = pattern.matcher(retString);
+            if (matcher.find()) updateLog = matcher.group(1);
+            pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
+            matcher = pattern.matcher(retString);
+            matcher.find();
+            final String downloadLink = matcher.group(1);
+            if (!Information.version.equals(versionNew)) {
+                new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
+                        .setMessage("新版本：" + versionNew + "\n更新包大小：" + apkSize + "\n更新时间：" + updateTime + "\n更新内容：" + updateLog)
+                        .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Uri uri = Uri.parse(downloadLink);
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+                                Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
                             }
-                        }).show();
+                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
                     }
-                    break;
-                }
-                case RequestType.CHECK_FOR_NOTICE: {
-                    SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-                    Information.newestNotice = settings.getString("newestNotice", null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
-                    retString = new Scanner(is).useDelimiter("\\A").next();
-                    pattern = Pattern.compile("<id>([0-9])(</id>)");
-                    matcher = pattern.matcher(retString);
-                    matcher.find();
-                    int tmpId = Integer.parseInt(matcher.group(1));
-                    if (Information.newestNotice == tmpId) {
-                        return;
-                    } else {
-                        Information.newestNotice = tmpId;
-                        pattern = Pattern.compile("<headline>(.+)(</headline>)");
-                        matcher = pattern.matcher(retString);
-                        matcher.find();
-                        String tmpHeadline = matcher.group(1);
-                        pattern = Pattern.compile("<content>(.+)(</content>)");
-                        matcher = pattern.matcher(retString);
-                        matcher.find();
-                        String tmpContent = matcher.group(1);
-                        pattern = Pattern.compile("<target>(.+)(</target>)");
-                        matcher = pattern.matcher(retString);
-                        matcher.find();
-                        String tmpTarget = matcher.group(1);
-                        pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
-                        matcher = pattern.matcher(retString);
-                        matcher.find();
-                        String tmpTargetVersion = matcher.group(1);
-                        if(tmpTarget.equals("all") || (tmpTarget.equals("specific") && tmpTargetVersion.equals(Information.version))){
-                            new AlertDialog.Builder(this).setTitle(tmpHeadline)
-                                    .setMessage(tmpContent)
-                                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    }).show();
-                        }
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putString("newestNotice", String.valueOf(Information.newestNotice));
-                        editor.apply();
-                    }
-                    break;
-                }
-                default:
-                    break;
+                }).show();
             }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+        } else if (response.tag().equals(RequestType.CHECK_FOR_NOTICE)) {
+            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+            Information.newestNotice = settings.getString("newestNotice", null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
+            pattern = Pattern.compile("<id>([0-9])(</id>)");
+            matcher = pattern.matcher(retString);
+            matcher.find();
+            int tmpId = Integer.parseInt(matcher.group(1));
+            if (Information.newestNotice != tmpId) {
+                Information.newestNotice = tmpId;
+                pattern = Pattern.compile("<headline>(.+)(</headline>)");
+                matcher = pattern.matcher(retString);
+                matcher.find();
+                String tmpHeadline = matcher.group(1);
+                pattern = Pattern.compile("<content>(.+)(</content>)");
+                matcher = pattern.matcher(retString);
+                matcher.find();
+                String tmpContent = matcher.group(1);
+                pattern = Pattern.compile("<target>(.+)(</target>)");
+                matcher = pattern.matcher(retString);
+                matcher.find();
+                String tmpTarget = matcher.group(1);
+                pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
+                matcher = pattern.matcher(retString);
+                matcher.find();
+                String tmpTargetVersion = matcher.group(1);
+                if (tmpTarget.equals("all") || (tmpTarget.equals("specific") && tmpTargetVersion.equals(Information.version))) {
+                    new AlertDialog.Builder(this).setTitle(tmpHeadline)
+                            .setMessage(tmpContent)
+                            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) { }
+                            }).show();
+                }
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("newestNotice", String.valueOf(Information.newestNotice));
+                editor.apply();
+            }
         }
     }
 
-    public void onClick(View view){
-        if(view.getId() == R.id.home_schedule_details) {
+    public void onClick(View view) {
+        if (view.getId() == R.id.home_schedule_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_schedule));
 //        }else if(view.getId() == R.id.home_exam_details){
 //            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_exam));
-        }else if(view.getId() == R.id.home_score_details){
+        } else if (view.getId() == R.id.home_score_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_score));
 //        }else if(view.getId() == R.id.home_select_details){
 //            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_select));
-        }else if(view.getId() == R.id.home_bus_details){
+        } else if (view.getId() == R.id.home_bus_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_612bus));
         }
     }
 
-    public void headerClicked(View view){
-        startActivity(new Intent(getApplicationContext(),PersonalPage.class));
+    public void headerClicked(View view) {
+        startActivity(new Intent(getApplicationContext(), PersonalPage.class));
     }
 
     @Override
@@ -224,15 +211,13 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else if(getFragmentManager().getBackStackEntryCount() > 1){
-            if(BrowserFragment.hasInstance()){
+        } else if (getFragmentManager().getBackStackEntryCount() > 1) {
+            if (BrowserFragment.hasInstance()) {
                 return;
             }
             navigationView.setCheckedItem(R.id.nav_home);
             getFragmentManager().popBackStack();
-        }
-        else {
+        } else {
             long currentTime = System.currentTimeMillis();
             if (Math.abs(currentTime - mLastBackPress) > mBackPressThreshold) {
                 mPressBackToast.show();
@@ -266,20 +251,19 @@ public class IndexActivity extends AppCompatActivity
 
         if (id == R.id.action_share) {
             Intent share = new Intent(Intent.ACTION_SEND);
-            share.putExtra(Intent.EXTRA_TEXT,"PROJECT NKU 南开信息集中平台。下载地址：http://kongxiao0532.cn/projectnku/");
+            share.putExtra(Intent.EXTRA_TEXT, "PROJECT NKU 南开信息集中平台。下载地址：http://kongxiao0532.cn/projectnku/");
             share.setType("text/plain");
             startActivity(share);
             return true;
-        }else if(id == R.id.action_bugreport){
+        } else if (id == R.id.action_bugreport) {
             Intent share = new Intent(Intent.ACTION_SEND);
             share.putExtra(Intent.EXTRA_STREAM
-                    ,Uri.fromFile( new File(getSharedPreferences(Information.PREFS_NAME,0).getString("lastBugCheckFile","")))
+                    , Uri.fromFile(new File(getSharedPreferences(Information.PREFS_NAME, 0).getString("lastBugCheckFile", "")))
             );
             share.setType("*/*");
             startActivity(share);
             return true;
-        }
-        else return super.onOptionsItemSelected(item);
+        } else return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -309,11 +293,11 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
             } else if (id == R.id.nav_612bus) {
                 fragmentTransaction.replace(R.id.fragment_container, new ShuttleBusFragment());
-            }else if (id == R.id.nav_feedback) {
+            } else if (id == R.id.nav_feedback) {
                 fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
-            }else if (id == R.id.nav_icHome) {
+            } else if (id == R.id.nav_icHome) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
-            }else if (id == R.id.nav_tycg) {
+            } else if (id == R.id.nav_tycg) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://tycg.nankai.edu.cn/"));
             }
             fragmentTransaction.addToBackStack(null);
@@ -323,5 +307,10 @@ public class IndexActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private static class RequestType {
+        static final String CHECK_FOR_UPDATE = "Check for update";
+        static final String CHECK_FOR_NOTICE = "Check for notice";
     }
 }

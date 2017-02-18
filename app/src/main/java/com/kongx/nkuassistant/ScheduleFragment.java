@@ -30,8 +30,12 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.httprequest.Response;
 
-public class ScheduleFragment extends Fragment implements Connectable, SwipeRefreshLayout.OnRefreshListener {
+
+public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback {
     private View myView = null;
     private ListViewNoScroll mListView;
     private RelativeLayout mReLayout;
@@ -81,41 +85,44 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
     public void onRefresh(){
         mRefresh.setRefreshing(true);
         tmpCurriculumList = new ArrayList<>();
-        new Connect(ScheduleFragment.this,1, stringToPost).execute(Information.WEB_URL + Information.Strings.url_curriculum);
+        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_curriculum).requestBody(stringToPost).build().send(this);
     }
+
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void onTaskComplete(Object o, int type) {
+    public void onNetworkError(Exception exception) {
+
+    }
+
+    @Override
+    public void onNetworkComplete(Response response) {
         if(m_activity == null) return;
-        if(o == null){
-        }else if(o.getClass() == BufferedInputStream.class) {
-            BufferedInputStream is = (BufferedInputStream) o;
+        if(response.code() == 200) {
             Pattern pattern;
             Matcher matcher;
-            String returnString = new Scanner(is).useDelimiter("\\A").next();
+            String returnString = response.body();
             CourseSelected tmpCourse;
             mNoCurrirulumView.setVisibility(View.GONE);
             int startPoint = 0;
-            while (true){
+            while (true) {
                 pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
                 matcher = pattern.matcher(returnString);
-                if(matcher.find(startPoint)){
+                if (matcher.find(startPoint)) {
                     tmpCourse = new CourseSelected();
                     startPoint = matcher.end();
-                    if (matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.teacherName = matcher.group(2);
                     }
                     pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.name = matcher.group(1);
                         tmpCourse.index = matcher.group(2);
                         tmpCourse.classRoom = matcher.group(3);
                         String tmpString = matcher.group(4);
                         int duration = 0, startWeek = 1;
-                        for(int i = 0;i < tmpString.length();i++){
-                            if(tmpString.charAt(i) == '1'){
-                                if(duration == 0)  startWeek = i + 1;
+                        for (int i = 0; i < tmpString.length(); i++) {
+                            if (tmpString.charAt(i) == '1') {
+                                if (duration == 0) startWeek = i + 1;
                                 duration++;
                             }
                         }
@@ -124,31 +131,26 @@ public class ScheduleFragment extends Fragment implements Connectable, SwipeRefr
                     }
                     pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
                         tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
                     }
                     pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
                     matcher = pattern.matcher(returnString);
-                    if(matcher.find(startPoint)){
+                    if (matcher.find(startPoint)) {
                         tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                         startPoint = matcher.end();
                     }
                     tmpCurriculumList.add(tmpCourse);
-                }else {
+                } else {
                     break;
                 }
             }
             Information.selectedCourseCount = tmpCurriculumList.size();
             update();
-        }else if(o.getClass() == Integer.class){
-            Integer code = (Integer)o;
-            if(code == 302){
-                this.startActivity(new Intent(m_activity,EduLoginActivity.class));
-                m_activity.finish();
-            }
-        }else if(o.getClass() == SocketTimeoutException.class){
-            Log.e("APP","SocketTimeoutException!");
+        }else if(response.code() == 302){
+            startActivity(new Intent(m_activity,EduLoginActivity.class));
+            m_activity.finish();
         }
     }
 
