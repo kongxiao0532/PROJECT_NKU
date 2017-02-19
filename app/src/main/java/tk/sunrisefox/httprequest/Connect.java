@@ -6,21 +6,26 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Connect extends AsyncTask<Void, Long, Void> {
     private static final String DEBUG_TAG = "NETWORK";
     private static int connectTimeout = 3000;
     private static int readTimeout = 0;
+    private static String rules = null;
     /*package-private*/ static boolean defaultFollowRedirects = false;
     private static String defaultUA = null;
     private Exception exception = null;
@@ -69,12 +74,39 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         defaultUA = UA;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static boolean setDefaultReplaceRules(String rules){
+        if(rules != null) {
+            // ^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1 ([.][^.]+)$<>3$1
+            String[] rule = rules.split(" ");
+            try {
+                for (String r : rule) {
+                    String[] p = r.split("<>");
+                    Pattern.compile(p[0]);
+                    Pattern.compile(p[1]);
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        Connect.rules = rules;
+        return true;
+    }
+
     @Override
     protected Void doInBackground(Void... params) {
         try {
             //noinspection ThrowableResultOfMethodCallIgnored
             if (request.exception() != null) throw request.exception();
-            URL url = request.url();
+            String urlString = request.url();
+            if(rules != null) {
+                String[] rule = rules.split(" ");
+                for (String r : rule) {
+                    String[] p = r.split("<>");
+                    urlString = urlString.replaceFirst(p[0].trim(),p[1].trim());
+                }
+            }
+            URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
@@ -104,10 +136,16 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             response.code = connection.getResponseCode();
             response.headers = connection.getHeaderFields();
             response.tag = request.tag();
+            InputStream stream = null;
             if (request.doInput()) {
+                try {
+                    stream = connection.getInputStream();
+                }catch (FileNotFoundException e){
+                    stream = connection.getErrorStream();
+                }
+            }
+            if(stream != null) {
                 long downloadedBytes = 0;
-                InputStream stream = connection.getInputStream();
-
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int nRead;
                 byte[] data = new byte[8192];
@@ -123,10 +161,10 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     }
                 }
                 if (file == null && request.saveAsFile()) {
-                    file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), request.url().getFile());
+                    file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), url.getFile());
                     for (int i = 1; file.exists(); i++)
                         file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                                , request.url().getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
+                                , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
                     if (!file.createNewFile()) throw new IOException("No file is writable");
                 }
                 if (file != null) fileOutputStream = new FileOutputStream(file);
@@ -188,7 +226,6 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
     public interface Callback {
         void onNetworkComplete(Response response);
-
         void onNetworkError(Exception exception);
     }
 

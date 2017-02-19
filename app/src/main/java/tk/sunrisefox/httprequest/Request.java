@@ -32,7 +32,7 @@ public class Request{
     }
     private String tag;
     private String method;
-    private URL url;
+    private String url;
     private String requestBody;
     private Map<String, List<String>> headers;
     private boolean doInput;
@@ -48,7 +48,7 @@ public class Request{
     public Response response() { return this.response; }
     public String tag(){ return this.tag; }
     public String method(){ return this.method; };
-    public URL url() { return url; }
+    public String url() { return url; }
     public String requestBody() { return requestBody; }
     public Map<String, List<String>> headers() { return headers; }
     public boolean doInput() { return doInput; }
@@ -78,7 +78,7 @@ public class Request{
     public static class Builder{
         String tag = null;
         String method = null;
-        URL url = null;
+        String url = null;
         String requestBody = null;
         Map<String, List<String>>  headers = new HashMap<>();
         Connect.Progress progress;
@@ -95,11 +95,7 @@ public class Request{
             return this;
         }
         public Builder url(String url) {
-            try {
-                this.url = new URL(url);
-            } catch (MalformedURLException e) {
-                exception = e;
-            }
+            this.url = url;
             return this;
         }
         public Builder method(String method){
