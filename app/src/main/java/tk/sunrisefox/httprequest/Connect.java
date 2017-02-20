@@ -28,12 +28,17 @@ public class Connect extends AsyncTask<Void, Long, Void> {
     private static String rules = null;
     /*package-private*/ static boolean defaultFollowRedirects = false;
     private static String defaultUA = null;
+
     private Exception exception = null;
-    private Request request;
+    final private Request request;
     private Response response;
-    private Callback ui;
-    private Callback network;
-    private Progress progress;
+    final private Callback ui;
+    final private Callback network;
+    final private Progress progress;
+    private Long startBytes = 0L;
+    private Long finishedBytes = 0L;
+
+    /*package-private*/ boolean shouldPause = false;
 
     /*package-private*/ Connect(Request request, Callback ui, Callback network, Progress progress) {
         this.request = request;
@@ -77,7 +82,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean setDefaultReplaceRules(String rules){
         if(rules != null) {
-            // ^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1 ([.][^.]+)$<>3$1
+            // ^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1<>all ([.][^.]+)$<>3$1
             String[] rule = rules.split(" ");
             try {
                 for (String r : rule) {
@@ -103,7 +108,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 String[] rule = rules.split(" ");
                 for (String r : rule) {
                     String[] p = r.split("<>");
-                    urlString = urlString.replaceFirst(p[0].trim(),p[1].trim());
+                    urlString = (p.length==3 && p[2].equals("all") ? urlString.replaceAll(p[0].trim(),p[1].trim()) : urlString.replaceFirst(p[0].trim(),p[1].trim()));
                 }
             }
             URL url = new URL(urlString);
@@ -124,7 +129,9 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 builder.deleteCharAt(builder.length() - 1);
                 connection.setRequestProperty(entry.getKey(), builder.toString());
             }
-
+            if((startBytes = finishedBytes = request.startBytes) != 0){
+                connection.setRequestProperty("Range","bytes="+ String.valueOf(startBytes) + "-");
+            }
             if (request.doOutput()) {
                 OutputStream os = connection.getOutputStream();
                 os.write(request.requestBody().getBytes());
@@ -132,10 +139,19 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 os.close();
             }
             connection.connect();
-            request.response = response = new Response();
-            response.code = connection.getResponseCode();
-            response.headers = connection.getHeaderFields();
+            request.response = response = new Response(this);
             response.tag = request.tag();
+            response.code = connection.getResponseCode();
+            if(startBytes != 0L && response.code() != 206) throw new IOException("Recovering from pause is not supported.");
+            response.headers = connection.getHeaderFields();
+            if (network != null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        network.onNetworkComplete(response);
+                    }
+                }).start();
+            }
             InputStream stream = null;
             if (request.doInput()) {
                 try {
@@ -152,22 +168,27 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
                 File file = request.file();
                 FileOutputStream fileOutputStream = null;
-                if (file != null && !file.isFile()) {
-                    try {
-                        if (!file.createNewFile())
+                if(startBytes == 0L) {
+                    if (file != null && !file.isFile()) {
+                        try {
+                            if (!file.createNewFile())
+                                file = null;
+                        } catch (IOException e) {
                             file = null;
-                    } catch (IOException e) {
-                        file = null;
+                        }
                     }
-                }
-                if (file == null && request.saveAsFile()) {
-                    file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), url.getFile());
-                    for (int i = 1; file.exists(); i++)
-                        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                                , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
-                    if (!file.createNewFile()) throw new IOException("No file is writable");
-                }
-                if (file != null) fileOutputStream = new FileOutputStream(file);
+                    if (file == null && request.saveAsFile()) {
+                        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), url.getFile());
+                        for (int i = 1; file.exists(); i++)
+                            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                                    , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
+                        if (!file.createNewFile()) throw new IOException("No file is writable");
+                    }
+                    if (file != null) {
+                        fileOutputStream = new FileOutputStream(file);
+                        request.setFile(file);
+                    }
+                }else fileOutputStream = new FileOutputStream(file,true);
                 String contentLength = connection.getHeaderField("Content-Length");
                 long totalBytes;
                 try {
@@ -177,25 +198,37 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     } catch (NumberFormatException e) {
                         totalBytes = -1L;
                     }
+                    int bytes;
                     while ((nRead = stream.read(data, 0, data.length)) != -1) {
                         buffer.write(data, 0, nRead);
                         downloadedBytes += nRead;
                         if (progress != null) publishProgress(downloadedBytes, totalBytes);
-                        if (fileOutputStream != null && buffer.size() >= 0x500000) {
+                        if (fileOutputStream != null && (bytes = buffer.size()) >= 0x100000) {
                             fileOutputStream.write(buffer.toByteArray());
                             fileOutputStream.flush();
+                            finishedBytes += bytes;
                             buffer.reset();
+                            if(isCancelled()) {
+                                stream.close();
+                                break;
+                            }
                         }
                     }
                     if (fileOutputStream != null) fileOutputStream.write(buffer.toByteArray());
                 } catch (OutOfMemoryError e) {
                     throw new IOException("OutOfMemoryError was thrown. You'd better save the response as a file.");
                 }
-                if (fileOutputStream != null) response.file = file;
+                if (fileOutputStream != null) {
+                    response.file = file;
+                    fileOutputStream.close();
+                }
                 else response.buffer = buffer;
+
+                if (network != null) {
+                    response.setFinished();
+                    network.onNetworkComplete(response);
+                }
             }
-            if (network != null)
-                network.onNetworkComplete(response);
         } catch (IOException e) {
             exception = e;
             if (network != null) {
@@ -207,14 +240,18 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
     @Override
     protected void onCancelled() {
-        IOException exception = new IOException("User Cancelled.");
-        if (ui != null) ui.onNetworkError(exception);
-        if (network != null) network.onNetworkError(exception);
+        if(shouldPause && response!=null){
+            response.setResumeRequest(Request.copy(request,finishedBytes));
+        }else {
+            IOException exception = new IOException("User Cancelled.");
+            if (ui != null) ui.onNetworkError(exception);
+            if (network != null) network.onNetworkError(exception);
+        }
     }
 
     @Override
     protected void onProgressUpdate(Long... values) {
-        progress.updateProgress(values[0], values[1]);
+        progress.updateProgress(startBytes + values[0], startBytes + values[1]);
     }
 
     @Override
@@ -226,6 +263,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
     public interface Callback {
         void onNetworkComplete(Response response);
+
         void onNetworkError(Exception exception);
     }
 

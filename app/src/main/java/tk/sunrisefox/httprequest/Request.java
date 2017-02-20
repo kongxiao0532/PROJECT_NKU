@@ -16,6 +16,28 @@ public class Request{
     private static final String[] methods = { "GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE" };
     private enum FollowRedirects{ UNSET, TRUE, FALSE};
 
+    public static Request copy(Request request, Long bytes){
+        Request newRequest = new Request(request);
+        newRequest.startBytes = bytes;
+        return newRequest;
+    }
+
+    private Request(Request request){
+        this.method = request.method;
+        this.url = request.url;
+        this.headers = request.headers;
+        this.requestBody = request.requestBody;
+        this.tag = request.tag;
+        this.doInput = request.doInput;
+        this.doOutput = request.doOutput;
+        this.followRedirects = request.followRedirects;
+        this.progress = request.progress;
+        this.file = request.file;
+        this.saveAsFile = request.saveAsFile;
+        this.uiThreadCallback = request.uiThreadCallback;
+        this.networkThreadCallback = request.networkThreadCallback;
+    }
+
     private Request(Builder builder){
         this.method = builder.method;
         this.url = builder.url;
@@ -43,8 +65,14 @@ public class Request{
     private IOException exception;
     private Connect.Progress progress;
     private Connect connect;
-    /*package-private*/ Response response;
+    private Connect.Callback uiThreadCallback;
+    private Connect.Callback networkThreadCallback;
 
+    /*package-private*/ Long startBytes = 0L;
+    /*package-private*/ Response response;
+    /*package-private*/ void setFile(File file){
+        this.file = file;
+    }
     public Response response() { return this.response; }
     public String tag(){ return this.tag; }
     public String method(){ return this.method; };
@@ -64,17 +92,27 @@ public class Request{
     public boolean saveAsFile() { return saveAsFile; }
     public File file() { return file; }
     public IOException exception() { return exception; }
+
+    /*package-private*/ Connect send(){
+        if(this.networkThreadCallback == null) return null;
+        connect = new Connect(this, uiThreadCallback, networkThreadCallback, progress);
+        connect.execute();
+        return connect;
+    }
+
     public void send(Connect.Callback uiThreadCallback){
-        connect = new Connect(this, uiThreadCallback, null, progress);
+        connect = new Connect(this, this.uiThreadCallback = uiThreadCallback, this.networkThreadCallback = null, progress);
         connect.execute();
     }
     public void send(Connect.Callback uiThreadCallback, Connect.Callback networkThreadCallback){
-        connect = new Connect(this, uiThreadCallback, networkThreadCallback, progress);
+        connect = new Connect(this, this.uiThreadCallback = uiThreadCallback, this.networkThreadCallback = networkThreadCallback, progress);
         connect.execute();
     }
     public boolean abort(){
         return connect == null || connect.cancel(true);
     }
+
+
     public static class Builder{
         String tag = null;
         String method = null;
