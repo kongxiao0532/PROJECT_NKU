@@ -1,129 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.kongx.nkuassistant.AboutFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.kongx.nkuassistant.AboutFragment"
+    android:paddingTop="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
 
-
-    <TabHost
-        android:id="@android:id/tabhost"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    </android.support.v4.view.ViewPager>
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabDots"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabGravity="center"
+        app:tabIndicatorHeight="0dp"/>
 
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical|fill_horizontal" />
-
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <FrameLayout
-                    android:id="@+id/tab1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/cd_kong"
-                        android:layout_gravity="top"
-                        android:scaleType="fitStart"
-                        android:layout_marginEnd="100dp"
-                        android:layout_marginBottom="100dp" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        android:layout_marginBottom="50dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:text="@string/kongx_name"
-                            android:textSize="40sp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginTop="40dp"
-                            android:layout_marginRight="20dp" />
-                        <TextView
-                            android:text="@string/nku"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="end" />
-                        <TextView
-                            android:text="@string/kongx_info"
-                            android:textSize="17sp"
-                            android:lineSpacingMultiplier="1.2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:layout_marginTop="80dp"
-                            android:layout_marginRight="20dp" />
-
-                    </LinearLayout>
-                </FrameLayout>
-
-                    <FrameLayout
-                        android:id="@+id/tab2"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/cd_fox"
-                            android:id="@+id/imageView"
-                            android:scaleType="fitEnd"
-                            android:layout_marginStart="100dp"
-                            android:layout_marginTop="100dp"
-                            android:layout_marginEnd="15dp" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:text="@string/fox_name"
-                                android:textSize="40sp"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="start"
-                                android:layout_marginTop="60dp"
-                                android:layout_marginLeft="20dp" />
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="end"
-                                android:text="@string/nku" />
-                            <TextView
-                                android:text="@string/fox_info"
-                                android:textSize="17sp"
-                                android:lineSpacingMultiplier="1.2"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="start"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                                android:layout_marginTop="100dp"
-                                android:layout_marginLeft="20dp" />
-
-                        </LinearLayout>
-                    </FrameLayout>
-            </FrameLayout>
-
-        </LinearLayout>
-    </TabHost>
-</FrameLayout>
+</RelativeLayout>
