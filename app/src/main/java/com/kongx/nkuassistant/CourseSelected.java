@@ -15,4 +15,17 @@ public class CourseSelected {
     int endTime;
     int startWeek;
     int endWeek;
+    public CourseSelected(){};
+    public CourseSelected(CourseSelected courseSelected){
+        this.index = courseSelected.index;
+        this.name = courseSelected.name;
+        this.classRoom = courseSelected.classRoom;
+        this.teacherName = courseSelected.teacherName;
+        this.classType = courseSelected.classType;
+        this.dayOfWeek = courseSelected.dayOfWeek;
+        this.startTime = courseSelected.startTime;
+        this.endTime = courseSelected.endTime;
+        this.startWeek = courseSelected.startWeek;
+        this.endWeek = courseSelected.endWeek;
+    }
 }

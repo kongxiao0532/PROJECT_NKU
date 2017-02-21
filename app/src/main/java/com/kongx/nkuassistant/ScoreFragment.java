@@ -64,22 +64,22 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     showAverageMethod = (++showAverageMethod)%6;
                     switch (showAverageMethod){
                         case 0:
-                            mAverageAll.setText("ABCDE百分制学分绩 "+new BigDecimal(Information.average_abcde).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("ABCDE百分制学分绩 "+new BigDecimal(Information.average_abcde).setScale(3,BigDecimal.ROUND_HALF_UP)+"/100");
                             break;
                         case 1:
-                            mAverageAll.setText("标准GPA "+new BigDecimal(Information.gpaABCED[0]).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("标准GPA "+new BigDecimal(Information.gpaABCED[0]).setScale(3,BigDecimal.ROUND_HALF_UP)+"/4.0");
                             break;
                         case 2:
-                            mAverageAll.setText("改进型GPA(1) "+new BigDecimal(Information.gpaABCED[1]).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("改进型GPA(1) "+new BigDecimal(Information.gpaABCED[1]).setScale(3,BigDecimal.ROUND_HALF_UP)+"/4.0");
                             break;
                         case 3:
-                            mAverageAll.setText("改进型GPA(2) "+new BigDecimal(Information.gpaABCED[2]).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("改进型GPA(2) "+new BigDecimal(Information.gpaABCED[2]).setScale(3,BigDecimal.ROUND_HALF_UP)+"/4.0");
                             break;
                         case 4:
-                            mAverageAll.setText("北大GPA "+new BigDecimal(Information.gpaABCED[3]).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("北大GPA "+new BigDecimal(Information.gpaABCED[3]).setScale(3,BigDecimal.ROUND_HALF_UP)+"/4.0");
                             break;
                         case 5:
-                            mAverageAll.setText("加拿大GPA(满分4.3) "+new BigDecimal(Information.gpaABCED[4]).setScale(3,BigDecimal.ROUND_HALF_UP));
+                            mAverageAll.setText("加拿大GPA "+new BigDecimal(Information.gpaABCED[4]).setScale(3,BigDecimal.ROUND_HALF_UP)+"/4.3");
                             break;
                         default:break;
                     }
@@ -93,7 +93,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        if(Information.studiedCourseCount == -1){
+        if(Connector.tmpStudiedCourseCount == -1){
             onRefresh();
         }else onConnectorComplete(Connector.RequestType.SCORE,true);
     }
@@ -119,6 +119,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 if(tmpBool){
                     if(m_activity == null) return;
                     Information.studiedCourseCount = Information.studiedCourses.size();
+                    if(Information.studiedCourseCount == 0) return;
                     Toast.makeText(getActivity(), "已加载"+Information.studiedCourseCount+"条成绩信息", Toast.LENGTH_SHORT).show();
                     SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
                     SharedPreferences.Editor editor = settings.edit();
@@ -202,7 +203,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         }
         @Override
         public int getCount() {
-            return Information.studiedCourses.size();
+            return Information.studiedCourseCount == -1 ? 0 : Information.studiedCourseCount;
         }
 
         @Override

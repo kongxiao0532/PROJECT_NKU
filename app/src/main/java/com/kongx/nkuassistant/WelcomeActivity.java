@@ -74,6 +74,7 @@ public class WelcomeActivity extends AppCompatActivity {
         CookieManager cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         Connect.initialize(cookieManager);
+        Connect.setDefaultUA("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 PROJECT");
 
         //Get configuration
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -81,6 +82,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         //Get previous information
         isFirstOpen = true;
+        ifLoggedIn = false;
         name = settings.getString(Strings.setting_student_name, "Name");
         facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
         id = settings.getString(Strings.setting_studentID, "ID");
@@ -88,6 +90,7 @@ public class WelcomeActivity extends AppCompatActivity {
         password = settings.getString(Strings.setting_password,null);
         //ids/*For new system*/ = settings.getString(Strings.setting_studentIDs, "IDs");
         majorName = settings.getString(Strings.setting_student_major, "Major");
+        minorName = settings.getString(Strings.setting_student_minor, "Minor");
         isDoubleMajor = settings.getBoolean(Strings.setting_student_isDoubleMajor,false);
         if (ifRemPass) startIntent = new Intent(this, IndexActivity.class);
         else startIntent = new Intent(this, EduLoginActivity.class);

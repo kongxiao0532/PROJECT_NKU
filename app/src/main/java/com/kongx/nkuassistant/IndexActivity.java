@@ -116,7 +116,6 @@ public class IndexActivity extends AppCompatActivity
                 editor.putString("newestNotice", String.valueOf(Information.newestNotice));
                 editor.apply();
                 break;
-
             }
             case CHECK_FOR_UPDATE:
                 final String[] resultString = (String[]) result;

@@ -8,6 +8,7 @@ public class CourseStudied {
     String semester;
     String name;
     String classType;
+    String classId;
     float score;
     float credit;
     float creditCalculated;             //防止有“通过”的情况

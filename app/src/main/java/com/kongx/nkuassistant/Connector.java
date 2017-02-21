@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
+import tk.sunrisefox.simplehtmlparser.HTML;
+import tk.sunrisefox.simplehtmlparser.HTMLParser;
 
 /**
  * Created by DELL on 2017/2/19 0019.
@@ -49,7 +51,12 @@ public class Connector {
     private final static String url_student_minor_info = "/eams/stdDetail!innerIndex.action?projectId=2&_=";
     private final static String url_student_major_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
-    public static ArrayList<CourseSelected> tmpStudiedCourses = new ArrayList<>();
+    private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
+    private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
+
+
+    static ArrayList<CourseSelected> tmpStudiedCourses = new ArrayList<>();
+    static int tmpStudiedCourseCount = -1;
     static long getTimeStamp(){ return System.currentTimeMillis();    }
 //    public static class RequestType {
 //        static final String CHECK_FOR_UPDATE = "Check for update";
@@ -64,7 +71,7 @@ public class Connector {
     public interface Callback{
         void onConnectorComplete(RequestType requestType, Object result);
     }
-    public static void getInformation(RequestType requestType, Connector.Callback uis,@Nullable String strToPost){
+    public static void getInformation(RequestType requestType, final Connector.Callback uis,@Nullable String strToPost){
         String tmpString;
         switch (requestType){
             case CHECK_FOR_UPDATE:
@@ -87,26 +94,21 @@ public class Connector {
                 new Request.Builder().url(WEB_URL + url_student_major_info + getTimeStamp()).tag("MAJOR").get(new InfoConnector(uis));
                 break;
             case USER_MINOR_INFO:
-                new Request.Builder().url(WEB_URL + url_student_minor_info + getTimeStamp()).tag("MINOR").get(new InfoConnector(uis));
+                new Request.Builder().url(WEB_URL + url_double_before_student_info + getTimeStamp()).tag("BEFOREMINOR").get(new InfoConnector(uis));
                 break;
-//            case USER_IDS:
-//                new Request.Builder().url(WEB_URL + url_student_major_ids + getTimeStamp()).tag("MAJOR").get(new IdsConnector());
-//                if(Information.isDoubleMajor)    new Request.Builder().url(WEB_URL + url_student_minor_ids + getTimeStamp()).tag("MINOR").get(new IdsConnector());
-//                break;
+            case USER_IDS:
+//                while(!Information.ifLoggedIn);
+                new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new IdsConnector(uis));
+                break;
             case CURRICULUM:
                 tmpStudiedCourses = new ArrayList<>();
-                new Request.Builder().url(WEB_URL + url_student_major_ids + getTimeStamp()).tag("MAJOR").get(new IdsConnector(uis));
-//                tmpString = String.format(currriculum_string_template,"31",Information.ids_major);
-//                new Request.Builder().url(WEB_URL + url_curriculum).post(tmpString,new Connector.CurriculumConnector(uis));
-                if(Information.isDoubleMajor) {
-                    new Request.Builder().url(WEB_URL + url_student_minor_ids + getTimeStamp()).tag("MINOR").get(new IdsConnector(uis));
-//                    tmpString = String.format(currriculum_string_template,"31",Information.ids_minor);
-//                    new Request.Builder().url(WEB_URL + url_curriculum).post(tmpString,new Connector.CurriculumConnector(uis));
-                }
+                if(Information.ids_major == null)   return;
+                new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new CurriculumConnector(uis));
                 break;
             case SCORE:
-                Log.e("C",uis.toString());
-                new Request.Builder().url(WEB_URL + url_score).post("",new ScoreConnector(uis));
+                tmpStudiedCourseCount = Information.studiedCourseCount;
+                if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new ScoreConnector(uis));
+                else    new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
                 break;
             case LOGOUT:
                 break;
@@ -193,7 +195,6 @@ public class Connector {
         }
     }
 
-
     private static class InfoConnector implements Connect.Callback{
         Connector.Callback uis;
         private InfoConnector(Connector.Callback uis)  {  this.uis = uis; }
@@ -225,6 +226,9 @@ public class Connector {
                     if (matcher.find()) Information.majorName = matcher.group(1);
                     uis.onConnectorComplete(RequestType.USER_MAJOR_INFO,null);
                     break;
+                case "BEFOREMINOR":
+                    new Request.Builder().url(WEB_URL + url_student_minor_info + getTimeStamp()).tag("MINOR").get(new InfoConnector(uis));
+                    break;
                 case "MINOR":
                     pattern = Pattern.compile("<td>(.*)(</td>)");
                     matcher = pattern.matcher(returnString);
@@ -238,6 +242,7 @@ public class Connector {
                     matcher.find();
                     matcher.find();
                     if (matcher.find()) Information.minorName = matcher.group(1);
+//                    new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).tag("AFTERMINOR").get(new InfoConnector(uis));
                     uis.onConnectorComplete(RequestType.USER_MINOR_INFO,null);
                     break;
                 default:
@@ -303,6 +308,7 @@ public class Connector {
 
         @Override
         public void onNetworkComplete(Response response) {
+
             Pattern pattern;
             Matcher matcher;
             String returnString = response.body();
@@ -314,15 +320,22 @@ public class Connector {
 //            editor.apply();
             String strToPost;
             switch (response.tag()){
+                case "BEFORE_MAJOR":
+                    new Request.Builder().url(WEB_URL + url_student_major_ids + getTimeStamp()).delay(500).tag("MAJOR").get(new IdsConnector(uis));
+                    break;
                 case "MAJOR":
                     if (matcher.find()) Information.ids_major = matcher.group(2);
-                    strToPost = String.format(currriculum_string_template,"31",Information.ids_major);
-                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
+                    if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_before_student_info + getTimeStamp()).delay(500).tag("BEFORE_MINOR").get(new IdsConnector(uis));
+//                    strToPost = String.format(currriculum_string_template,"31",Information.ids_major);
+//                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
+                    break;
+                case "BEFORE_MINOR":
+                    new Request.Builder().url(WEB_URL + url_student_minor_ids + getTimeStamp()).delay(500).tag("MINOR").get(new IdsConnector(uis));
                     break;
                 case "MINOR":
                     if (matcher.find()) Information.ids_minor = matcher.group(2);
-                    strToPost = String.format(currriculum_string_template,"31",Information.ids_minor);
-                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
+//                    strToPost = String.format(currriculum_string_template,"31",Information.ids_minor);
+//                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
                     break;
                 default:
                     break;
@@ -342,59 +355,105 @@ public class Connector {
         @Override
         public void onNetworkComplete(Response response) {
             if(response.code() == 200){
-                ArrayList<CourseStudied> tmpScore = new ArrayList<>();
-                String returnString = response.body();
-                CourseStudied tmpCourse;
-                Pattern pattern;
-                Matcher matcher;
-                int startPoint = 0;
-                pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) {
-                    Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
-                    Information.credits_All = Float.parseFloat(matcher.group(4));
-                }
-                try {
-                    startPoint = matcher.end();
-                }catch (IllegalStateException e){
-                    uis.onConnectorComplete(RequestType.SCORE,false);
-                    return;
-                }
-                try {
-                    for (int i = 0; i < Information.studiedCourseCount; i++) {
-                        tmpCourse = new CourseStudied();
-                        pattern = Pattern.compile("<td>(.+)</td>");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) tmpCourse.setSemester(matcher.group(1));
-                        startPoint = matcher.end();
+            switch (response.tag()){
+                case "BEFORE_MAJOR":
+                    new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
+                    break;
+                case "SCORE":
+                    ArrayList<CourseStudied> tmpScore = new ArrayList<>();
+                    String returnString = response.body();
+                    String[] stringToBeDealt = new String[]{
+                            returnString.substring(returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"),returnString.indexOf("/tr",returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"))),
+                            returnString.substring(returnString.indexOf("<tbody",returnString.indexOf(">学分</th>")),returnString.indexOf("</table",returnString.indexOf(">学分</th>")))
+                    };
+                    HTMLParser.parse(stringToBeDealt[0], new HTMLParser.Callback() {
+                        int count = 0;
+                        @Override
+                        public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
 
-                        pattern = Pattern.compile("<td>(.+)\\t(.+)\\n(.+)</td>");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) tmpCourse.name = matcher.group(1);
-                        startPoint = matcher.end();
+                        }
 
-                        pattern = Pattern.compile("<td>(.+)</td>.+");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
+                        @Override
+                        public void onText(String text) {
+                            if(count == 3){
+                                tmpStudiedCourseCount = Integer.parseInt(text);
+                            }else
+                            if(count == 5){
+                                Information.credits_All = Float.parseFloat(text);
+                            }
+                            count++;
+                        }
 
-                        pattern = Pattern.compile("\\n.+</td>.+<td>(.+)</td>\\n");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) tmpCourse.credit = Float.parseFloat(matcher.group(1));
-                        startPoint = matcher.end();
+                        @Override
+                        public void onTagEnd(HTML.Tag tag) {
 
-                        pattern = Pattern.compile("</td><td style=\"\">.+\\t(.+)\\n");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) tmpCourse.setScore(matcher.group(1));
-                        startPoint = matcher.end();
-                        tmpScore.add(tmpCourse);
+                        }
+                    });
+                    if(tmpStudiedCourseCount == 0){
+                        Information.studiedCourses = tmpScore;
+                        uis.onConnectorComplete(RequestType.SCORE,true);
+                        return;
                     }
-                }catch (IllegalStateException e){
-                    uis.onConnectorComplete(RequestType.SCORE,false);
-                    e.printStackTrace();
-                    return;
+                    HTMLParser.parse(stringToBeDealt[1], new HTMLParser.Callback() {
+                        int textCount = 0, emptyCount = 0;
+                        ArrayList<CourseStudied> tmpScore = new ArrayList<>();
+                        CourseStudied tmpCourse;
+
+                        @Override
+                        public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+
+                        }
+
+                        @Override
+                        public void onText(String text) {
+                            if(text.isEmpty()){
+                                if(textCount%8 == 0)    return;
+                                else if(textCount%8 != emptyCount){
+                                    emptyCount++;
+                                    return;
+                                }
+                            }
+                            switch ((textCount++)%8){
+                                case 0:                         //get Semester
+                                    tmpCourse = new CourseStudied();
+                                    tmpCourse.setSemester(text);
+                                    break;
+                                case 1:                         //get class ID
+                                    tmpCourse.classId = text;
+                                    break;
+                                case 2:                         //get selection ID
+                                    break;
+                                case 3:                         //get course name
+                                    tmpCourse.name = text;
+                                    break;
+                                case 4:                         //get class type
+                                    tmpCourse.classType = text;
+                                    break;
+                                case 5:                         //get credits
+                                    tmpCourse.credit = Float.parseFloat(text);
+                                    break;
+                                case 6:                         //get grade
+                                    break;
+                                case 7:                         //get score
+                                    tmpCourse.setScore(text);
+                                    tmpScore.add(tmpCourse);
+                                    emptyCount = 0;
+                                    break;
+                            }
+                            if(textCount == tmpStudiedCourseCount * 8){
+                                Information.studiedCourses = tmpScore;
+                                uis.onConnectorComplete(RequestType.SCORE,true);
+                            }
+                        }
+
+                        @Override
+                        public void onTagEnd(HTML.Tag tag) {
+
+                        }
+                    });
+
+                    break;
                 }
-                Information.studiedCourses = tmpScore;
-                uis.onConnectorComplete(RequestType.SCORE,true);
             }else if(response.code() == 302){
                 String strToPost = String.format(login_string_template, Information.id, Information.password);
                 Connector.getInformation(RequestType.LOGIN,uis,strToPost);
@@ -413,69 +472,87 @@ public class Connector {
 
         @Override
         public void onNetworkComplete(Response response) {
-            final String returnString = response.body();
-            if (response.code() == 200 || response.code() == 206) {
-                Pattern pattern;
-                Matcher matcher;
-                CourseSelected tmpCourse;
-                int startPoint = 0;
-                while (true) {
-                    pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
-                    matcher = pattern.matcher(returnString);
-                    if (matcher.find(startPoint)) {
-                        tmpCourse = new CourseSelected();
-                        startPoint = matcher.end();
-                        if (matcher.find(startPoint)) {
-                            tmpCourse.teacherName = matcher.group(2);
+            String tmpString;
+            switch (response.tag()){
+                case "BEFORE_MAJOR":
+                    tmpString = String.format(currriculum_string_template,"31",Information.ids_major);
+                    new Request.Builder().url(WEB_URL + url_curriculum).tag("MAJOR").post(tmpString,new CurriculumConnector(uis));
+                    break;
+                case "BEFORE_MINOR":
+                    tmpString = String.format(currriculum_string_template,"31",Information.ids_minor);
+                    new Request.Builder().url(WEB_URL + url_curriculum).tag("MINOR").post(tmpString,new CurriculumConnector(uis));
+                    break;
+                default:
+                    final String returnString = response.body();
+                    if (response.code() == 200 || response.code() == 206) {
+                        Pattern pattern;
+                        Matcher matcher;
+                        CourseSelected tmpCourse;
+                        int startPoint = 0;
+                        while (true) {
+                            pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
+                            matcher = pattern.matcher(returnString);
+                            if (matcher.find(startPoint)) {
+                                tmpCourse = new CourseSelected();
+                                startPoint = matcher.end();
+                                if (matcher.find(startPoint)) {
+                                    tmpCourse.teacherName = matcher.group(2);
+                                }
+                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
+                                matcher = pattern.matcher(returnString);
+                                if (matcher.find(startPoint)) {
+                                    tmpCourse.name = matcher.group(1);
+                                    tmpCourse.index = matcher.group(2);
+                                    tmpCourse.classRoom = matcher.group(3);
+                                    tmpString = matcher.group(4);
+                                    int duration = 0, startWeek = 1;
+                                    for (int i = 0; i < tmpString.length(); i++) {
+                                        if (tmpString.charAt(i) == '1') {
+                                            if (duration == 0) startWeek = i + 1;
+                                            duration++;
+                                        }
+                                    }
+                                    tmpCourse.startWeek = startWeek;
+                                    tmpCourse.endWeek = startWeek + duration - 1;
+                                }
+                                pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
+                                matcher = pattern.matcher(returnString);
+                                if (matcher.find(startPoint)) {
+                                    tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
+                                    tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
+                                }
+                                pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
+                                matcher = pattern.matcher(returnString);
+                                if (matcher.find(startPoint)) {
+                                    tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
+                                    startPoint = matcher.end();
+                                }
+                                tmpStudiedCourses.add(tmpCourse);
+                            } else {
+                                break;
+                            }
                         }
-                        pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) {
-                            tmpCourse.name = matcher.group(1);
-                            tmpCourse.index = matcher.group(2);
-                            tmpCourse.classRoom = matcher.group(3);
-                            String tmpString = matcher.group(4);
-                            int duration = 0, startWeek = 1;
-                            for (int i = 0; i < tmpString.length(); i++) {
-                                if (tmpString.charAt(i) == '1') {
-                                    if (duration == 0) startWeek = i + 1;
-                                    duration++;
+                        Collections.sort(tmpStudiedCourses, new Comparator<CourseSelected>() {
+                            @Override
+                            public int compare(CourseSelected t1, CourseSelected t2) {
+                                if (t1.dayOfWeek == t2.dayOfWeek) {
+                                    return t1.startTime - t2.startTime;
+                                } else {
+                                    return t1.dayOfWeek - t2.dayOfWeek;
                                 }
                             }
-                            tmpCourse.startWeek = startWeek;
-                            tmpCourse.endWeek = startWeek + duration - 1;
-                        }
-                        pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) {
-                            tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
-                            tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
-                        }
-                        pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
-                        matcher = pattern.matcher(returnString);
-                        if (matcher.find(startPoint)) {
-                            tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
-                            startPoint = matcher.end();
-                        }
-                        tmpStudiedCourses.add(tmpCourse);
-                    } else {
-                        break;
+                        });
+                        uis.onConnectorComplete(RequestType.CURRICULUM,true);
+                    }else if(response.code() == 302){
+                        String strToPost = String.format(login_string_template, Information.id, Information.password);
+                        Connector.getInformation(RequestType.LOGIN,uis,strToPost);
                     }
-                }
-                Collections.sort(tmpStudiedCourses, new Comparator<CourseSelected>() {
-                    @Override
-                    public int compare(CourseSelected t1, CourseSelected t2) {
-                        if (t1.dayOfWeek == t2.dayOfWeek) {
-                            return t1.startTime - t2.startTime;
-                        } else {
-                            return t1.dayOfWeek - t2.dayOfWeek;
-                        }
+                    if(response.tag().equals("MAJOR")){
+                        if(Information.isDoubleMajor) {
+                            if(Information.ids_minor == null)    return;
+                            new Request.Builder().url(WEB_URL + url_double_before_student_info + getTimeStamp()).delay(500).tag("BEFORE_MINOR").get(new CurriculumConnector(uis));                        }
                     }
-                });
-                uis.onConnectorComplete(RequestType.CURRICULUM,true);
-            }else if(response.code() == 302){
-                String strToPost = String.format(login_string_template, Information.id, Information.password);
-                Connector.getInformation(RequestType.LOGIN,uis,strToPost);
+                    break;
             }
         }
 
