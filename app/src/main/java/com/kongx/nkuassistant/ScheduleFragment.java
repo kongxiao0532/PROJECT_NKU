@@ -18,13 +18,16 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -35,7 +38,7 @@ import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
 
 
-public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback {
+public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback {
     private View myView = null;
     private ListViewNoScroll mListView;
     private RelativeLayout mReLayout;
@@ -55,7 +58,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.fragment_schedule, container, false);
-        stringToPost = String.format(Information.Strings.currriculum_string_template,"31", Information.ids);
         mReLayout = (RelativeLayout) myView.findViewById(R.id.schedule_relative_layout);
         mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noSchedule);
         mListView = (ListViewNoScroll) myView.findViewById(R.id.list_schedule);
@@ -82,93 +84,43 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         m_activity = null;
     }
 
-    public void onRefresh(){
+    public void onRefresh() {
         mRefresh.setRefreshing(true);
-        tmpCurriculumList = new ArrayList<>();
-        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_curriculum).requestBody(stringToPost).build().send(this);
+        Connector.getInformation(Connector.RequestType.CURRICULUM,this,null);
     }
 
     @Override
-    public void onNetworkError(Exception exception) {
-
-    }
-
-    @Override
-    public void onNetworkComplete(Response response) {
-        if(m_activity == null) return;
-        if(response.code() == 200) {
-            Pattern pattern;
-            Matcher matcher;
-            String returnString = response.body();
-            CourseSelected tmpCourse;
-            mNoCurrirulumView.setVisibility(View.GONE);
-            int startPoint = 0;
-            while (true) {
-                pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) {
-                    tmpCourse = new CourseSelected();
-                    startPoint = matcher.end();
-                    if (matcher.find(startPoint)) {
-                        tmpCourse.teacherName = matcher.group(2);
-                    }
-                    pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
-                    matcher = pattern.matcher(returnString);
-                    if (matcher.find(startPoint)) {
-                        tmpCourse.name = matcher.group(1);
-                        tmpCourse.index = matcher.group(2);
-                        tmpCourse.classRoom = matcher.group(3);
-                        String tmpString = matcher.group(4);
-                        int duration = 0, startWeek = 1;
-                        for (int i = 0; i < tmpString.length(); i++) {
-                            if (tmpString.charAt(i) == '1') {
-                                if (duration == 0) startWeek = i + 1;
-                                duration++;
-                            }
-                        }
-                        tmpCourse.startWeek = startWeek;
-                        tmpCourse.endWeek = startWeek + duration - 1;
-                    }
-                    pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
-                    matcher = pattern.matcher(returnString);
-                    if (matcher.find(startPoint)) {
-                        tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
-                        tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
-                    }
-                    pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
-                    matcher = pattern.matcher(returnString);
-                    if (matcher.find(startPoint)) {
-                        tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
-                        startPoint = matcher.end();
-                    }
-                    tmpCurriculumList.add(tmpCourse);
-                } else {
-                    break;
+    public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        if (m_activity == null) return;
+        switch (requestType){
+            case CURRICULUM:
+                if(result.getClass() == Boolean.class && (Boolean)result) {
+                    Information.selectedCourses = Connector.tmpStudiedCourses;
+                    Information.selectedCourseCount = Connector.tmpStudiedCourses.size();
+                    Calendar calendar = Calendar.getInstance();
+                    int minute = calendar.get(Calendar.MINUTE);
+                    String time_now = String.format(Locale.US, "%2d:%2d", calendar.get(Calendar.HOUR_OF_DAY), minute);
+                    Information.curriculum_lastUpdate = Information.date + " " + time_now;
+                    storeCourses();
+                    mRefresh.setRefreshing(false);
+                    loadCurriculum();
                 }
-            }
-            Information.selectedCourseCount = tmpCurriculumList.size();
-            update();
-        }else if(response.code() == 302){
-            startActivity(new Intent(m_activity,EduLoginActivity.class));
-            m_activity.finish();
+                break;
+            case LOGIN:
+                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
+                    Toast.makeText(getActivity(), "已重新登录", Toast.LENGTH_SHORT).show();
+                    onRefresh();
+                }else {
+                    Toast.makeText(getActivity(), "重新登录失败", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(m_activity,EduLoginActivity.class));
+                    m_activity.finish();
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    void update(){
-        Collections.sort(tmpCurriculumList, new Comparator<CourseSelected>() {
-            @Override
-            public int compare(CourseSelected t1,CourseSelected t2) {
-                if(t1.dayOfWeek == t2.dayOfWeek){
-                    return t1.startTime - t2.startTime;
-                }else {
-                    return t1.dayOfWeek - t2.dayOfWeek;
-                }
-            }
-        });
-        Information.selectedCourses = tmpCurriculumList;
-        storeCourses();
-        loadCurriculum();
-    }
     boolean storeCourses() {
         SharedPreferences settings = m_activity.getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();

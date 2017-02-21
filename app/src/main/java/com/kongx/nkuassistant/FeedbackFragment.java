@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import tk.sunrisefox.httprequest.*;
 
-public class FeedbackFragment extends Fragment implements View.OnClickListener, Connect.Callback{
+public class FeedbackFragment extends Fragment implements View.OnClickListener, Connector.Callback{
     private String version;
 
     @Override
@@ -49,7 +49,7 @@ public class FeedbackFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.button_check_for_update){
-            new Request.Builder().url(Information.UPDATE_URL).build().send(this);
+            Connector.getInformation(Connector.RequestType.CHECK_FOR_UPDATE,this,null);
 
         }else if(view.getId() == R.id.button_feedback){
             Intent seedEmail=new Intent(Intent.ACTION_SENDTO);
@@ -60,59 +60,22 @@ public class FeedbackFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onNetworkComplete(Response response) {
-        if(response.code() != 200) ; //TODO: Why not 200?
-        String retString = response.body();
-        Pattern pattern;
-        Matcher matcher;
-        String versionNew = "";
-        String apkSize = "";
-        String updateTime = "";
-        String updateLog = "";
-        pattern = Pattern.compile("<version>(.+)(</version>)");
-        matcher = pattern.matcher(retString);
-        if(matcher.find())  versionNew = matcher.group(1);
-        pattern = Pattern.compile("<size>(.+)(</size>)");
-        matcher = pattern.matcher(retString);
-        if(matcher.find())  apkSize = matcher.group(1);
-        pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
-        matcher = pattern.matcher(retString);
-        if(matcher.find())  updateTime = matcher.group(1);
-        pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
-        matcher = pattern.matcher(retString);
-        if(matcher.find())  updateLog = matcher.group(1);
-        pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
-        matcher = pattern.matcher(retString);
-        matcher.find();
-        final String downloadLink = matcher.group(1);
-        if (Information.version.equals(versionNew)){
-            Toast.makeText(getActivity(), "暂无可用更新", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        else {
+    public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        final String[] resultString = (String[]) result;
+        if (!Information.version.equals(resultString[0])) {
             new AlertDialog.Builder(getActivity()).setTitle(getString(R.string.update_available))
-                    .setMessage("更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
+                    .setMessage(resultString[2])
                     .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Uri uri = Uri.parse(downloadLink);
-                            Intent intent =new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(intent);
+                            Uri uri = Uri.parse(resultString[1]);
+                            Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
                             Toast.makeText(getActivity(), "更新开始下载...", Toast.LENGTH_SHORT).show();
                         }
                     }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                 }
             }).show();
         }
-        if(!version.equals(retString)){
-            Toast.makeText(getActivity(), "有版本更新", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onNetworkError(Exception exception) {
-
     }
 }

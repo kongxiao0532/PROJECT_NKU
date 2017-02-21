@@ -24,12 +24,7 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.button_logOut){
-            Information.selectedCourseCount = -1;
-            Information.studiedCourseCount = -1;
-            Information.examCount = -1;
-            Information.ifLoggedIn = false;
-            Information.ifRemPass = false;
-            new Request.Builder().url(Information.WEB_URL + Information.Strings.url_logout).build().send(this);
+            new Request.Builder().url(Connector.WEB_URL + Connector.url_logout).build().send(this);
 //            java.net.CookieManager cookieManager = new java.net.CookieManager();
 //            Connect.initialize(cookieManager);
         } else finish();
@@ -38,6 +33,11 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onNetworkComplete(Response response) {
         if(response.code() == 302){
+            Information.selectedCourseCount = -1;
+            Information.studiedCourseCount = -1;
+            Information.examCount = -1;
+            Information.ifLoggedIn = false;
+            Information.ifRemPass = false;
             SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
             SharedPreferences.Editor editor = settings.edit();
             Toast.makeText(getApplicationContext(), Information.Strings.str_logout_suc , Toast.LENGTH_SHORT).show();
@@ -85,5 +85,10 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
 
         TextView gradeTextView = (TextView) findViewById(R.id.PP_Grade);
         gradeTextView.setText("20"+Information.id.substring(0,2)+"级本科生");
+
+        if(Information.isDoubleMajor){
+            TextView doubleTextView = (TextView) findViewById(R.id.PP_Double);
+            gradeTextView.setText("第二专业："+Information.minorName);
+        }
     }
 }

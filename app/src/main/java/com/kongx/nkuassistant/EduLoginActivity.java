@@ -50,11 +50,11 @@ import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
 
 import static com.kongx.nkuassistant.Information.Strings;
+import static com.kongx.nkuassistant.Information.password;
 
-public class EduLoginActivity extends AppCompatActivity implements Connect.Callback{
+public class EduLoginActivity extends AppCompatActivity implements Connector.Callback{
     private static final long mBackPressThreshold = 3500;
     static String m_username;
-    static String m_encryptedPassword;
     private long mLastBackPress;
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -98,7 +98,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
         if (useRememberedPWD = settings.getBoolean(Strings.setting_remember_pwd, false)) {
             mRemPass.setChecked(true);
             mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            if(settings.getString(Strings.setting_password,null) != null){
+            if(Information.password != null){
                 mPasswordView.setText(Strings.str_pwd_not_changed);
             }
         }
@@ -123,7 +123,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if(networkInfo == null) Toast.makeText(getApplicationContext(),R.string.connection_error, Toast.LENGTH_SHORT).show();
-        else new Request.Builder().url(Information.UPDATE_URL).tag(RequestType.CHECK_FOR_UPDATE).build().send(this);
+        else Connector.getInformation(Connector.RequestType.CHECK_FOR_UPDATE,this,null);
     }
 
     @Override
@@ -135,42 +135,20 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
         } else finish();
     }
 
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
-    public void onNetworkComplete(Response response) {
-        Pattern pattern;
-        Matcher matcher;
-
-        if(response.tag().equals(RequestType.CHECK_FOR_UPDATE)){
-            String retString = response.body();
-            String versionNew = "";
-            String apkSize = "";
-            String updateTime = "";
-            String updateLog = "";
-            pattern = Pattern.compile("<version>(.+)(</version>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  versionNew = matcher.group(1);
-            pattern = Pattern.compile("<size>(.+)(</size>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  apkSize = matcher.group(1);
-            pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  updateTime = matcher.group(1);
-            pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  updateLog = matcher.group(1);
-            pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
-            matcher = pattern.matcher(retString);
-            matcher.find();
-            final String downloadLink = matcher.group(1);
-            if (!Information.version.equals(versionNew)) {
+    public void onConnectorComplete(Connector.RequestType requestType, final Object result) {
+        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        switch (requestType){
+            case CHECK_FOR_UPDATE:
+                final String[] resultString = (String[]) result;
+                if (!Information.version.equals(resultString[0])) {
                 new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
-                        .setMessage("新版本："+versionNew+"\n更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog)
+                        .setMessage(resultString[2])
                         .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Uri uri = Uri.parse(downloadLink);
+                                Uri uri = Uri.parse(resultString[1]);
                                 Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
                                 Toast.makeText(EduLoginActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
                             }
@@ -180,72 +158,61 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
                     }
                 }).show();
             }
-        } else if(response.tag().equals(RequestType.LOGIN)){
-            if(response.code() == 302){
-                new Request.Builder().url(Information.WEB_URL + Strings.url_student_ids + Information.getTimeStamp()).tag(RequestType.USER_IDS).build().send(null,this);
-                new Request.Builder().url(Information.WEB_URL + Strings.url_student_info + Information.getTimeStamp()).tag(RequestType.USER_INFO).build().send(null,this);
-
-                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
-                SharedPreferences.Editor settingEditor = settings.edit();
-                CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
-                for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
-                    if (httpCookie.getName().equals("JSESSIONID")   ) {
-                        settingEditor.putString("JSESSIONID", httpCookie.getValue());
-                        break;
+                break;
+            case LOGIN:
+                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
+                    Connector.getInformation(Connector.RequestType.USER_INFO,this,null);
+//                new Request.Builder().url(Information.WEB_URL + Strings.url_student_info + Information.getTimeStamp()).tag(RequestType.USER_INFO).build().send(null,this);
+                    CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
+                    for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
+                        if (httpCookie.getName().equals("JSESSIONID")   ) {
+                            editor.putString("JSESSIONID", httpCookie.getValue());
+                            break;
+                        }
                     }
+                    editor.putBoolean(Strings.setting_remember_pwd, mRemPass.isChecked());
+                    editor.putString(Strings.setting_studentID, m_username);
+                    editor.putString(Strings.setting_password, Information.password);
+                    editor.apply();
+                }else {                             //Login Failed
+                    String tmpString = (String) result;
+                    if(tmpString.equals("密码错误"))    {
+                        Toast.makeText(getApplicationContext(),Strings.str_wrong_password,Toast.LENGTH_SHORT).show();
+                        Connect.initialize(new CookieManager());
+                    }else if(tmpString.equals("failed"))    Toast.makeText(getApplicationContext(),Strings.str_login_failed,Toast.LENGTH_SHORT).show();
                 }
-                settingEditor.putBoolean(Strings.setting_remember_pwd, mRemPass.isChecked());
-                settingEditor.putString(Strings.setting_studentID, m_username);
-                settingEditor.putString(Strings.setting_password, m_encryptedPassword);
-                settingEditor.apply();
-            } else {
-                //TODO: Login to VPN or clear cookies
-            }
-        } else if(response.tag().equals(RequestType.USER_IDS)) {
-            String returnString = response.body();
-            pattern = Pattern.compile("(bg.form.addInput\\(form,\"ids\",\")(.+)(\"\\);)");
-            matcher = pattern.matcher(returnString);
-            if (matcher.find()) Information.ids = matcher.group(2);
-            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString(Strings.setting_studentIDs,Information.ids);
-            editor.apply();
-        } else if(response.tag().equals(RequestType.USER_INFO)){
-            String returnString = response.body();
-            pattern = Pattern.compile("<td width=\"25%\">(.+)</td>");
-            matcher = pattern.matcher(returnString);
-            if (matcher.find()) Information.id = matcher.group(1);
-            pattern = Pattern.compile("<td>(.*)(</td>)");
-            matcher = pattern.matcher(returnString);
-            if (matcher.find()) Information.name = matcher.group(1);
-            matcher.find();
-            matcher.find();
-            matcher.find();
-            matcher.find();
-            matcher.find();
-            matcher.find();
-            matcher.find();
-            if (matcher.find()) Information.facultyName = matcher.group(1);
-            if (matcher.find()) Information.majorName = matcher.group(1);
-            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString(Strings.setting_student_name, Information.name);
-            editor.putString(Strings.setting_student_faculty, Information.facultyName);
-            editor.putString(Strings.setting_student_major, Information.majorName);
-            editor.apply();
-            Information.ifLoggedIn = true;
-            Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-        } else if(response.tag().equals(RequestType.LOG_TO_VPN)){
-            //TODO: Log to VPN
+                break;
+            case USER_MAJOR_INFO:
+                settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                editor = settings.edit();
+                editor.putString(Strings.setting_student_name, Information.name);
+                editor.putString(Strings.setting_student_faculty, Information.facultyName);
+                editor.putString(Strings.setting_student_major, Information.majorName);
+                editor.putBoolean(Strings.setting_student_isDoubleMajor,Information.isDoubleMajor);
+                editor.apply();
+                if(Information.isDoubleMajor)   Connector.getInformation(Connector.RequestType.USER_MINOR_INFO,this,null);
+                else{
+                    Information.ifLoggedIn = true;
+                    startIndexActivity();
+                }
+                break;
+            case USER_MINOR_INFO:
+                settings = getSharedPreferences(Information.PREFS_NAME, 0);
+                editor = settings.edit();
+                editor.putString(Strings.setting_student_minor,Information.minorName);
+                editor.apply();
+                Information.ifLoggedIn = true;
+                startIndexActivity();
+                break;
         }
+
     }
 
-    @Override
-    public void onNetworkError(Exception exception) {
-
+    private void startIndexActivity(){
+        Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void attemptLogin() {
@@ -276,10 +243,10 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
         m_username = username;
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
         if (useRememberedPWD) {
-            m_encryptedPassword = settings.getString(Strings.setting_password, null);
-        } else m_encryptedPassword = password;
-        String strToPost = String.format(Strings.login_string_template, m_username, m_encryptedPassword);
-        new Request.Builder().url(Information.WEB_URL + Strings.url_login).requestBody(strToPost).tag(RequestType.LOGIN).build().send(this);
+            Information.password = settings.getString(Strings.setting_password, null);
+        } else Information.password = password;
+        String strToPost = String.format(Connector.login_string_template, m_username, Information.password);
+        Connector.getInformation(Connector.RequestType.LOGIN,this,strToPost);
         showProgress(true);
     }
 
@@ -294,13 +261,5 @@ public class EduLoginActivity extends AppCompatActivity implements Connect.Callb
         });
     }
 
-    private static class RequestType {
-        static final String CHECK_FOR_UPDATE = "Check for update";
-        static final String LOGIN = "Login";
-        static final String USER_IDS = "User ID";
-        static final String USER_INFO = "User Info";
-        static final String LOG_TO_VPN = "Login to VPN";
-
-    }
 }
 

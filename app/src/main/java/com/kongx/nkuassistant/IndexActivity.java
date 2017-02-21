@@ -35,7 +35,7 @@ import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
 
 public class IndexActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connect.Callback {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connector.Callback {
     private static final long mBackPressThreshold = 3500;
     private Toast mPressBackToast;
     private long mLastBackPress;
@@ -80,9 +80,8 @@ public class IndexActivity extends AppCompatActivity
         if (networkInfo == null)
             Toast.makeText(getApplicationContext(), R.string.connection_error, Toast.LENGTH_SHORT).show();
         else {
-            //TODO: 检查更新前你自己也要判断这个程序检查了几次更新对吧。。（第三次写这个Connect了）
-            new Request.Builder().url(Information.UPDATE_URL).tag(RequestType.CHECK_FOR_UPDATE).build().send(this);
-            new Request.Builder().url(Information.NOTICE_URL).tag(RequestType.CHECK_FOR_NOTICE).build().send(this);
+            Connector.getInformation(Connector.RequestType.CHECK_FOR_UPDATE,this,null);
+            Connector.getInformation(Connector.RequestType.CHECK_FOR_NOTICE,this,null);
         }
     }
 
@@ -99,92 +98,47 @@ public class IndexActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNetworkError(Exception exception) {
-
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Override
-    public void onNetworkComplete(Response response) {
-        if (response.code() != 200) ; //TODO: Why not 200?
-        String retString = response.body();
-        Pattern pattern;
-        Matcher matcher;
-        if (response.tag().equals(RequestType.CHECK_FOR_UPDATE)) {
-            String versionNew = "";
-            String apkSize = "";
-            String updateTime = "";
-            String updateLog = "";
-            pattern = Pattern.compile("<version>(.+)(</version>)");
-            matcher = pattern.matcher(retString);
-            if (matcher.find()) versionNew = matcher.group(1);
-            pattern = Pattern.compile("<size>(.+)(</size>)");
-            matcher = pattern.matcher(retString);
-            if (matcher.find()) apkSize = matcher.group(1);
-            pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
-            matcher = pattern.matcher(retString);
-            if (matcher.find()) updateTime = matcher.group(1);
-            pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
-            matcher = pattern.matcher(retString);
-            if (matcher.find()) updateLog = matcher.group(1);
-            pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
-            matcher = pattern.matcher(retString);
-            matcher.find();
-            final String downloadLink = matcher.group(1);
-            if (!Information.version.equals(versionNew)) {
-                new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
-                        .setMessage("新版本：" + versionNew + "\n更新包大小：" + apkSize + "\n更新时间：" + updateTime + "\n更新内容：" + updateLog)
-                        .setPositiveButton("更新", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Uri uri = Uri.parse(downloadLink);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                startActivity(intent);
-                                Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                }).show();
-            }
-        } else if (response.tag().equals(RequestType.CHECK_FOR_NOTICE)) {
-            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-            Information.newestNotice = settings.getString("newestNotice", null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
-            pattern = Pattern.compile("<id>([0-9])(</id>)");
-            matcher = pattern.matcher(retString);
-            matcher.find();
-            int tmpId = Integer.parseInt(matcher.group(1));
-            if (Information.newestNotice != tmpId) {
-                Information.newestNotice = tmpId;
-                pattern = Pattern.compile("<headline>(.+)(</headline>)");
-                matcher = pattern.matcher(retString);
-                matcher.find();
-                String tmpHeadline = matcher.group(1);
-                pattern = Pattern.compile("<content>(.+)(</content>)");
-                matcher = pattern.matcher(retString);
-                matcher.find();
-                String tmpContent = matcher.group(1);
-                pattern = Pattern.compile("<target>(.+)(</target>)");
-                matcher = pattern.matcher(retString);
-                matcher.find();
-                String tmpTarget = matcher.group(1);
-                pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
-                matcher = pattern.matcher(retString);
-                matcher.find();
-                String tmpTargetVersion = matcher.group(1);
-                if (tmpTarget.equals("all") || (tmpTarget.equals("specific") && tmpTargetVersion.equals(Information.version))) {
-                    new AlertDialog.Builder(this).setTitle(tmpHeadline)
-                            .setMessage(tmpContent)
+    public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        switch (requestType){
+            case CHECK_FOR_NOTICE:{
+                final String[] resultString = (String[]) result;
+                if (resultString[3].equals("all") || (resultString[3].equals("specific") && resultString[4].equals(Information.version))) {
+                    new AlertDialog.Builder(this).setTitle(resultString[1])
+                            .setMessage(resultString[2])
                             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) { }
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
                             }).show();
                 }
+                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("newestNotice", String.valueOf(Information.newestNotice));
                 editor.apply();
+                break;
+
             }
+            case CHECK_FOR_UPDATE:
+                final String[] resultString = (String[]) result;
+                if (!Information.version.equals(resultString[0])) {
+                    new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
+                            .setMessage(resultString[2])
+                            .setPositiveButton("更新", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Uri uri = Uri.parse(resultString[1]);
+                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
+                                    Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    }).show();
+                }
+                break;
+            default:
+                break;
         }
     }
 

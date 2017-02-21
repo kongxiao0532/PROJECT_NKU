@@ -80,11 +80,15 @@ public class WelcomeActivity extends AppCompatActivity {
         ifRemPass = settings.getBoolean(Strings.setting_remember_pwd, false);
 
         //Get previous information
+        isFirstOpen = true;
         name = settings.getString(Strings.setting_student_name, "Name");
         facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
         id = settings.getString(Strings.setting_studentID, "ID");
-        ids/*For new system*/ = settings.getString(Strings.setting_studentIDs, "IDs");
+        newestNotice = settings.getString(Strings.setting_notice, null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
+        password = settings.getString(Strings.setting_password,null);
+        //ids/*For new system*/ = settings.getString(Strings.setting_studentIDs, "IDs");
         majorName = settings.getString(Strings.setting_student_major, "Major");
+        isDoubleMajor = settings.getBoolean(Strings.setting_student_isDoubleMajor,false);
         if (ifRemPass) startIntent = new Intent(this, IndexActivity.class);
         else startIntent = new Intent(this, EduLoginActivity.class);
 
@@ -168,7 +172,6 @@ public class WelcomeActivity extends AppCompatActivity {
                     tmpMap.put("hour", Integer.parseInt(node.getChildNodes().item(1).getTextContent()));
                     tmpMap.put("minute", Integer.parseInt(node.getChildNodes().item(3).getTextContent()));
                     weekdays_tojinnan.add(tmpMap);
-                    Log.e("BUS", tmpMap.get("id") + "");
                 }
             }
             for (int i = 0; i < weekdays_tobalitai_list.getLength(); i++) {

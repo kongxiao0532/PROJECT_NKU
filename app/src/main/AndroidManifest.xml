@@ -42,10 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ColorSelectActivity"
-            android:label="@string/title_activity_color_select"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

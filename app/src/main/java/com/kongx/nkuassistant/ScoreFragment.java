@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
+import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,10 +35,9 @@ import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
 
 
-public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback{
+public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     String lastType;
     private SwipeRefreshLayout mRefresh;
-    private ArrayList<CourseStudied> tmpScore;
     private ListView mScoreList;
     private TextView mCreditsAll;
     private TextView mAverageAll;
@@ -44,7 +46,6 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     @Override
         public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Information.resetScores();
     }
 
     @Override
@@ -63,29 +64,28 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     showAverageMethod = (++showAverageMethod)%6;
                     switch (showAverageMethod){
                         case 0:
-                            mAverageAll.setText("ABCDE百分制学分绩 "+Information.average_abcde+"分");
+                            mAverageAll.setText("ABCDE百分制学分绩 "+new BigDecimal(Information.average_abcde).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         case 1:
-                            mAverageAll.setText("标准GPA "+Information.gpaABCED[0]+"分");
+                            mAverageAll.setText("标准GPA "+new BigDecimal(Information.gpaABCED[0]).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         case 2:
-                            mAverageAll.setText("改进型GPA(1) "+Information.gpaABCED[1]+"分");
+                            mAverageAll.setText("改进型GPA(1) "+new BigDecimal(Information.gpaABCED[1]).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         case 3:
-                            mAverageAll.setText("改进型GPA(2) "+Information.gpaABCED[2]+"分");
+                            mAverageAll.setText("改进型GPA(2) "+new BigDecimal(Information.gpaABCED[2]).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         case 4:
-                            mAverageAll.setText("北大GPA "+Information.gpaABCED[3]+"分");
+                            mAverageAll.setText("北大GPA "+new BigDecimal(Information.gpaABCED[3]).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         case 5:
-                            mAverageAll.setText("加拿大GPA(满分4.3) "+Information.gpaABCED[4]+"分");
+                            mAverageAll.setText("加拿大GPA(满分4.3) "+new BigDecimal(Information.gpaABCED[4]).setScale(3,BigDecimal.ROUND_HALF_UP));
                             break;
                         default:break;
                     }
                 }
             }
         });
-        onRefresh();
         return myView;
     }
 
@@ -93,6 +93,9 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
+        if(Information.studiedCourseCount == -1){
+            onRefresh();
+        }else onConnectorComplete(Connector.RequestType.SCORE,true);
     }
 
     @Override
@@ -103,130 +106,94 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
     public void onRefresh() {
         mRefresh.setRefreshing(true);
-        lastType = "A";
+//        lastType = "A";
         Information.resetScores();
-        tmpScore = new ArrayList<>();
-        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_score).method("POST").build().send(this);
+        Connector.getInformation(Connector.RequestType.SCORE,ScoreFragment.this,null);
     }
 
     @Override
-    public void onNetworkComplete(Response response) {
-        if(response.code() == 200) {
-            String returnString = response.body();
-            CourseStudied tmpCourse;
-            Pattern pattern;
-            Matcher matcher;
-            int startPoint = 0;
-            pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
-            matcher = pattern.matcher(returnString);
-            if (matcher.find()) {
-                Information.studiedCourseCount = Integer.parseInt(matcher.group(2));
-                Information.credits_All = Float.parseFloat(matcher.group(4));
-            }
-            startPoint = matcher.end();
-            for (int i = 0; i < Information.studiedCourseCount; i++) {
-                tmpCourse = new CourseStudied();
-                pattern = Pattern.compile("<td>(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) tmpCourse.setSemester(matcher.group(1));
-                try {
-                    startPoint = matcher.end();
-                }catch (IllegalStateException e) {
-                    break;
+    public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        switch (requestType){
+            case SCORE:
+                Boolean tmpBool = (Boolean) result;
+                if(tmpBool){
+                    if(m_activity == null) return;
+                    Information.studiedCourseCount = Information.studiedCourses.size();
+                    Toast.makeText(getActivity(), "已加载"+Information.studiedCourseCount+"条成绩信息", Toast.LENGTH_SHORT).show();
+                    SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putInt("studiedCourseCount",Information.studiedCourseCount);
+                    editor.apply();
+                    float sumABCDE = 0, creditABCDE = 0;
+                    float[] gpaSumABCDE = new float[]{0,0,0,0,0};
+                    Information.gpaABCED = new float[5];
+                    for(CourseStudied tmp : Information.studiedCourses){
+                        sumABCDE += tmp.score * tmp.creditCalculated;
+                        for(int i = 0;i < 5;i++){
+                            gpaSumABCDE[i] += tmp.gpas[i] * tmp.creditCalculated;
+                        }
+                        creditABCDE += tmp.creditCalculated;
+                    }
+                    for(int i = 0;i < 5;i++){
+                        Information.gpaABCED[i] = gpaSumABCDE[i] / creditABCDE;
+                    }
+                    Information.average_abcde = sumABCDE / creditABCDE;
+        //        Set<String> keySet = Information.scores.keySet();
+        //        List<String> keyList = new ArrayList<String>(keySet);
+        //        Collections.sort(keyList);
+        //        for (String key : keyList){
+        //            Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
+        //            Information.credits_All += Information.credits.get(key);
+        //            Information.credits_All_counted += Information.credits_counted.get(key);
+        //            Information.scores_All += Information.scores.get(key);
+        //        }
+        //        Float A = Information.scores.get("A");
+        //        Float B = Information.scores.get("B");
+        //        Float C = Information.scores.get("C");
+        //        Float D = Information.scores.get("D");
+        //        Float E = Information.scores.get("E");
+        //
+        //        Float cA = Information.credits_counted.get("A");
+        //        Float cB = Information.credits_counted.get("B");
+        //        Float cC = Information.credits_counted.get("C");
+        //        Float cD = Information.credits_counted.get("D");
+        //        Float cE = Information.credits_counted.get("E");
+        //
+        //        Float sumABCD = ((A==null?0:A)+(B==null?0:B)+(C==null?0:C)+(D==null?0:D));
+        //        Float sumcABCD = ((cA==null?0:cA)+(cB==null?0:cB)+(cC==null?0:cC)+(cD==null?0:cD));
+        //        Information.average_abcd = sumABCD / sumcABCD;
+        //        Information.average_abcde = (sumABCD+(E==null?0:E)) / (sumcABCD+(cE==null?0:cE));
+        //
+        //        Float FC = Information.scores.get("FC");
+        //        Float FD = Information.scores.get("FD");
+        //        Float cFC = Information.credits_counted.get("FC");
+        //        Float cFD = Information.credits_counted.get("FD");
+        //        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
+                    mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
+        //        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
+                    mAverageAll.setText("ABCDE百分制学分绩"+new BigDecimal(Information.average_abcde).setScale(3,BigDecimal.ROUND_HALF_UP)+"分");
+                    mRefresh.setRefreshing(false);
+                    mScoreList.setAdapter(new MyAdapter(m_activity));
+                }else {
+
                 }
-
-                pattern = Pattern.compile("<td>(.+)\\t(.+)\\n(.+)</td>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) tmpCourse.name = matcher.group(1);
-                startPoint = matcher.end();
-
-                pattern = Pattern.compile("<td>(.+)</td>.+");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) tmpCourse.classType = matcher.group(1);
-
-                pattern = Pattern.compile("\\n.+</td>.+<td>(.+)</td>\\n");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) tmpCourse.credit = Float.parseFloat(matcher.group(1));
-                startPoint = matcher.end();
-
-                //TODO:解决 通过 的情况
-                //TODO：解决 双修 的情况
-                pattern = Pattern.compile("</td><td style=\"\">.+\\t(.+)\\n");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find(startPoint)) tmpCourse.setScore(matcher.group(1));
-                startPoint = matcher.end();
-                tmpScore.add(tmpCourse);
-            }
-            update();
-        }else if (response.code() == 302){
-            startActivity(new Intent(m_activity,EduLoginActivity.class));
-            m_activity.finish();
+                break;
+            case LOGIN:
+                Log.e("SCORE",result.toString());
+                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
+                    Toast.makeText(getActivity(), "已重新登录", Toast.LENGTH_SHORT).show();
+                    onRefresh();
+                }else {
+                    Toast.makeText(getActivity(), "重新登录失败", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(m_activity,EduLoginActivity.class));
+                    m_activity.finish();
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    @Override
-    public void onNetworkError(Exception exception) {
-
-    }
-
-    private void update(){
-        if(m_activity == null) return;
-        Information.studiedCourses = tmpScore;
-        SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("studiedCourseCount",Information.studiedCourseCount);
-        editor.apply();
-        float sumABCDE = 0, creditABCDE = 0;
-        float[] gpaSumABCDE = new float[]{0,0,0,0,0};
-        Information.gpaABCED = new float[5];
-        for(CourseStudied tmp : Information.studiedCourses){
-            sumABCDE += tmp.score * tmp.creditCalculated;
-            for(int i = 0;i < 5;i++){
-                gpaSumABCDE[i] += tmp.gpas[i] * tmp.creditCalculated;
-            }
-            creditABCDE += tmp.creditCalculated;
-        }
-        for(int i = 0;i < 5;i++){
-            Information.gpaABCED[i] = gpaSumABCDE[i] / creditABCDE;
-        }
-        Information.average_abcde = sumABCDE / creditABCDE;
-//        Set<String> keySet = Information.scores.keySet();
-//        List<String> keyList = new ArrayList<String>(keySet);
-//        Collections.sort(keyList);
-//        for (String key : keyList){
-//            Information.averages.put(key,Information.scores.get(key) / Information.credits_counted.get(key));
-//            Information.credits_All += Information.credits.get(key);
-//            Information.credits_All_counted += Information.credits_counted.get(key);
-//            Information.scores_All += Information.scores.get(key);
-//        }
-//        Float A = Information.scores.get("A");
-//        Float B = Information.scores.get("B");
-//        Float C = Information.scores.get("C");
-//        Float D = Information.scores.get("D");
-//        Float E = Information.scores.get("E");
-//
-//        Float cA = Information.credits_counted.get("A");
-//        Float cB = Information.credits_counted.get("B");
-//        Float cC = Information.credits_counted.get("C");
-//        Float cD = Information.credits_counted.get("D");
-//        Float cE = Information.credits_counted.get("E");
-//
-//        Float sumABCD = ((A==null?0:A)+(B==null?0:B)+(C==null?0:C)+(D==null?0:D));
-//        Float sumcABCD = ((cA==null?0:cA)+(cB==null?0:cB)+(cC==null?0:cC)+(cD==null?0:cD));
-//        Information.average_abcd = sumABCD / sumcABCD;
-//        Information.average_abcde = (sumABCD+(E==null?0:E)) / (sumcABCD+(cE==null?0:cE));
-//
-//        Float FC = Information.scores.get("FC");
-//        Float FD = Information.scores.get("FD");
-//        Float cFC = Information.credits_counted.get("FC");
-//        Float cFD = Information.credits_counted.get("FD");
-//        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
-        mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
-//        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
-        mAverageAll.setText("ABCDE百分制学分绩"+Information.average_abcde+"分");
-        mRefresh.setRefreshing(false);
-        mScoreList.setAdapter(new MyAdapter(m_activity));
-    }
 
     private class MyAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
@@ -277,7 +244,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         Information.studiedCourses.get(position).semester+ "  " +
                                 Information.studiedCourses.get(position).credit+"学分"
                 );
-                holder.score.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? "通过" : String.valueOf(Information.studiedCourses.get(position).score));
+                holder.score.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? "通过" : (!String.valueOf(Information.studiedCourses.get(position).score).contains(".")) ? String.valueOf(Information.studiedCourses.get(position).score) : String.valueOf(Information.studiedCourses.get(position).score).replaceAll("0*$", "").replaceAll("\\.$", ""));
 //            }
             return convertView;
         }

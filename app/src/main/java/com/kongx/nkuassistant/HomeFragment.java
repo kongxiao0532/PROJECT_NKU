@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
 
 import tk.sunrisefox.httprequest.*;
 
-public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connect.Callback{
+public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private SwipeRefreshLayout mReFresh;
     private Activity m_activity;
     //Schedule Module
@@ -161,42 +162,41 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mSememText.setText(Information.semester);
         mDate.setText(dateFormat.format(calendar.getTime()));
         mDay.setText(Information.dayOfWeek[dayOfWeek]);
-        if(Information.ifLoggedIn){
+        if(Information.isFirstOpen){
             onRefresh();
+            Information.isFirstOpen = false;
         } else{
             updateSchedule();
             updateBus();
             mScoreStatus.setText(getString(R.string.pull_to_refresh));
-            mSelectStatus.setText(getString(R.string.pull_to_refresh));
+            onConnectorComplete(Connector.RequestType.SCORE,true);
+//            mSelectStatus.setText(getString(R.string.pull_to_refresh));
         }
         return myView;
     }
 
     @Override
-    public void onNetworkError(Exception exception) {
-
-    }
-
-    @Override
-    public void onNetworkComplete(Response response) {
-        if (response.code() == 200) {
-            if(response.tag().equals(RequestType.SCORE_COUNT)) {
-                Information.ifLoggedIn = true;
-                String returnString = response.body();
-                pattern = Pattern.compile("</th>\\n(.+)<th>(\\d+)</th>\\n(.+)<th>(.+)</th>");
-                matcher = pattern.matcher(returnString);
-                if (matcher.find()) {
-                    newStudiedCourseCount = Integer.parseInt(matcher.group(2));
+    public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        switch (requestType){
+            case LOGIN:
+                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
+                    Toast.makeText(getActivity(), "已重新登录", Toast.LENGTH_SHORT).show();
+                    onRefresh();
+                }else {
+                    Toast.makeText(getActivity(), "重新登录失败", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(m_activity,EduLoginActivity.class));
+                    m_activity.finish();
                 }
-                if (newStudiedCourseCount == Information.studiedCourseCount) {
+                break;
+            case SCORE:
+                if (Information.studiedCourses.size() == Information.studiedCourseCount) {
                     mScoreStatus.setText("暂无成绩更新");
                 } else {
-                    mScoreStatus.setText("有" + Math.abs(newStudiedCourseCount - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
+                    mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
                 }
-            }
-        }else if(response.code() == 302) {
-            startActivity(new Intent(m_activity,EduLoginActivity.class));
-            m_activity.finish();
+                break;
+            default:
+                break;
         }
     }
 
@@ -214,7 +214,9 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        new Request.Builder().url(Information.WEB_URL + Information.Strings.url_score).tag(RequestType.SCORE_COUNT).build().send(this);
+        Information.resetScores();
+        Connector.getInformation(Connector.RequestType.SCORE,this,null);
+//        new Request.Builder().url(Connector.WEB_URL + Connector.url_score).tag(RequestType.SCORE_COUNT).build().send(this);
         try{
             updateSchedule();
             updateBus();
@@ -291,7 +293,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 View view = mInflater.inflate(R.layout.home_schedule_item, null);
                 TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
                 TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
-                item_name.setText(courseToday.get(i).get("name"));
+                item_name.setText((courseToday.get(i).get("name").length() <= 8) ? courseToday.get(i).get("name") : courseToday.get(i).get("name").substring(0,4) + "..." + courseToday.get(i).get("name").substring(courseToday.get(i).get("name").length() - 4,courseToday.get(i).get("name").length()));
                 item_classroom.setText(courseToday.get(i).get("classRoom"));
                 mScheduleList.addView(view);
             }
@@ -385,10 +387,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             return;
         }
     }
-
-    private static class RequestType {
-        static final String SCORE_COUNT = "Get score count";
-    }
+//
+//    private static class RequestType {
+//        static final String SCORE_COUNT = "Get score count";
+//    }
 
 } 
 

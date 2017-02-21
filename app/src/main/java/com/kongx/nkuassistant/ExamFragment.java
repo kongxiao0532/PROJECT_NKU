@@ -76,7 +76,7 @@ public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onRefresh() {
         mRefresh.setRefreshing(true);
         tmpExamList = new ArrayList<>();
-        new Request.Builder().url(Information.WEB_URL +"/xxcx/stdexamarrange/listAction.do").build().send(this);
+        new Request.Builder().url(Connector.WEB_URL +"/xxcx/stdexamarrange/listAction.do").build().send(this);
     }
 
     private void update(){
