@@ -2,7 +2,6 @@ package tk.sunrisefox.httprequest;
 
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,34 +10,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Connect extends AsyncTask<Void, Long, Void> {
     private static final String DEBUG_TAG = "NETWORK";
+    /*package-private*/ static boolean defaultFollowRedirects = false;
     private static int connectTimeout = 3000;
     private static int readTimeout = 0;
     private static String rules = null;
-    /*package-private*/ static boolean defaultFollowRedirects = false;
     private static String defaultUA = null;
-
-    private Exception exception = null;
     final private Request request;
-    private Response response;
     final private Callback ui;
     final private Callback network;
     final private Progress progress;
+    /*package-private*/ boolean shouldPause = false;
+    private Exception exception = null;
+    private Response response;
     private Long startBytes = 0L;
     private Long finishedBytes = 0L;
-
-    /*package-private*/ boolean shouldPause = false;
 
     /*package-private*/ Connect(Request request, Callback ui, Callback network, Progress progress) {
         this.request = request;
@@ -63,7 +58,9 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         return defaultUA;
     }
 
-    public static boolean defaultFollowRedirects() { return defaultFollowRedirects; }
+    public static boolean defaultFollowRedirects() {
+        return defaultFollowRedirects;
+    }
 
     public static void setConnectTimeout(int time) {
         connectTimeout = (time < 0 ? 0 : time);
@@ -73,15 +70,17 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         readTimeout = (time < 0 ? 0 : time);
     }
 
-    public static void setDefaultFollowRedirects(boolean followRedirects) { defaultFollowRedirects = followRedirects; }
+    public static void setDefaultFollowRedirects(boolean followRedirects) {
+        defaultFollowRedirects = followRedirects;
+    }
 
     public static void setDefaultUA(String UA) {
         defaultUA = UA;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static boolean setDefaultReplaceRules(String rules){
-        if(rules != null) {
+    public static boolean setDefaultReplaceRules(String rules) {
+        if (rules != null) {
             // ^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1<>all ([.][^.]+)$<>3$1
             String[] rule = rules.split(" ");
             try {
@@ -104,11 +103,11 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             //noinspection ThrowableResultOfMethodCallIgnored
             if (request.exception() != null) throw request.exception();
             String urlString = request.url();
-            if(rules != null) {
+            if (rules != null) {
                 String[] rule = rules.split(" ");
                 for (String r : rule) {
                     String[] p = r.split("<>");
-                    urlString = (p.length==3 && p[2].equals("all") ? urlString.replaceAll(p[0].trim(),p[1].trim()) : urlString.replaceFirst(p[0].trim(),p[1].trim()));
+                    urlString = (p.length == 3 && p[2].equals("all") ? urlString.replaceAll(p[0].trim(), p[1].trim()) : urlString.replaceFirst(p[0].trim(), p[1].trim()));
                 }
             }
             URL url = new URL(urlString);
@@ -129,8 +128,8 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 builder.deleteCharAt(builder.length() - 1);
                 connection.setRequestProperty(entry.getKey(), builder.toString());
             }
-            if((startBytes = finishedBytes = request.startBytes) != 0){
-                connection.setRequestProperty("Range","bytes="+ String.valueOf(startBytes) + "-");
+            if ((startBytes = finishedBytes = request.startBytes) != 0) {
+                connection.setRequestProperty("Range", "bytes=" + String.valueOf(startBytes) + "-");
             }
             if (request.doOutput()) {
                 OutputStream os = connection.getOutputStream();
@@ -142,13 +141,15 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             request.response = response = new Response(this);
             response.tag = request.tag();
             response.code = connection.getResponseCode();
-            if(startBytes != 0L && response.code() != 206) throw new IOException("Recovering from pause is not supported.");
+            if (startBytes != 0L && response.code() != 206)
+                throw new IOException("Recovering from pause is not supported.");
             response.headers = connection.getHeaderFields();
             if (network != null) {
+                //TODO: Thought is still needed on starting new thread or not
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        network.onNetworkComplete(response);
+                        if (!response.finished()) network.onNetworkComplete(response);
                     }
                 }).start();
             }
@@ -156,11 +157,11 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             if (request.doInput()) {
                 try {
                     stream = connection.getInputStream();
-                }catch (FileNotFoundException e){
+                } catch (FileNotFoundException e) {
                     stream = connection.getErrorStream();
                 }
             }
-            if(stream != null) {
+            if (stream != null) {
                 long downloadedBytes = 0;
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 int nRead;
@@ -168,7 +169,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
                 File file = request.file();
                 FileOutputStream fileOutputStream = null;
-                if(startBytes == 0L) {
+                if (startBytes == 0L) {
                     if (file != null && !file.isFile()) {
                         try {
                             if (!file.createNewFile())
@@ -188,7 +189,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                         fileOutputStream = new FileOutputStream(file);
                         request.setFile(file);
                     }
-                }else fileOutputStream = new FileOutputStream(file,true);
+                } else fileOutputStream = new FileOutputStream(file, true);
                 String contentLength = connection.getHeaderField("Content-Length");
                 long totalBytes;
                 try {
@@ -208,7 +209,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                             fileOutputStream.flush();
                             finishedBytes += bytes;
                             buffer.reset();
-                            if(isCancelled()) {
+                            if (isCancelled()) {
                                 stream.close();
                                 break;
                             }
@@ -221,8 +222,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 if (fileOutputStream != null) {
                     response.file = file;
                     fileOutputStream.close();
-                }
-                else response.buffer = buffer;
+                } else response.buffer = buffer;
 
                 if (network != null) {
                     response.setFinished();
@@ -240,9 +240,9 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
     @Override
     protected void onCancelled() {
-        if(shouldPause && response!=null){
-            response.setResumeRequest(Request.copy(request,finishedBytes));
-        }else {
+        if (shouldPause && response != null) {
+            response.setResumeRequest(Request.copy(request, finishedBytes));
+        } else {
             IOException exception = new IOException("User Cancelled.");
             if (ui != null) ui.onNetworkError(exception);
             if (network != null) network.onNetworkError(exception);
