@@ -66,7 +66,7 @@ public class Request{
     private File file;
     private IOException exception;
     private Connect.Progress progress;
-    private Connect connect;
+    /*package-private*/ Connect connect;
     private Connect.Callback uiThreadCallback;
     private Connect.Callback networkThreadCallback;
     private int delay = 0;
