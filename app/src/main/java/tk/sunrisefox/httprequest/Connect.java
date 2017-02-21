@@ -122,7 +122,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     }
                 }
             }
-
+            request.connect = null;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(connectTimeout);
