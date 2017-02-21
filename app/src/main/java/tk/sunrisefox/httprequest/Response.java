@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class Response {
 
-
+    private Request originalRequest;
     private Request resumeRequest;
     private Connect connect = null;
     /*package-private*/ String tag;
@@ -23,6 +23,7 @@ public class Response {
 
     /*package-private*/ Response(Connect connect){
         this.connect = connect;
+        this.originalRequest = new Request(connect.request);
     }
     /*package-private*/ void setResumeRequest(Request resumeRequest){
         this.resumeRequest = resumeRequest;
@@ -70,4 +71,8 @@ public class Response {
     public byte[] bytes(){ return buffer == null ? null : buffer.toByteArray(); }
     public String body(){ return buffer == null ? null : buffer.toString(); };
     public File file(){ return file != null && file.exists() ? file : null; }
+    public Request resend(){
+        originalRequest.send();
+        return originalRequest;
+    }
 }

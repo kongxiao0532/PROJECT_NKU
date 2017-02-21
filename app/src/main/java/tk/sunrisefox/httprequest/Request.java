@@ -22,12 +22,12 @@ public class Request{
         return newRequest;
     }
 
-    private Request(Request request){
+    /*package-private*/ Request(Request request){
+        this.tag = request.tag;
         this.method = request.method;
         this.url = request.url;
         this.headers = request.headers;
         this.requestBody = request.requestBody;
-        this.tag = request.tag;
         this.doInput = request.doInput;
         this.doOutput = request.doOutput;
         this.followRedirects = request.followRedirects;
@@ -36,6 +36,7 @@ public class Request{
         this.saveAsFile = request.saveAsFile;
         this.uiThreadCallback = request.uiThreadCallback;
         this.networkThreadCallback = request.networkThreadCallback;
+        this.delay = request.delay;
     }
 
     private Request(Builder builder){
@@ -51,6 +52,7 @@ public class Request{
         this.progress = builder.progress;
         this.file = builder.file;
         this.saveAsFile = builder.saveAsFile;
+        this.delay = builder.delay;
     }
     private String tag;
     private String method;
@@ -67,6 +69,7 @@ public class Request{
     private Connect connect;
     private Connect.Callback uiThreadCallback;
     private Connect.Callback networkThreadCallback;
+    private int delay = 0;
 
     /*package-private*/ Long startBytes = 0L;
     /*package-private*/ Response response;
@@ -92,9 +95,10 @@ public class Request{
     public boolean saveAsFile() { return saveAsFile; }
     public File file() { return file; }
     public IOException exception() { return exception; }
+    public int delay() { return delay; }
 
     /*package-private*/ Connect send(){
-        if(this.networkThreadCallback == null) return null;
+        if(this.uiThreadCallback == null && this.networkThreadCallback == null) return null;
         connect = new Connect(this, uiThreadCallback, networkThreadCallback, progress);
         connect.execute();
         return connect;
@@ -108,10 +112,23 @@ public class Request{
         connect = new Connect(this, this.uiThreadCallback = uiThreadCallback, this.networkThreadCallback = networkThreadCallback, progress);
         connect.execute();
     }
+
     public boolean abort(){
         return connect == null || connect.cancel(true);
     }
 
+    public boolean notifyConnect(){
+        if(connect == null)return false;
+        try {
+            //noinspection SynchronizeOnNonFinalField
+            synchronized (connect) {
+                connect.notifyAll();
+            }
+        }catch (IllegalMonitorStateException e){
+            return false;
+        }
+        return true;
+    }
 
     public static class Builder{
         String tag = null;
@@ -126,6 +143,7 @@ public class Request{
         boolean saveAsFile = false;
         FollowRedirects followRedirects = FollowRedirects.UNSET;
         IOException exception = null;
+        int delay = 0;
 
         public Builder(){ }
         public Builder tag(String tag){
@@ -189,6 +207,11 @@ public class Request{
 
         public Builder progress(Connect.Progress progress){
             this.progress = progress;
+            return this;
+        }
+
+        public Builder delay(int delay){
+            this.delay = delay;
             return this;
         }
 

@@ -2,6 +2,7 @@ package tk.sunrisefox.httprequest;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,7 +26,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
     private static int readTimeout = 0;
     private static String rules = null;
     private static String defaultUA = null;
-    final private Request request;
+    final /*package-private*/ Request request;
     final private Callback ui;
     final private Callback network;
     final private Progress progress;
@@ -110,6 +111,18 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     urlString = (p.length == 3 && p[2].equals("all") ? urlString.replaceAll(p[0].trim(), p[1].trim()) : urlString.replaceFirst(p[0].trim(), p[1].trim()));
                 }
             }
+
+            if(request.delay()!=0){
+                synchronized (this){
+                    try {
+                        if(request.delay() == -1) wait();
+                        else wait(request.delay());
+                    }catch (InterruptedException e){
+                        Log.e("Network",Log.getStackTraceString(e));
+                    }
+                }
+            }
+
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(connectTimeout);
