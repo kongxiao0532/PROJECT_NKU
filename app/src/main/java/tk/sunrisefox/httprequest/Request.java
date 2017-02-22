@@ -1,15 +1,9 @@
 package tk.sunrisefox.httprequest;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Request{
@@ -40,25 +34,25 @@ public class Request{
     }
 
     private Request(Builder builder){
+        this.tag = builder.tag;
         this.method = builder.method;
         this.url = builder.url;
         this.headers = builder.headers;
         this.requestBody = builder.requestBody;
-        this.tag = builder.tag;
         this.doInput = builder.doInput;
         this.doOutput = builder.doOutput;
         this.followRedirects = builder.followRedirects;
-        this.exception = builder.exception;
         this.progress = builder.progress;
         this.file = builder.file;
         this.saveAsFile = builder.saveAsFile;
         this.delay = builder.delay;
+        this.exception = builder.exception;
     }
     private String tag;
     private String method;
     private String url;
     private String requestBody;
-    private Map<String, List<String>> headers;
+    private Map<String, String> headers;
     private boolean doInput;
     private boolean doOutput;
     private FollowRedirects followRedirects;
@@ -81,7 +75,7 @@ public class Request{
     public String method(){ return this.method; };
     public String url() { return url; }
     public String requestBody() { return requestBody; }
-    public Map<String, List<String>> headers() { return headers; }
+    public Map<String, String> headers() { return headers; }
     public boolean doInput() { return doInput; }
     public boolean doOutput() { return doOutput; }
     public boolean followRedirects() {
@@ -135,7 +129,7 @@ public class Request{
         String method = null;
         String url = null;
         String requestBody = null;
-        Map<String, List<String>>  headers = new HashMap<>();
+        Map<String, String>  headers = new HashMap<>();
         Connect.Progress progress;
         File file = null;
         boolean doInput = true;
@@ -146,6 +140,23 @@ public class Request{
         int delay = 0;
 
         public Builder(){ }
+
+        /*package-private*/ Builder(Request request){
+            this.tag = request.tag;
+            this.method = request.method;
+            this.url = request.url;
+            this.headers = request.headers;
+            this.requestBody = request.requestBody;
+            this.doInput = request.doInput;
+            this.doOutput = request.doOutput;
+            this.followRedirects = request.followRedirects;
+            this.exception = request.exception;
+            this.progress = request.progress;
+            this.file = request.file;
+            this.saveAsFile = request.saveAsFile;
+            this.delay = request.delay;
+        }
+
         public Builder tag(String tag){
             this.tag = tag;
             return this;
@@ -180,15 +191,12 @@ public class Request{
         }
 
         public Builder addHeader(String key, String value){
-            List<String> valueList;
-            if((valueList = headers.get(key)) != null) {
-                valueList = new ArrayList<>(valueList);
-                valueList.add(value);
-            } else {
-                valueList = new ArrayList<>();
-                valueList.add(value);
-            }
-            headers.put(key,valueList);
+            headers.put(key,value);
+            return this;
+        }
+
+        public Builder setHeader(Map<String,String> headers){
+            this.headers = (headers == null ? new HashMap<String, String>() : headers);
             return this;
         }
 

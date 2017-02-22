@@ -15,7 +15,7 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -25,7 +25,18 @@ public class Connect extends AsyncTask<Void, Long, Void> {
     private static int connectTimeout = 3000;
     private static int readTimeout = 0;
     private static String rules = null;
-    private static String defaultUA = null;
+    private static Map<String,String> defaultHeaders = new HashMap<>();
+    private static File defaultSavingDirectory;
+    private static void resetDefaultSavingDirectory(){
+        try {
+            defaultSavingDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        }catch (Throwable throwable){
+            defaultSavingDirectory = null;
+        }
+    }
+    static {
+        resetDefaultSavingDirectory();
+    }
     final /*package-private*/ Request request;
     final private Callback ui;
     final private Callback network;
@@ -55,10 +66,6 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         return readTimeout;
     }
 
-    public static String defaultUA() {
-        return defaultUA;
-    }
-
     public static boolean defaultFollowRedirects() {
         return defaultFollowRedirects;
     }
@@ -75,8 +82,23 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         defaultFollowRedirects = followRedirects;
     }
 
-    public static void setDefaultUA(String UA) {
-        defaultUA = UA;
+    public static boolean setDefaultSavingDirectory(File file) {
+        if(file == null) { resetDefaultSavingDirectory(); return true; }
+        if(file.isDirectory()) { defaultSavingDirectory = file; return true; }
+        return false;
+    }
+
+    public static Map<String,String> getDefaultHeaders() {
+        return defaultHeaders;
+    }
+
+    public static void setDefaultHeaders(Map<String,String> defaultHeaders) {
+        if(defaultHeaders == null) defaultHeaders = new HashMap<>();
+        Connect.defaultHeaders = defaultHeaders;
+    }
+
+    public static void addDefaultHeaders(String key, String value) {
+        defaultHeaders.put(key, value);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -122,25 +144,22 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     }
                 }
             }
-            request.connect = null;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
             connection.setConnectTimeout(connectTimeout);
             connection.setReadTimeout(readTimeout);
             connection.setRequestMethod(request.method());
             connection.setDoInput(request.doInput());
             connection.setDoOutput(request.doOutput());
             connection.setInstanceFollowRedirects(request.followRedirects());
-            if (defaultUA != null) connection.setRequestProperty("User-Agent", defaultUA);
-            for (Map.Entry<String, List<String>> entry : request.headers().entrySet()) {
-                StringBuilder builder = new StringBuilder();
-                for (String value : entry.getValue()) {
-                    builder.append(value);
-                    builder.append(";");
-                }
-                builder.deleteCharAt(builder.length() - 1);
-                connection.setRequestProperty(entry.getKey(), builder.toString());
+            for (Map.Entry<String, String> entry : defaultHeaders.entrySet()){
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
             }
+            for (Map.Entry<String, String> entry : request.headers().entrySet()) {
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+
             if ((startBytes = finishedBytes = request.startBytes) != 0) {
                 connection.setRequestProperty("Range", "bytes=" + String.valueOf(startBytes) + "-");
             }
@@ -158,7 +177,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 throw new IOException("Recovering from pause is not supported.");
             response.headers = connection.getHeaderFields();
             if (network != null) {
-                //TODO: Thought is still needed on starting new thread or not
+                //TODO: Thought is still needed on whether to start a new thread or not.
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -166,6 +185,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     }
                 }).start();
             }
+
             InputStream stream = null;
             if (request.doInput()) {
                 try {
@@ -185,16 +205,20 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 if (startBytes == 0L) {
                     if (file != null && !file.isFile()) {
                         try {
-                            if (!file.createNewFile())
+                            if(file.isDirectory()){
+                                for (int i = 1; file.exists(); i++)
+                                    file = new File(file
+                                            , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
+                            }else if (!file.createNewFile())
                                 file = null;
                         } catch (IOException e) {
                             file = null;
                         }
                     }
                     if (file == null && request.saveAsFile()) {
-                        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), url.getFile());
+                        file = new File(defaultSavingDirectory, url.getFile());
                         for (int i = 1; file.exists(); i++)
-                            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                            file = new File(defaultSavingDirectory
                                     , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
                         if (!file.createNewFile()) throw new IOException("No file is writable");
                     }
@@ -237,16 +261,19 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     fileOutputStream.close();
                 } else response.buffer = buffer;
 
-                if (network != null) {
-                    response.setFinished();
+                if (network != null)
                     network.onNetworkComplete(response);
-                }
             }
         } catch (IOException e) {
             exception = e;
             if (network != null) {
                 network.onNetworkError(e);
             }
+        }finally {
+            if(request != null)
+                request.connect = null;
+            if(response != null)
+                response.connect = null;
         }
         return null;
     }

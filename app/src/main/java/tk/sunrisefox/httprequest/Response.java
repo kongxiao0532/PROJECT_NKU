@@ -1,12 +1,7 @@
 package tk.sunrisefox.httprequest;
 
-import android.util.Log;
-
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +9,7 @@ public class Response {
 
     private Request originalRequest;
     private Request resumeRequest;
-    private Connect connect = null;
+    /*package-private*/ Connect connect = null;
     /*package-private*/ String tag;
     /*package-private*/ int code = -1;
     /*package-private*/ ByteArrayOutputStream buffer;
@@ -23,14 +18,10 @@ public class Response {
 
     /*package-private*/ Response(Connect connect){
         this.connect = connect;
-        this.originalRequest = new Request(connect.request);
+        this.originalRequest = connect.request;
     }
     /*package-private*/ void setResumeRequest(Request resumeRequest){
         this.resumeRequest = resumeRequest;
-        connect = null;
-    }
-
-    /*package-private*/ void setFinished(){
         connect = null;
     }
 
@@ -72,7 +63,12 @@ public class Response {
     public String body(){ return buffer == null ? null : buffer.toString(); };
     public File file(){ return file != null && file.exists() ? file : null; }
     public Request resend(){
-        originalRequest.send();
-        return originalRequest;
+        Request request = new Request(originalRequest);
+        originalRequest = null;
+        request.send();
+        return request;
+    }
+    public Request.Builder getBuilder(){
+        return new Request.Builder(originalRequest);
     }
 }
