@@ -2,8 +2,8 @@ package com.kongx.nkuassistant;
 
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +14,7 @@ import android.webkit.WebViewClient;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  BrowserFragment extends Fragment {
+public class BrowserFragment extends Fragment {
     private static final String URL = "URL";
     private static List<BrowserFragment> list = new ArrayList<>();
     private String mUrl;
@@ -51,11 +51,10 @@ public class  BrowserFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_browser, container, false);
         webView = (WebView) v.findViewById(R.id.ic_webview);
-//        webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(new WebChromeClient());
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setSupportMultipleWindows(true);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient());
         webView.loadUrl(mUrl);
         list.add(this);
         return v;
