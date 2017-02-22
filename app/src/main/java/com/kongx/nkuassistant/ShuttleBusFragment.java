@@ -3,23 +3,23 @@ package com.kongx.nkuassistant;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.provider.DocumentsContract;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 
 public class ShuttleBusFragment extends Fragment {
-    private View myView = null;
-    private TabHost mTab;
     private ListView mToJinnanList;
     private ListView mToBalitaiList;
 
@@ -33,101 +33,161 @@ public class ShuttleBusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.fragment_shuttle_bus, container, false);
-        mTab = (TabHost) myView.findViewById(R.id.shuttlebus_tabs);
-        mTab.setup();
-        TabHost.TabSpec ts = mTab.newTabSpec("tag1");
-        ts.setContent(R.id.tab_tojinnan);
-        ts.setIndicator(getString(R.string.tab_tojinnan));
-        mTab.addTab(ts);
-        ts = mTab.newTabSpec("tag2");
-        ts.setContent(R.id.tab_tobalitai);
-        ts.setIndicator(getString(R.string.tab_tobalitai));
-        mTab.addTab(ts);
+        View view = inflater.inflate(R.layout.fragment_shuttle_bus, container, false);
 
-        mToJinnanList = (ListView) myView.findViewById(R.id.list_tojinnan);
-        mToBalitaiList = (ListView) myView.findViewById(R.id.list_tobalitai);
-        mToJinnanList.setAdapter(new ToJinnanAdapter(getActivity()));
-        mToBalitaiList.setAdapter(new ToBalitaiAdapter(getActivity()));
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        viewPager.setAdapter(new ScreenSlidePagerAdapter(((AppCompatActivity)getActivity()).getSupportFragmentManager()));
 
-        return myView;
+        final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager, true);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                ViewGroup vg = ((ViewGroup) tabLayout.getChildAt(0));
+                vg.animate()
+                        .setStartDelay(600)
+                        .setDuration(400)
+                        .setInterpolator(new LinearOutSlowInInterpolator())
+                        .start();
+
+                ViewGroup vgTab = (ViewGroup) vg.getChildAt(tab.getPosition());
+                vgTab.setScaleX(0.8f);
+                vgTab.setScaleY(0.8f);
+                vgTab.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setInterpolator(new FastOutSlowInInterpolator())
+                        .setDuration(450)
+                        .start();
+            }
+
+            @Override public void onTabUnselected(TabLayout.Tab tab) { }
+            @Override public void onTabReselected(TabLayout.Tab tab) { }
+        });
+
+        return view;
     }
-    private class ToJinnanAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-        public ToJinnanAdapter(Context context) {
-            this.mInflater = LayoutInflater.from(context);
+
+    public static class ShuttleBusPage1 extends android.support.v4.app.Fragment{
+        public ShuttleBusPage1(){}
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_shuttle_bus_page1, container, false);
+            ((ListView)view.findViewById(R.id.list_tojinnan)).setAdapter(new ToJinnanAdapter(getActivity()));
+            return view;
         }
+
+        private class ToJinnanAdapter extends BaseAdapter {
+            private LayoutInflater mInflater;
+            public ToJinnanAdapter(Context context) {
+                this.mInflater = LayoutInflater.from(context);
+            }
+            @Override
+            public int getCount() {
+                return Information.weekdays_tojinnan.size();
+            }
+            @Override
+            public Object getItem(int position) {
+                return Information.weekdays_tojinnan.get(position);
+            }
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewHolder holder;
+                if(convertView == null){
+                    convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                    holder = new ViewHolder();
+                    holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                    holder.time = (TextView) convertView.findViewById(R.id.textView_time);
+                    convertView.setTag(holder);//绑定ViewHolder对象
+                } else{
+                    holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
+                }
+                holder.way.setText(Information.weekdays_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
+                holder.time.setText(Information.weekdays_tojinnan.get(position).get("hour") + ":" +
+                        ((Information.weekdays_tojinnan.get(position).get("minute") == 0) ? "00" : Information.weekdays_tojinnan.get(position).get("minute")));
+                return convertView;
+            }
+        }
+
+        class ViewHolder {
+            TextView way;
+            TextView time;
+        }
+    }
+
+    public static class ShuttleBusPage2 extends android.support.v4.app.Fragment{
+        public ShuttleBusPage2(){}
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_shuttle_bus_page2, container, false);
+            ((ListView)view.findViewById(R.id.list_tobalitai)).setAdapter(new ToBalitaiAdapter(getActivity()));
+            return view;
+        }
+
+        private class ToBalitaiAdapter extends BaseAdapter {
+            private LayoutInflater mInflater;
+            public ToBalitaiAdapter(Context context) {
+                this.mInflater = LayoutInflater.from(context);
+            }
+            @Override
+            public int getCount() {
+                return Information.weekdays_tobalitai.size();
+            }
+            @Override
+            public Object getItem(int position) {
+                return Information.weekdays_tobalitai.get(position);
+            }
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewHolder holder;
+                if(convertView == null){
+                    convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                    holder = new ViewHolder();
+                    holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                    holder.time = (TextView) convertView.findViewById(R.id.textView_time);
+                    convertView.setTag(holder);//绑定ViewHolder对象
+                } else{
+                    holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
+                }
+                holder.way.setText(Information.weekdays_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
+                holder.time.setText(Information.weekdays_tobalitai.get(position).get("hour") + ":" +
+                        ((Information.weekdays_tobalitai.get(position).get("minute") == 0) ? "00" : Information.weekdays_tobalitai.get(position).get("minute")));
+                return convertView;
+            }
+        }
+        class ViewHolder {
+            TextView way;
+            TextView time;
+        }
+    }
+
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager supportFragmentManager) {
+            super(supportFragmentManager);
+        }        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            if(position==1) return new ShuttleBusPage2();
+            return new ShuttleBusPage1();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if(position==1) return getString(R.string.tab_tobalitai);
+            return getString(R.string.tab_tojinnan);
+        }
+
         @Override
         public int getCount() {
-            return Information.weekdays_tojinnan.size();
+            return 2;
         }
-        @Override
-        public Object getItem(int position) {
-            return Information.weekdays_tojinnan.get(position);
-        }
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ToJinnanViewHolder holder;
-            if(convertView == null){
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
-                holder = new ToJinnanViewHolder();
-                holder.way = (TextView) convertView.findViewById(R.id.textView_way);
-                holder.time = (TextView) convertView.findViewById(R.id.textView_time);
-                convertView.setTag(holder);//绑定ViewHolder对象
-            } else{
-                holder = (ToJinnanViewHolder)convertView.getTag();//取出ViewHolder对象
-            }
-            holder.way.setText(Information.weekdays_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
-            holder.time.setText(Information.weekdays_tojinnan.get(position).get("hour") + ":" +
-                    ((Information.weekdays_tojinnan.get(position).get("minute") == 0) ? "00" : Information.weekdays_tojinnan.get(position).get("minute")));
-            return convertView;
-        }
-    }
-    class ToJinnanViewHolder{
-        TextView way;
-        TextView time;
-    }
-    private class ToBalitaiAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-        public ToBalitaiAdapter(Context context) {
-            this.mInflater = LayoutInflater.from(context);
-        }
-        @Override
-        public int getCount() {
-            return Information.weekdays_tobalitai.size();
-        }
-        @Override
-        public Object getItem(int position) {
-            return Information.weekdays_tobalitai.get(position);
-        }
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ToBalitaiViewHolder holder;
-            if(convertView == null){
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
-                holder = new ToBalitaiViewHolder();
-                holder.way = (TextView) convertView.findViewById(R.id.textView_way);
-                holder.time = (TextView) convertView.findViewById(R.id.textView_time);
-                convertView.setTag(holder);//绑定ViewHolder对象
-            } else{
-                holder = (ToBalitaiViewHolder)convertView.getTag();//取出ViewHolder对象
-            }
-            holder.way.setText(Information.weekdays_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
-            holder.time.setText(Information.weekdays_tobalitai.get(position).get("hour") + ":" +
-                    ((Information.weekdays_tobalitai.get(position).get("minute") == 0) ? "00" : Information.weekdays_tobalitai.get(position).get("minute")));
-            return convertView;
-        }
-    }
-    class ToBalitaiViewHolder{
-        TextView way;
-        TextView time;
     }
 }
