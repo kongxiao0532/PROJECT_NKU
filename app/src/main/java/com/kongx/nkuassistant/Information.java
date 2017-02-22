@@ -37,6 +37,7 @@ public class Information {
     //related to Home Page
     static int weekCount;
     static String semester;
+    static int semesterId;
     static String date;
 
     //related to Scores
@@ -100,7 +101,8 @@ public class Information {
         final static String setting_selected_course_count = "selectedCourseCount";
         final static String setting_exam_count = "examCount";
         final static String setting_last_update_time = "curriculum_lastUpdate";
-        final static String setting_studentIDs = "StudentIDs";
+        final static String setting_student_major_IDs = "student_major_IDs";
+        final static String setting_student_minor_IDs = "Student_minor_IDs";
         final static String setting_studentID = "StudentID";
         final static String setting_student_name = "StudentName";
         final static String setting_student_faculty = "FacultyName";

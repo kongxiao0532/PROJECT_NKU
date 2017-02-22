@@ -3,6 +3,7 @@ package com.kongx.nkuassistant;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.IDNA;
 import android.media.Image;
 import android.os.Bundle;
@@ -123,6 +124,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if(weekOfYear == 1 || weekOfYear == 2){
                 Information.weekCount = 0;
                 Information.semester = "2016-2017 第一学期";
+                Information.semesterId = 30;
             }
             if(weekOfYear > 2 && weekOfYear <= 6){
                 Information.weekCount = weekOfYear - 2;
@@ -131,14 +133,17 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if(weekOfYear > 6 && weekOfYear <= 22){
                 Information.weekCount = weekOfYear - 6;
                 Information.semester = "2016-2017 第二学期";
+                Information.semesterId = 31;
             }
             if(weekOfYear > 22 && weekOfYear <= 24){
                 Information.weekCount = 0;
                 Information.semester = "2016-2017 第二学期";
+                Information.semesterId = 31;
             }
             if(weekOfYear > 24 && weekOfYear <= 28){
                 Information.weekCount = weekOfYear - 24;
                 Information.semester = "2016-2017 夏季学期";
+                Information.semesterId = 32;
             }
             if(weekOfYear > 28 && weekOfYear <= 36){
                 Information.weekCount = weekOfYear - 28;
@@ -149,10 +154,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if(weekOfYear >= 38 && weekOfYear <= 53){
                 Information.weekCount = weekOfYear - 37;
                 Information.semester = "2016-2017 第一学期";
+                Information.semesterId = 30;
             }
             if(weekOfYear == 54){
                 Information.weekCount = 0;
                 Information.semester = "2016-2017 第一学期";
+                Information.semesterId = 30;
             }
         }
         if(Information.weekCount == 0){
@@ -170,7 +177,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         } else{
             updateSchedule();
             updateBus();
-            mScoreStatus.setText(getString(R.string.pull_to_refresh));
             onConnectorComplete(Connector.RequestType.SCORE,true);
 //            mSelectStatus.setText(getString(R.string.pull_to_refresh));
         }
@@ -180,6 +186,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
         if(m_activity == null)  return;
+        SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
         switch (requestType){
             case LOGIN:
                 if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
@@ -193,12 +201,20 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 break;
             case SCORE:
                 Information.ifLoggedIn = true;
-                Connector.getInformation(Connector.RequestType.USER_IDS,null,null);
+                if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,this,null);
                 if (Information.studiedCourses.size() == Information.studiedCourseCount) {
                     mScoreStatus.setText("暂无成绩更新");
                 } else {
                     mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
                 }
+                break;
+            case USER_MAJOR_IDS:
+                editor.putString(Information.Strings.setting_student_major_IDs,Information.ids_major);
+                editor.apply();
+                break;
+            case USER_MINOR_IDS:
+                editor.putString(Information.Strings.setting_student_minor_IDs,Information.ids_minor);
+                editor.apply();
                 break;
             default:
                 break;

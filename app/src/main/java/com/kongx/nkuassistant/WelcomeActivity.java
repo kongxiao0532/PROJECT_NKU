@@ -83,21 +83,22 @@ public class WelcomeActivity extends AppCompatActivity {
         //Get previous information
         isFirstOpen = true;
         ifLoggedIn = false;
-        name = settings.getString(Strings.setting_student_name, "Name");
-        facultyName = settings.getString(Strings.setting_student_faculty, "Faculty");
-        id = settings.getString(Strings.setting_studentID, "ID");
+        name = settings.getString(Strings.setting_student_name, null);
+        facultyName = settings.getString(Strings.setting_student_faculty, null);
+        id = settings.getString(Strings.setting_studentID, null);
         newestNotice = settings.getString(Strings.setting_notice, null) == null ? -1 : Integer.parseInt(settings.getString("newestNotice", null));
         password = settings.getString(Strings.setting_password,null);
-        //ids/*For new system*/ = settings.getString(Strings.setting_studentIDs, "IDs");
-        majorName = settings.getString(Strings.setting_student_major, "Major");
-        minorName = settings.getString(Strings.setting_student_minor, "Minor");
+        ids_major/*For new system*/ = settings.getString(Strings.setting_student_major_IDs, null);
+        ids_minor/*For new system*/ = settings.getString(Strings.setting_student_minor_IDs, null);
+        majorName = settings.getString(Strings.setting_student_major, null);
+        minorName = settings.getString(Strings.setting_student_minor, null);
         isDoubleMajor = settings.getBoolean(Strings.setting_student_isDoubleMajor,false);
+        studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
         if (ifRemPass) startIntent = new Intent(this, IndexActivity.class);
         else startIntent = new Intent(this, EduLoginActivity.class);
 
         //get Curriculum Preferences
         settings = getSharedPreferences(COURSE_PREFS_NAME, 0);
-        studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
         selectedCourseCount = settings.getInt(Strings.setting_selected_course_count, -1);
         curriculum_lastUpdate = settings.getString(Strings.setting_last_update_time, null);
         selectedCourses = new ArrayList<>();

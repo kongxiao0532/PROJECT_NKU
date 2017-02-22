@@ -123,7 +123,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     Toast.makeText(getActivity(), "已加载"+Information.studiedCourseCount+"条成绩信息", Toast.LENGTH_SHORT).show();
                     SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
                     SharedPreferences.Editor editor = settings.edit();
-                    editor.putInt("studiedCourseCount",Information.studiedCourseCount);
+                    editor.putInt(Information.Strings.setting_studied_course_count,Information.studiedCourseCount);
                     editor.apply();
                     float sumABCDE = 0, creditABCDE = 0;
                     float[] gpaSumABCDE = new float[]{0,0,0,0,0};

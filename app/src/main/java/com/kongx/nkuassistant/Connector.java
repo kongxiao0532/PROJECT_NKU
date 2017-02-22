@@ -53,21 +53,13 @@ public class Connector {
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
     private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
     private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
+    private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
 
 
     static ArrayList<CourseSelected> tmpStudiedCourses = new ArrayList<>();
     static int tmpStudiedCourseCount = -1;
     static long getTimeStamp(){ return System.currentTimeMillis();    }
-//    public static class RequestType {
-//        static final String CHECK_FOR_UPDATE = "Check for update";
-//        static final String LOGIN = "Login";
-//        static final String USER_MAJOR_IDS = "User Major ID";
-//        static final String USER_MINOR_IDS = "User Minor ID";
-//        static final String USER_INFO = "User Info";
-//        static final String LOG_TO_VPN = "Login to VPN";
-//        static final String CURRICULUM = "Curriculum";
-//        static final String SCORE = "Score";
-//    }
+
     public interface Callback{
         void onConnectorComplete(RequestType requestType, Object result);
     }
@@ -97,7 +89,6 @@ public class Connector {
                 new Request.Builder().url(WEB_URL + url_double_before_student_info + getTimeStamp()).tag("BEFOREMINOR").get(new InfoConnector(uis));
                 break;
             case USER_IDS:
-//                while(!Information.ifLoggedIn);
                 new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new IdsConnector(uis));
                 break;
             case CURRICULUM:
@@ -301,7 +292,6 @@ public class Connector {
         }
     }
 
-    //TODO: 现在与课程紧密关联。。。
     private static class IdsConnector implements Connect.Callback{
         Connector.Callback uis;
         private IdsConnector(Connector.Callback uis)  {  this.uis = uis; }
@@ -314,11 +304,6 @@ public class Connector {
             String returnString = response.body();
             pattern = Pattern.compile("(bg.form.addInput\\(form,\"ids\",\")(.+)(\"\\);)");
             matcher = pattern.matcher(returnString);
-//            SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-//            SharedPreferences.Editor editor = settings.edit();
-//            editor.putString(Information.Strings.setting_studentIDs,Information.ids);
-//            editor.apply();
-            String strToPost;
             switch (response.tag()){
                 case "BEFORE_MAJOR":
                     new Request.Builder().url(WEB_URL + url_student_major_ids + getTimeStamp()).delay(500).tag("MAJOR").get(new IdsConnector(uis));
@@ -326,16 +311,14 @@ public class Connector {
                 case "MAJOR":
                     if (matcher.find()) Information.ids_major = matcher.group(2);
                     if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_before_student_info + getTimeStamp()).delay(500).tag("BEFORE_MINOR").get(new IdsConnector(uis));
-//                    strToPost = String.format(currriculum_string_template,"31",Information.ids_major);
-//                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
+                    uis.onConnectorComplete(RequestType.USER_MAJOR_IDS,true);
                     break;
                 case "BEFORE_MINOR":
                     new Request.Builder().url(WEB_URL + url_student_minor_ids + getTimeStamp()).delay(500).tag("MINOR").get(new IdsConnector(uis));
                     break;
                 case "MINOR":
                     if (matcher.find()) Information.ids_minor = matcher.group(2);
-//                    strToPost = String.format(currriculum_string_template,"31",Information.ids_minor);
-//                    new Request.Builder().url(WEB_URL + url_curriculum).post(strToPost,new Connector.CurriculumConnector(uis));
+                    uis.onConnectorComplete(RequestType.USER_MINOR_IDS,true);
                     break;
                 default:
                     break;
