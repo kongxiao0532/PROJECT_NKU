@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.icu.text.IDNA;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,7 +50,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private int weekOfYear;
     private int dayOfWeek;
     private int courseTodayCount;
-    private ArrayList<HashMap<String,String>> courseToday;
+    private ArrayList<CourseSelected> courseToday;
     //Exam Module
     private TextView mExamStatus;
     private LinearLayout mExamList;
@@ -177,6 +179,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        if(m_activity == null)  return;
         switch (requestType){
             case LOGIN:
                 if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
@@ -189,6 +192,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
                 break;
             case SCORE:
+                Information.ifLoggedIn = true;
+                Connector.getInformation(Connector.RequestType.USER_IDS,null,null);
                 if (Information.studiedCourses.size() == Information.studiedCourseCount) {
                     mScoreStatus.setText("暂无成绩更新");
                 } else {
@@ -270,16 +275,14 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
         courseToday.clear();
         courseTodayCount = 0;
-        HashMap<String,String> map;
+        CourseSelected tmpCourse;
         for(int i = 0;i < Information.selectedCourseCount;i++){
             if(Information.selectedCourses.get(i).dayOfWeek == dayOfWeek &&
                     Information.weekCount >= Information.selectedCourses.get(i).startWeek &&
                     Information.weekCount <= Information.selectedCourses.get(i).endWeek){
-                map = new HashMap<>();
+                tmpCourse = new CourseSelected(Information.selectedCourses.get(i));
                 courseTodayCount++;
-                map.put("name",Information.selectedCourses.get(i).name);
-                map.put("classRoom",Information.selectedCourses.get(i).classRoom);
-                courseToday.add(map);
+                courseToday.add(tmpCourse);
             }
         }
         if (courseTodayCount == 0){
@@ -293,8 +296,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 View view = mInflater.inflate(R.layout.home_schedule_item, null);
                 TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
                 TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
-                item_name.setText((courseToday.get(i).get("name").length() <= 8) ? courseToday.get(i).get("name") : courseToday.get(i).get("name").substring(0,4) + "..." + courseToday.get(i).get("name").substring(courseToday.get(i).get("name").length() - 4,courseToday.get(i).get("name").length()));
-                item_classroom.setText(courseToday.get(i).get("classRoom"));
+                ImageView item_image = (ImageView) view.findViewById(R.id.home_schedule_item_image);
+                item_name.setText((courseToday.get(i).name.length() <= 6) ? courseToday.get(i).name : courseToday.get(i).name.substring(0,3) + "..." + courseToday.get(i).name.substring(courseToday.get(i).name.length() - 3,courseToday.get(i).name.length()));
+                item_classroom.setText(courseToday.get(i).classRoom);
+                if(courseToday.get(i).startTime == 1 ||courseToday.get(i).startTime == 2)   item_image.setImageResource(R.drawable.morning);
+                else if(courseToday.get(i).startTime > 2 && courseToday.get(i).startTime < 11)  item_image.setImageResource(R.drawable.noon);
+                else if(courseToday.get(i).startTime > 10)  item_image.setImageResource(R.drawable.evening);
                 mScheduleList.addView(view);
             }
         }

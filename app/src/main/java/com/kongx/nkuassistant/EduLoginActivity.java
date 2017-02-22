@@ -175,6 +175,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                     editor.putString(Strings.setting_password, Information.password);
                     editor.apply();
                 }else {                             //Login Failed
+                    showProgress(false);
                     String tmpString = (String) result;
                     if(tmpString.equals("密码错误"))    {
                         Toast.makeText(getApplicationContext(),Strings.str_wrong_password,Toast.LENGTH_SHORT).show();

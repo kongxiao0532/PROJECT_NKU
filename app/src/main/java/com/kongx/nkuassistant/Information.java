@@ -30,8 +30,8 @@ public class Information {
     static String minorName;
     static String password;
     static String id;
-    static String ids_major;
-    static String ids_minor;
+    static String ids_major = null;
+    static String ids_minor = null;
     static boolean isDoubleMajor;
 
     //related to Home Page
@@ -40,7 +40,7 @@ public class Information {
     static String date;
 
     //related to Scores
-    static int studiedCourseCount;
+    static int studiedCourseCount = -1;
     static ArrayList<CourseStudied> studiedCourses = new ArrayList<>();
     static Map<String,Float>  credits         = new HashMap<>();
     static Map<String,Float>  credits_counted = new HashMap<>();
@@ -61,14 +61,14 @@ public class Information {
         credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
     }
     //related to Curriculum
-    static int selectedCourseCount;
+    static int selectedCourseCount = -1;
     static ArrayList<CourseSelected> selectedCourses = new ArrayList<>();
     static String curriculum_lastUpdate;
 
 
     //related to Exams
     static ArrayList<HashMap<String,String>> exams = new ArrayList<>();
-    static int examCount;
+    static int examCount = -1;
 
     //related to Bus TimeTable
     static ArrayList<HashMap<String,Integer>> weekdays_tojinnan;

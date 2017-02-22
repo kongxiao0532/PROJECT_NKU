@@ -36,8 +36,10 @@ public class PersonalPage extends AppCompatActivity implements View.OnClickListe
             Information.selectedCourseCount = -1;
             Information.studiedCourseCount = -1;
             Information.examCount = -1;
+            Connector.tmpStudiedCourseCount = -1;
             Information.ifLoggedIn = false;
             Information.ifRemPass = false;
+            Information.isFirstOpen = true;
             SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME,0);
             SharedPreferences.Editor editor = settings.edit();
             Toast.makeText(getApplicationContext(), Information.Strings.str_logout_suc , Toast.LENGTH_SHORT).show();

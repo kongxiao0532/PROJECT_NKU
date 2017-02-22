@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
     android:orientation="horizontal"
     android:layout_width="match_parent"
@@ -7,13 +8,20 @@
     android:paddingTop="10dp"
     android:layout_height="30dp">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/morning"
+        android:id="@+id/home_schedule_item_image"
+        android:layout_weight="0"
+        android:scaleType="fitCenter" />
+
     <TextView
         android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/home_schedule_item_name"
         android:textColor="#424242"
-        android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:gravity="start"
         android:layout_weight="0.45" />
