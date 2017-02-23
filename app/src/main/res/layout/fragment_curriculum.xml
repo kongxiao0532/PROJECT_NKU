@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.kongx.nkuassistant.CurriculumFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,12 +13,13 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/list_curriculum"/>
-        <TextView
-            android:text="@string/no_curriculum_info"
-            android:textSize="50sp"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/textView_noCurriculum" />
     </android.support.v4.widget.SwipeRefreshLayout>
+    <TextView
+        android:text="@string/no_curriculum_info"
+        android:textSize="50sp"
+        android:clickable="false"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/textView_noCurriculum" />
 </FrameLayout>
