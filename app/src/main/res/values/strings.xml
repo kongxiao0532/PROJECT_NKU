@@ -80,11 +80,8 @@
     <string name="action_report_bug">发送日志…</string>
     <string name="action_settings">设置</string>
     <string name="press_back_again_to_exit">再按返回键退出</string>
-    <string name="connection_error">网络无连接</string>
+    <string name="connection_error">网络连接失败</string>
     <string name="Unlogged">未登录</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_color_select">颜色选择</string>
 
 </resources>
