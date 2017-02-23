@@ -1,4 +1,4 @@
-package tk.sunrisefox.simplehtmlparser;
+package tk.sunrisefox.htmlparser;
 
 import android.util.Pair;
 
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class HTML{
     public static class Tag{
+        public  final static Tag INVALID = new Tag("");
         private final String tag;
         Tag(String tag){
             this.tag = tag.toLowerCase();
@@ -20,6 +21,7 @@ public class HTML{
         }
 
         public String tag() { return tag; }
+
     }
 
     public static class Attribute extends Pair<String, String>{

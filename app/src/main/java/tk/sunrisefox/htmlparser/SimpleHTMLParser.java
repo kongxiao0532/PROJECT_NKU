@@ -1,11 +1,11 @@
-package tk.sunrisefox.simplehtmlparser;
+package tk.sunrisefox.htmlparser;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HTMLParser {
+public class SimpleHTMLParser {
     final private static Pattern pattern = Pattern.compile("</?\\w+((\\s+[\\w-]+(\\s*=\\s*(?:\".*?\"|'.*?'|[\\^'\">\\s]+))?)+\\s*|\\s*)/?>");
     final private static Pattern tagPattern = Pattern.compile("</?(\\w+)\\s*?");
     final private static Pattern attributePattern = Pattern.compile("([-\\w]+)\\s*=\\s*(?:\"(.*?)\"|'(.*?)'|([^'\">\\s]+))");
