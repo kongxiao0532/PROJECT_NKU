@@ -1,5 +1,7 @@
 package tk.sunrisefox.httprequest;
 
+import android.os.AsyncTask;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.ProtocolException;
@@ -94,17 +96,20 @@ public class Request{
     /*package-private*/ Connect send(){
         if(this.uiThreadCallback == null && this.networkThreadCallback == null) return null;
         connect = new Connect(this, uiThreadCallback, networkThreadCallback, progress);
-        connect.execute();
+        //NOTE: executing it parallel is still being tested.
+        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         return connect;
     }
 
     public void send(Connect.Callback uiThreadCallback){
         connect = new Connect(this, this.uiThreadCallback = uiThreadCallback, this.networkThreadCallback = null, progress);
-        connect.execute();
+        //NOTE: executing it parallel is still being tested.
+        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     public void send(Connect.Callback uiThreadCallback, Connect.Callback networkThreadCallback){
         connect = new Connect(this, this.uiThreadCallback = uiThreadCallback, this.networkThreadCallback = networkThreadCallback, progress);
-        connect.execute();
+        //NOTE: executing it parallel is still being tested.
+        connect.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public boolean abort(){
