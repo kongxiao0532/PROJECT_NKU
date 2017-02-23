@@ -15,9 +15,20 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class Connect extends AsyncTask<Void, Long, Void> {
     private static final String DEBUG_TAG = "NETWORK";
@@ -96,7 +107,38 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         if(defaultHeaders == null) defaultHeaders = new HashMap<>();
         Connect.defaultHeaders = defaultHeaders;
     }
+    public static void disableHttpsCertVerification (boolean enable) {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        }
 
+                        @Override
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+                    }
+            };
+
+            try {
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+                HostnameVerifier hv = new HostnameVerifier() {
+                    public boolean verify(String urlHostName, SSLSession session) {
+                        return true;
+                    }
+                };
+                HttpsURLConnection.setDefaultHostnameVerifier(hv);
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
+            }
+    }
     public static void addDefaultHeaders(String key, String value) {
         defaultHeaders.put(key, value);
     }
