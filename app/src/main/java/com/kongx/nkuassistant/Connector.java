@@ -1,12 +1,7 @@
 package com.kongx.nkuassistant;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.icu.text.IDNA;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -18,12 +13,8 @@ import java.util.regex.Pattern;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
-import tk.sunrisefox.simplehtmlparser.HTML;
-import tk.sunrisefox.simplehtmlparser.HTMLParser;
-
-/**
- * Created by DELL on 2017/2/19 0019.
- */
+import tk.sunrisefox.htmlparser.HTML;
+import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 
 public class Connector {
     enum RequestType{
@@ -40,13 +31,12 @@ public class Connector {
     };
     static String WEB_URL = "http://eamis.nankai.edu.cn";
     final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
-    private final static String vpn_string_tmplate = "svpn_name=%s&svpn_password=%s";
     final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
     private final static String url_login = "/eams/login.action";
     final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
     final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
     final static String url_logout = "/eams/logout.action";
-    private final static String url_vpn_login = "https://60.29.153.223/por/login_psw.csp?sfrnd=2346912324982305";
+    private final static String url_vpn_login = "https://221.238.246.69/por/login_psw.csp?sfrnd=2346912324982305";
     private final static String url_student_basic_info = "/eams/stdDetail.action?_=";
     private final static String url_student_major_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_info = "/eams/stdDetail!innerIndex.action?projectId=2&_=";
@@ -66,7 +56,6 @@ public class Connector {
         void onConnectorComplete(RequestType requestType, Object result);
     }
     public static void getInformation(RequestType requestType, final Connector.Callback uis,@Nullable String strToPost){
-        String tmpString;
         switch (requestType){
             case CHECK_FOR_UPDATE:
                 new Request.Builder().url(Information.UPDATE_URL).build().send(new UpdateConnector(uis));
@@ -75,8 +64,7 @@ public class Connector {
                 new Request.Builder().url(Information.NOTICE_URL).build().send(new NoticeConnector(uis));
                 break;
             case LOG_TO_VPN:
-                tmpString = String.format(vpn_string_tmplate,Information.id, Information.password);
-                new Request.Builder().url(url_vpn_login).post(tmpString,new VPNConnector(uis));
+                new Request.Builder().url(url_vpn_login).post(strToPost,new VPNConnector(uis));
                 break;
             case LOGIN:
                 new Request.Builder().url(WEB_URL + url_login).post(strToPost,new LoginConnector(uis));
@@ -272,12 +260,15 @@ public class Connector {
                 if(response.body().contains("密码错误"))    uis.onConnectorComplete(RequestType.LOGIN,"密码错误");
                 else    uis.onConnectorComplete(RequestType.LOGIN, "failed");
             }
+            else if(response.code() == 403 || response.code() == 502 || response.code() == 504){
+                uis.onConnectorComplete(RequestType.LOGIN,false);
+            }
         }
 
         @Override
         public void onNetworkError(Exception exception) {
             if(exception.getClass() == SocketTimeoutException.class){
-                Connector.getInformation(RequestType.LOG_TO_VPN,uis,null);      //STException happens, then LOG TO VPN
+                uis.onConnectorComplete(RequestType.LOGIN,false);
             }
         }
     }
@@ -290,10 +281,10 @@ public class Connector {
         @Override
         public void onNetworkComplete(Response response) {
             if(response.code() == 302){
-                uis.onConnectorComplete(RequestType.LOGIN,null);
-                Connect.setDefaultReplaceRules("^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1<>all");
+                Connect.setDefaultReplaceRules("^http://(eamis.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1<>all http://(jz.nankai.edu.cn)<>https://221.238.246.69/web/1/http/0/$1<>all");
+                uis.onConnectorComplete(RequestType.LOGIN,"vpn");
             }else if(response.code() == 200){
-
+                //TODO: ...
             }
         }
 
@@ -363,7 +354,7 @@ public class Connector {
                             returnString.substring(returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"),returnString.indexOf("/tr",returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"))),
                             returnString.substring(returnString.indexOf("<tbody",returnString.indexOf(">学分</th>")),returnString.indexOf("</table",returnString.indexOf(">学分</th>")))
                     };
-                    HTMLParser.parse(stringToBeDealt[0], new HTMLParser.Callback() {
+                    SimpleHTMLParser.parse(stringToBeDealt[0], new SimpleHTMLParser.Callback() {
                         int count = 0;
                         @Override
                         public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
@@ -391,7 +382,7 @@ public class Connector {
                         uis.onConnectorComplete(RequestType.SCORE,true);
                         return;
                     }
-                    HTMLParser.parse(stringToBeDealt[1], new HTMLParser.Callback() {
+                    SimpleHTMLParser.parse(stringToBeDealt[1], new SimpleHTMLParser.Callback() {
                         int textCount = 0, emptyCount = 0;
                         ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                         CourseStudied tmpCourse;
@@ -565,9 +556,9 @@ public class Connector {
         @Override
         public void onNetworkComplete(Response response) {
             final String tmpStirng = response.body();
-            if(!tmpStirng.contains("<ul class=\"list-ul\">"))   return;
+            if(!tmpStirng.contains("<ul class=\"list-ul\">"))  { uis.onConnectorComplete(RequestType.LECTURE,false); return; }
             String returnStirng = tmpStirng.substring(tmpStirng.indexOf("<ul class=\"list-ul\">"),tmpStirng.contains("<!-- ") ? tmpStirng.indexOf("<!-- ") : tmpStirng.indexOf("<div class=\"cright right\">"));
-            HTMLParser.parse(returnStirng, new HTMLParser.Callback() {
+            SimpleHTMLParser.parse(returnStirng, new SimpleHTMLParser.Callback() {
                 int count = 0;
                 Lecture tmpLecture;
                 @Override

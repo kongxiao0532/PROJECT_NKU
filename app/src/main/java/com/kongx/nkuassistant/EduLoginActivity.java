@@ -2,15 +2,12 @@ package com.kongx.nkuassistant;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -21,38 +18,25 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
-import java.net.SocketTimeoutException;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 import cn.jiguang.analytics.android.api.LoginEvent;
 import tk.sunrisefox.httprequest.Connect;
-import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
 
 import static com.kongx.nkuassistant.Information.Strings;
-import static com.kongx.nkuassistant.Information.password;
+import static com.kongx.nkuassistant.Information.sessionUseVPN;
 
 public class EduLoginActivity extends AppCompatActivity implements Connector.Callback{
     private static final long mBackPressThreshold = 3500;
@@ -162,27 +146,51 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
             }
                 break;
             case LOGIN:
-                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
-                    Connector.getInformation(Connector.RequestType.USER_INFO,this,null);
-//                new Request.Builder().url(Information.WEB_URL + Strings.url_student_info + Information.getTimeStamp()).tag(RequestType.USER_INFO).build().send(null,this);
-                    CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
-                    for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
-                        if (httpCookie.getName().equals("JSESSIONID")   ) {
-                            editor.putString("JSESSIONID", httpCookie.getValue());
-                            break;
+                if(result.getClass() == Boolean.class){                //Login Successfully
+                    if((Boolean)result) {
+                        Connector.getInformation(Connector.RequestType.USER_INFO, this, null);
+                        CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
+                        for (HttpCookie httpCookie : cookieManager.getCookieStore().getCookies()) {
+                            if (httpCookie.getName().equals("JSESSIONID")) {
+                                editor.putString("JSESSIONID", httpCookie.getValue());
+                                break;
+                            }
                         }
+                        editor.putBoolean(Strings.setting_remember_pwd, mRemPass.isChecked());
+                        editor.putString(Strings.setting_studentID, m_username);
+                        editor.putString(Strings.setting_password, Information.password);
+                        editor.apply();
+                    }else {
+                        new AlertDialog.Builder(this).setTitle("登录到南开大学VPN")
+                                .setMessage("您请求的网络无法到达，如果您是南开大学在读生，可以允许我们使用您的凭据登录到南开大学VPN并尝试重新访问吗？")
+                                .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Connect.disableHttpsCertVerification(false);
+                                        Connector.getInformation(Connector.RequestType.LOG_TO_VPN, EduLoginActivity.this, "svpn_name="+mUsernameView.getText()+"&svpn_password=");
+                                    }
+                                })
+                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        showProgress(false);
+                                    }
+                                })
+                                .show();
                     }
-                    editor.putBoolean(Strings.setting_remember_pwd, mRemPass.isChecked());
-                    editor.putString(Strings.setting_studentID, m_username);
-                    editor.putString(Strings.setting_password, Information.password);
-                    editor.apply();
                 }else {                             //Login Failed
                     showProgress(false);
                     String tmpString = (String) result;
                     if(tmpString.equals("密码错误"))    {
                         Toast.makeText(getApplicationContext(),Strings.str_wrong_password,Toast.LENGTH_SHORT).show();
                         Connect.initialize(new CookieManager());
-                    }else if(tmpString.equals("failed"))    Toast.makeText(getApplicationContext(),Strings.str_login_failed,Toast.LENGTH_SHORT).show();
+                    }else if(tmpString.equals("failed"))
+                        Toast.makeText(getApplicationContext(),Strings.str_login_failed,Toast.LENGTH_SHORT).show();
+                    else if(tmpString.equals("vpn")){
+                        Toast.makeText(this,"程序工作在VPN模式下，退出VPN模式，请重新启动此程序。",Toast.LENGTH_LONG).show();
+                        sessionUseVPN = true;
+                        mLoginButton.callOnClick();
+                    }
                 }
                 break;
             case USER_MAJOR_INFO:

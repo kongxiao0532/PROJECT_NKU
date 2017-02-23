@@ -86,6 +86,7 @@ public class Information {
 
     //related to Internet Connection
     static boolean ifRemPass;
+    static boolean sessionUseVPN = false;
     static final String PREFS_NAME = "PersonalFile";
     static final String COURSE_PREFS_NAME = "CourseFile";
     static final String EXAM_PREFS_NAME = "ExamFile";
@@ -97,7 +98,7 @@ public class Information {
         final static String str_logout_suc = "退出成功";
         final static String str_logout_failed = "退出失败，请重试";
         final static String str_wrong_password = "密码错误";
-        final static String str_login_failed = "登录失败，请重试";
+        final static String str_login_failed = "登录失败，如果您输错了太多次密码，请重启此程序";
         final static String setting_remember_pwd = "ifRemPass";
         final static String setting_password = "Password";
         final static String setting_studied_course_count = "studiedCourseCount";

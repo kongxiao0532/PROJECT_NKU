@@ -18,6 +18,12 @@
         <item name="android:windowActionBarOverlay">false</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.TranslucentStatus.VPN">
+        <item name="colorPrimary">#44AAFF</item>
+        <item name="colorPrimaryDark">#44AAFF</item>
+        <item name="colorAccent">#EE82EE</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

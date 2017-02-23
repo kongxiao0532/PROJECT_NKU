@@ -15,7 +15,7 @@
             android:gravity="center"
             android:layout_width="@dimen/fragment_class_month_num_width"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -24,7 +24,7 @@
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -33,7 +33,7 @@
             android:id="@+id/Schedule_Tuesday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -42,7 +42,7 @@
             android:id="@+id/Schedule_Wednesday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -51,7 +51,7 @@
             android:id="@+id/Schedule_Thursday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -60,7 +60,7 @@
             android:id="@+id/Schedule_Friday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -69,7 +69,7 @@
             android:id="@+id/Schedule_Saturday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
         <TextView
@@ -78,7 +78,7 @@
             android:id="@+id/Schedule_Sunday"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?colorPrimary"
             android:background="#E0E0E0"
             android:layout_weight="1" />
     </LinearLayout>

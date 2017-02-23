@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -45,6 +46,7 @@ public class IndexActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(Information.sessionUseVPN) setTheme(R.style.AppTheme_NoActionBar_TranslucentStatus_VPN);
         setContentView(R.layout.index);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
