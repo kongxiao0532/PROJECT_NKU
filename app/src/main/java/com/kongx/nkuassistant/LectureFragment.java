@@ -84,9 +84,12 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
-        if(result.getClass() == Boolean.class && (Boolean)result){
+        if(result.getClass() == Boolean.class){
+            if(m_activity == null) return;
             mRefresh.setRefreshing(false);
-            mLectureList.setAdapter(new MyAdapter(m_activity));
+            if((Boolean)result)
+                mLectureList.setAdapter(new MyAdapter(m_activity));
+            else Toast.makeText(m_activity, R.string.connection_error, Toast.LENGTH_SHORT).show();
         }
     }
 
