@@ -63,6 +63,8 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
         JAnalyticsInterface.onPageStart(m_activity, this.getClass().getCanonicalName());
         if(Information.lectures == null){
             onRefresh();
+        }else {
+            onConnectorComplete(Connector.RequestType.LECTURE,true);
         }
 
     }

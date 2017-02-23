@@ -565,6 +565,7 @@ public class Connector {
         @Override
         public void onNetworkComplete(Response response) {
             final String tmpStirng = response.body();
+            if(!tmpStirng.contains("<ul class=\"list-ul\">"))   return;
             String returnStirng = tmpStirng.substring(tmpStirng.indexOf("<ul class=\"list-ul\">"),tmpStirng.contains("<!-- ") ? tmpStirng.indexOf("<!-- ") : tmpStirng.indexOf("<div class=\"cright right\">"));
             HTMLParser.parse(returnStirng, new HTMLParser.Callback() {
                 int count = 0;
@@ -590,6 +591,7 @@ public class Connector {
                             tmpLecture.location = text.substring(3,text.length());
                             break;
                         case 6:
+                           if(text.contains("\n"))  text = text.replace("\n","");
                             tmpLecture.lecturer = text.substring(4,text.length());
                             tmpLectures.add(tmpLecture);
                             break;
