@@ -33,6 +33,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
@@ -72,7 +73,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        m_activity = getActivity();
+        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
         if(Information.selectedCourseCount == -1){
             onRefresh();
         }else loadCurriculum();
@@ -81,10 +82,12 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onPause() {
         super.onPause();
+        JAnalyticsInterface.onPageEnd(getActivity(),this.getClass().getCanonicalName());
         m_activity = null;
     }
 
     public void onRefresh() {
+        Log.e("SCHEDULE",Information.ids_major+" "+Information.ids_minor);
         mRefresh.setRefreshing(true);
         Connector.getInformation(Connector.RequestType.CURRICULUM,this,null);
     }
@@ -104,6 +107,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                     storeCourses();
                     mRefresh.setRefreshing(false);
                     loadCurriculum();
+                }else if(result.getClass() == Boolean.class && !(Boolean)result) {
+                    Toast.makeText(getActivity(),"动作太快啦，请重试",Toast.LENGTH_SHORT).show();
+                    mRefresh.setRefreshing(false);
                 }
                 break;
             case LOGIN:

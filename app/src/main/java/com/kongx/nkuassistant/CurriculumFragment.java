@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
@@ -59,6 +60,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
+        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
         if (Information.selectedCourseCount == -1) {
             onRefresh();
         } else if (Information.selectedCourseCount == 0) {
@@ -74,6 +76,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
     @Override
     public void onPause() {
         super.onPause();
+        JAnalyticsInterface.onPageStart(getActivity(),this.getClass().getCanonicalName());
         m_activity = null;
     }
 
@@ -95,6 +98,9 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
                     storeCourses();
                     mRefresh.setRefreshing(false);
                     mlistView.setAdapter(new MyAdapter(m_activity));
+                }else if(result.getClass() == Boolean.class && !(Boolean)result) {
+                    Toast.makeText(getActivity(),"动作太快啦，请重试",Toast.LENGTH_SHORT).show();
+                    mRefresh.setRefreshing(false);
                 }
                 break;
             case LOGIN:

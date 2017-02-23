@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.text.IDNA;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -14,24 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import tk.sunrisefox.httprequest.*;
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private SwipeRefreshLayout mReFresh;
@@ -201,20 +191,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 break;
             case SCORE:
                 Information.ifLoggedIn = true;
-                if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,this,null);
+                if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,(Connector.Callback)getActivity(),null);
                 if (Information.studiedCourses.size() == Information.studiedCourseCount) {
                     mScoreStatus.setText("暂无成绩更新");
                 } else {
                     mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
                 }
-                break;
-            case USER_MAJOR_IDS:
-                editor.putString(Information.Strings.setting_student_major_IDs,Information.ids_major);
-                editor.apply();
-                break;
-            case USER_MINOR_IDS:
-                editor.putString(Information.Strings.setting_student_minor_IDs,Information.ids_minor);
-                editor.apply();
                 break;
             default:
                 break;
@@ -225,11 +207,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onResume(){
         super.onResume();
         m_activity = getActivity();
+        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
     }
     @Override
     public void onPause(){
         super.onPause();
         m_activity = null;
+        JAnalyticsInterface.onPageEnd(m_activity,this.getClass().getCanonicalName());
     }
 
     @Override
@@ -313,7 +297,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
                 TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
                 ImageView item_image = (ImageView) view.findViewById(R.id.home_schedule_item_image);
-                item_name.setText((courseToday.get(i).name.length() <= 6) ? courseToday.get(i).name : courseToday.get(i).name.substring(0,3) + "..." + courseToday.get(i).name.substring(courseToday.get(i).name.length() - 3,courseToday.get(i).name.length()));
+                item_name.setText((courseToday.get(i).name.length() <= 7) ? courseToday.get(i).name : courseToday.get(i).name.substring(0,3) + "..." + courseToday.get(i).name.substring(courseToday.get(i).name.length() - 3,courseToday.get(i).name.length()));
                 item_classroom.setText(courseToday.get(i).classRoom);
                 if(courseToday.get(i).startTime == 1 ||courseToday.get(i).startTime == 2)   item_image.setImageResource(R.drawable.morning);
                 else if(courseToday.get(i).startTime > 2 && courseToday.get(i).startTime < 11)  item_image.setImageResource(R.drawable.noon);

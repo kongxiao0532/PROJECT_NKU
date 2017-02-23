@@ -13,6 +13,7 @@
     <string name="drawer_select">选课退课</string>
     <string name="drawer_information_divider">信息查询</string>
     <string name="drawer_612bus">612时刻表</string>
+    <string name="drawer_lecture">讲座信息</string>
     <string name="drawer_about_divider">关于</string>
     <string name="drawer_about_projectnku">关于Project NKU</string>
     <string name="drawer_about_developer">关于开发者</string>

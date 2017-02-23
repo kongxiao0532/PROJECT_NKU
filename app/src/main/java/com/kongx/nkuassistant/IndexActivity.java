@@ -99,6 +99,8 @@ public class IndexActivity extends AppCompatActivity
 
     @Override
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
+        SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
         switch (requestType){
             case CHECK_FOR_NOTICE:{
                 final String[] resultString = (String[]) result;
@@ -111,8 +113,6 @@ public class IndexActivity extends AppCompatActivity
                                 }
                             }).show();
                 }
-                SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
                 editor.putString("newestNotice", String.valueOf(Information.newestNotice));
                 editor.apply();
                 break;
@@ -135,6 +135,14 @@ public class IndexActivity extends AppCompatActivity
                         }
                     }).show();
                 }
+                break;
+            case USER_MAJOR_IDS:
+                editor.putString(Information.Strings.setting_student_major_IDs,Information.ids_major);
+                editor.apply();
+                break;
+            case USER_MINOR_IDS:
+                editor.putString(Information.Strings.setting_student_minor_IDs,Information.ids_minor);
+                editor.apply();
                 break;
             default:
                 break;
@@ -252,6 +260,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
             } else if (id == R.id.nav_tycg) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://tycg.nankai.edu.cn/"));
+            }   else if (id == R.id.nav_lecture) {
+                fragmentTransaction.replace(R.id.fragment_container, new LectureFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

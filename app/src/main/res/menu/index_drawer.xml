@@ -55,6 +55,12 @@
                     android:checked="false"
                     android:title="@string/drawer_612bus" />
                 <item
+                    android:id="@+id/nav_lecture"
+                    android:icon="@drawable/ic_account_balance_black"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/drawer_lecture" />
+                <item
                     android:id="@+id/nav_icHome"
                     android:icon="@drawable/ic_library_books_white_48dp"
                     android:checkable="true"

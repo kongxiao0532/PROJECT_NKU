@@ -45,6 +45,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
+import cn.jiguang.analytics.android.api.LoginEvent;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
@@ -73,7 +75,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
             //TODO: Show update logs between versions
             Information.version = info.versionName;
         } catch (PackageManager.NameNotFoundException e) { Information.version = "unknown"; }
-
+        JAnalyticsInterface.onPageStart(this, this.getClass().getCanonicalName());
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
@@ -210,6 +212,9 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
     }
 
     private void startIndexActivity(){
+        JAnalyticsInterface.onPageStart(this, this.getClass().getCanonicalName());
+        LoginEvent loginEvent = new LoginEvent("Eamis",true);
+        loginEvent.addKeyValue("AppVersion",Information.version);
         Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

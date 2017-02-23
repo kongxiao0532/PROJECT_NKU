@@ -28,6 +28,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
+import cn.jiguang.api.JAnalyticsAction;
 import cn.jpush.android.api.JPushInterface;
 import tk.sunrisefox.httprequest.Connect;
 
@@ -68,6 +70,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(getApplication());
+        JAnalyticsInterface.init(getApplication());
+        JAnalyticsInterface.setDebugMode(true);
 
         //Initialize network
         System.setProperty("java.net.useSystemProxies", "true");

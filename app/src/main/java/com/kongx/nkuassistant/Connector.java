@@ -35,6 +35,7 @@ public class Connector {
         USER_IDS,USER_MAJOR_IDS,USER_MINOR_IDS,
         CURRICULUM,
         SCORE,
+        LECTURE,
         LOGOUT
     };
     static String WEB_URL = "http://eamis.nankai.edu.cn";
@@ -57,6 +58,7 @@ public class Connector {
 
 
     static ArrayList<CourseSelected> tmpStudiedCourses = new ArrayList<>();
+    static ArrayList<Lecture> tmpLectures = new ArrayList<Lecture>();
     static int tmpStudiedCourseCount = -1;
     static long getTimeStamp(){ return System.currentTimeMillis();    }
 
@@ -93,13 +95,24 @@ public class Connector {
                 break;
             case CURRICULUM:
                 tmpStudiedCourses = new ArrayList<>();
-                if(Information.ids_major == null)   return;
+                if(Information.ids_major == null)  {
+                    uis.onConnectorComplete(RequestType.CURRICULUM,false);
+                    return;
+                }
+                if(Information.isDoubleMajor && Information.ids_minor == null) {
+                    uis.onConnectorComplete(RequestType.CURRICULUM,false);
+                    return;
+                }
                 new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new CurriculumConnector(uis));
                 break;
             case SCORE:
                 tmpStudiedCourseCount = Information.studiedCourseCount;
                 if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new ScoreConnector(uis));
                 else    new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
+                break;
+            case LECTURE:
+                tmpLectures.clear();
+                new Request.Builder().url(url_lectures).get(new LectureConnector(uis));
                 break;
             case LOGOUT:
                 break;
@@ -345,6 +358,7 @@ public class Connector {
                 case "SCORE":
                     ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                     String returnString = response.body();
+                    if(!returnString.contains("<th colSpan=\"2\">在校汇总</th>"))   return;
                     String[] stringToBeDealt = new String[]{
                             returnString.substring(returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"),returnString.indexOf("/tr",returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"))),
                             returnString.substring(returnString.indexOf("<tbody",returnString.indexOf(">学分</th>")),returnString.indexOf("</table",returnString.indexOf(">学分</th>")))
@@ -537,6 +551,58 @@ public class Connector {
                     }
                     break;
             }
+        }
+
+        @Override
+        public void onNetworkError(Exception exception) {
+
+        }
+    }
+
+    private static class LectureConnector implements Connect.Callback{
+        Callback uis;
+        public LectureConnector(Callback uis)   {this.uis = uis;}
+        @Override
+        public void onNetworkComplete(Response response) {
+            final String tmpStirng = response.body();
+            String returnStirng = tmpStirng.substring(tmpStirng.indexOf("<ul class=\"list-ul\">"),tmpStirng.contains("<!-- ") ? tmpStirng.indexOf("<!-- ") : tmpStirng.indexOf("<div class=\"cright right\">"));
+            HTMLParser.parse(returnStirng, new HTMLParser.Callback() {
+                int count = 0;
+                Lecture tmpLecture;
+                @Override
+                public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+
+                }
+
+                @Override
+                public void onText(String text) {
+                    if(text.isEmpty())  return;
+                    switch (count++%7){
+                        case 3:
+                            tmpLecture = new Lecture();
+                            tmpLecture.topic = text;
+                            break;
+                        case 4:
+                            text = text.replace("&nbsp;","   ");
+                            tmpLecture.time = text.substring(3,text.length());
+                            break;
+                        case 5:
+                            tmpLecture.location = text.substring(3,text.length());
+                            break;
+                        case 6:
+                            tmpLecture.lecturer = text.substring(4,text.length());
+                            tmpLectures.add(tmpLecture);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onTagEnd(HTML.Tag tag) {
+
+                }
+            });
+            Information.lectures = tmpLectures;
+            uis.onConnectorComplete(RequestType.LECTURE,true);
         }
 
         @Override

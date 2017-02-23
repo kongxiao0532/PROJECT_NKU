@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
@@ -93,6 +94,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
+        JAnalyticsInterface.onPageStart(m_activity, this.getClass().getCanonicalName());
         if(Connector.tmpStudiedCourseCount == -1){
             onRefresh();
         }else onConnectorComplete(Connector.RequestType.SCORE,true);
@@ -101,6 +103,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     @Override
     public void onPause() {
         super.onPause();
+        JAnalyticsInterface.onPageEnd(getActivity(),this.getClass().getCanonicalName());
         m_activity = null;
     }
 
@@ -129,6 +132,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     float[] gpaSumABCDE = new float[]{0,0,0,0,0};
                     Information.gpaABCED = new float[5];
                     for(CourseStudied tmp : Information.studiedCourses){
+                        if(tmp.score < 60)  continue;
                         sumABCDE += tmp.score * tmp.creditCalculated;
                         for(int i = 0;i < 5;i++){
                             gpaSumABCDE[i] += tmp.gpas[i] * tmp.creditCalculated;

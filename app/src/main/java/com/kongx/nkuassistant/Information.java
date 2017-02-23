@@ -71,6 +71,9 @@ public class Information {
     static ArrayList<HashMap<String,String>> exams = new ArrayList<>();
     static int examCount = -1;
 
+    //related to Lectures
+    static ArrayList<Lecture> lectures = null;
+
     //related to Bus TimeTable
     static ArrayList<HashMap<String,Integer>> weekdays_tojinnan;
     static ArrayList<HashMap<String,Integer>> weekdays_tobalitai;
