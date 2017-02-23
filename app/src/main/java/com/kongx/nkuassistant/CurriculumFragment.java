@@ -16,18 +16,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import tk.sunrisefox.httprequest.Connect;
-import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
 
 public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback {
     //    private int numberOfPages;
@@ -93,7 +85,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
                     Information.selectedCourseCount = Connector.tmpStudiedCourses.size();
                     Calendar calendar = Calendar.getInstance();
                     int minute = calendar.get(Calendar.MINUTE);
-                    String time_now = String.format(Locale.US, "%2d:%2d", calendar.get(Calendar.HOUR_OF_DAY), minute);
+                    String time_now = String.format(Locale.US, "%2d:%2d".replace(' ','0'), calendar.get(Calendar.HOUR_OF_DAY), minute);
                     Information.curriculum_lastUpdate = Information.date + " " + time_now;
                     storeCourses();
                     mRefresh.setRefreshing(false);
