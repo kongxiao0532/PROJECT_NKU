@@ -180,14 +180,16 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         SharedPreferences.Editor editor = settings.edit();
         switch (requestType){
             case LOGIN:
-                if(result.getClass() == Boolean.class && (Boolean)result) {                //Login Successfully
-                    Toast.makeText(getActivity(), "已重新登录", Toast.LENGTH_SHORT).show();
-                    onRefresh();
-                }else {
-                    Toast.makeText(getActivity(), "重新登录失败", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(m_activity,EduLoginActivity.class));
-                    m_activity.finish();
-                }
+                if(result.getClass() == Boolean.class){
+                    if((Boolean)result) {                //Login Successfully
+                        Toast.makeText(getActivity(), "已重新登录", Toast.LENGTH_SHORT).show();
+                        onRefresh();
+                    }else {
+                        Toast.makeText(getActivity(), "重新登录失败", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(m_activity,EduLoginActivity.class));
+                        m_activity.finish();
+                    }
+        }
                 break;
             case SCORE:
                 Information.ifLoggedIn = true;

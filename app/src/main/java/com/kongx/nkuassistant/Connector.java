@@ -450,7 +450,9 @@ public class Connector {
 
         @Override
         public void onNetworkError(Exception exception) {
-
+            if(exception.getClass() == SocketTimeoutException.class){
+                uis.onConnectorComplete(RequestType.LOGIN,false);
+            }
         }
     }
 

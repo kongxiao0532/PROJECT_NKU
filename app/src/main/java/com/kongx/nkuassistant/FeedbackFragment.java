@@ -76,6 +76,6 @@ public class FeedbackFragment extends Fragment implements View.OnClickListener, 
                 public void onClick(DialogInterface dialogInterface, int i) {
                 }
             }).show();
-        }
+        }else Toast.makeText(getActivity(),"没有可用更新",Toast.LENGTH_SHORT).show();
     }
 }

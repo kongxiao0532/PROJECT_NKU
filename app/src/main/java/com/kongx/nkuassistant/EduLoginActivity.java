@@ -187,7 +187,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                     }else if(tmpString.equals("failed"))
                         Toast.makeText(getApplicationContext(),Strings.str_login_failed,Toast.LENGTH_SHORT).show();
                     else if(tmpString.equals("vpn")){
-                        Toast.makeText(this,"程序工作在VPN模式下，退出VPN模式，请重新启动此程序。",Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"程序工作在VPN模式下，若要退出VPN模式，请重新启动此程序。",Toast.LENGTH_LONG).show();
                         sessionUseVPN = true;
                         mLoginButton.callOnClick();
                     }
