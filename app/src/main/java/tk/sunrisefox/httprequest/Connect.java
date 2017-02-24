@@ -218,7 +218,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             response.tag = request.tag();
             response.code = connection.getResponseCode();
             if (startBytes != 0L && response.code() != 206)
-                throw new IOException("Recovering from pause is not supported.");
+                throw new IOException("Recovering from pause is not possible.");
             response.headers = connection.getHeaderFields();
             if (network != null) {
                 //TODO: Thought is still needed on whether to start a new thread or not.
@@ -278,7 +278,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 } else fileOutputStream = new FileOutputStream(file, true);
                 ByteArrayOutputStream buffer;
                 try {
-                    if(totalBytes == -1L){
+                    if(totalBytes == -1L || fileOutputStream != null){
                         buffer = new ByteArrayOutputStream();
                     }else buffer = new ByteArrayOutputStream(((int) totalBytes + 1024));
                     int nRead;
