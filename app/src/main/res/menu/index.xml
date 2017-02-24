@@ -6,8 +6,4 @@
         android:title="@string/action_share"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_name"/>
-    <item
-        android:id="@+id/action_bugreport"
-        android:title="@string/action_start_record"
-        android:icon="@drawable/ic_action_name"/>
 </menu>
