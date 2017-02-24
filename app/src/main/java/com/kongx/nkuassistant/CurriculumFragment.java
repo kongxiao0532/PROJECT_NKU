@@ -81,8 +81,8 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
         switch (requestType){
             case CURRICULUM:
                 if(result.getClass() == Boolean.class && (Boolean)result){
-                    Information.selectedCourses = Connector.tmpStudiedCourses;
-                    Information.selectedCourseCount = Connector.tmpStudiedCourses.size();
+                    Information.selectedCourses = Connector.tmpSelectedCourses;
+                    Information.selectedCourseCount = Connector.tmpSelectedCourses.size();
                     Calendar calendar = Calendar.getInstance();
                     int minute = calendar.get(Calendar.MINUTE);
                     String time_now = String.format(Locale.US, "%2d:%2d".replace(' ','0'), calendar.get(Calendar.HOUR_OF_DAY), minute);
@@ -117,14 +117,15 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
         for (int i = 0; i < Information.selectedCourseCount; i++) {
             editor.putString("index" + i, Information.selectedCourses.get(i).index);
             editor.putString("name" + i, Information.selectedCourses.get(i).name);
-            editor.putString("dayOfWeek" + i, String.valueOf(Information.selectedCourses.get(i).dayOfWeek));
-            editor.putString("startTime" + i, String.valueOf(Information.selectedCourses.get(i).startTime));
-            editor.putString("endTime" + i, String.valueOf(Information.selectedCourses.get(i).endTime));
+            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
+            editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
+            editor.putInt("endTime" + i, Information.selectedCourses.get(i).endTime);
             editor.putString("classRoom" + i, Information.selectedCourses.get(i).classRoom);
 //            editor.putString("classType" + i, Information.selectedCourses.get(i).classType);
             editor.putString("teacherName" + i, Information.selectedCourses.get(i).teacherName);
-            editor.putString("startWeek" + i, String.valueOf(Information.selectedCourses.get(i).startWeek));
-            editor.putString("endWeek" + i, String.valueOf(Information.selectedCourses.get(i).endWeek));
+            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).startWeek);
+            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
+            editor.putInt("color" + i, Information.selectedCourses.get(i).color);
         }
         editor.putString("curriculum_lastUpdate", Information.curriculum_lastUpdate);
         return editor.commit();

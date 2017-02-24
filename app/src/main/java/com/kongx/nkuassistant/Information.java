@@ -35,6 +35,7 @@ public class Information {
     static boolean isDoubleMajor;
 
     //related to Home Page
+    static int dayOfWeek_int;
     static int weekCount;
     static String semester;
     static int semesterId;

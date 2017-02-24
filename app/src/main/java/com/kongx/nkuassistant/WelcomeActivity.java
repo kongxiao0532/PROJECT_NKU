@@ -112,13 +112,14 @@ public class WelcomeActivity extends AppCompatActivity {
                 tmpCourse = new CourseSelected();
                 tmpCourse.index = settings.getString("index" + i, "null");
                 tmpCourse.name = settings.getString("name" + i, "null");
-                tmpCourse.dayOfWeek = Integer.parseInt(settings.getString("dayOfWeek" + i, "0"));
-                tmpCourse.startTime = Integer.parseInt(settings.getString("startTime" + i, "0"));
-                tmpCourse.endTime = Integer.parseInt(settings.getString("endTime" + i, "0"));
+                tmpCourse.dayOfWeek = settings.getInt("dayOfWeek" + i, -1);
+                tmpCourse.startTime = settings.getInt("startTime" + i, -1);
+                tmpCourse.endTime = settings.getInt("endTime" + i, -1);
                 tmpCourse.classRoom = settings.getString("classRoom" + i, "null");
                 tmpCourse.teacherName = settings.getString("teacherName" + i, "null");
-                tmpCourse.startWeek = Integer.parseInt(settings.getString("startWeek" + i, "0"));
-                tmpCourse.endWeek = Integer.parseInt(settings.getString("endWeek" + i, "0"));
+                tmpCourse.startWeek = settings.getInt("startWeek" + i, -1);
+                tmpCourse.endWeek = settings.getInt("endWeek" + i, -1);
+                tmpCourse.color = settings.getInt("color" + i, -1);
                 selectedCourses.add(tmpCourse);
             }
         }

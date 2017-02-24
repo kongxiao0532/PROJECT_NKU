@@ -98,8 +98,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         switch (requestType){
             case CURRICULUM:
                 if(result.getClass() == Boolean.class && (Boolean)result) {
-                    Information.selectedCourses = Connector.tmpStudiedCourses;
-                    Information.selectedCourseCount = Connector.tmpStudiedCourses.size();
+                    Information.selectedCourses = Connector.tmpSelectedCourses;
+                    Information.selectedCourseCount = Connector.tmpSelectedCourses.size();
                     Calendar calendar = Calendar.getInstance();
                     int minute = calendar.get(Calendar.MINUTE);
                     String time_now = String.format(Locale.US, "%2d:%2d", calendar.get(Calendar.HOUR_OF_DAY), minute);
@@ -134,14 +134,15 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         for (int i = 0; i < Information.selectedCourseCount; i++) {
             editor.putString("index" + i, Information.selectedCourses.get(i).index);
             editor.putString("name" + i, Information.selectedCourses.get(i).name);
-            editor.putString("dayOfWeek" + i, String.valueOf(Information.selectedCourses.get(i).dayOfWeek));
-            editor.putString("startTime" + i, String.valueOf(Information.selectedCourses.get(i).startTime));
-            editor.putString("endTime" + i, String.valueOf(Information.selectedCourses.get(i).endTime));
+            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
+            editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
+            editor.putInt("endTime" + i, Information.selectedCourses.get(i).endTime);
             editor.putString("classRoom" + i, Information.selectedCourses.get(i).classRoom);
 //            editor.putString("classType" + i, Information.selectedCourses.get(i).classType);
             editor.putString("teacherName" + i, Information.selectedCourses.get(i).teacherName);
-            editor.putString("startWeek" + i, String.valueOf(Information.selectedCourses.get(i).startWeek));
-            editor.putString("endWeek" + i, String.valueOf(Information.selectedCourses.get(i).endWeek));
+            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).startWeek);
+            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
+            editor.putInt("color" + i, Information.selectedCourses.get(i).color);
         }
         editor.putString("curriculum_lastUpdate",Information.curriculum_lastUpdate);
         return editor.commit();
@@ -158,36 +159,18 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         int margin1Px = getResources().getDimensionPixelSize(R.dimen.fragment_class_course_margin1dp);
         int marginLessonPx = getResources().getDimensionPixelSize(R.dimen.fragment_class_month_num_width);
         int lessonWidth = (screenWidth - marginLessonPx) / 7;
-        int lessonHeight = getResources().getDimensionPixelSize(R.dimen.fragment_class_list_item_height);
+        int lessonHeight = getResources().getDimensionPixelSize(R.dimen.fragment_class_list_item_height) + margin1Px;
         RelativeLayout.LayoutParams layoutParams;
         TextView courseText;
         int courseHeight, courseWidth;
         for(int i = 0; i < Information.selectedCourseCount; i++){
             courseParent = new RelativeLayout(getActivity());
-            courseHeight = lessonHeight * (Information.selectedCourses.get(i).endTime - Information.selectedCourses.get(i).startTime + 1) - 2 * margin1Px;
-            courseWidth = lessonWidth - 2 * margin1Px;
+            courseHeight = lessonHeight * (Information.selectedCourses.get(i).endTime - Information.selectedCourses.get(i).startTime + 1);
+            courseWidth = lessonWidth;
             layoutParams = new RelativeLayout.LayoutParams(courseWidth, courseHeight);
-            layoutParams.setMargins(marginLessonPx + lessonWidth * (Information.selectedCourses.get(i).dayOfWeek - 1) + margin1Px,
-                    ((Information.selectedCourses.get(i).startTime - 1) * (lessonHeight +  margin1Px)) + margin1Px, 0, 0);
+            layoutParams.setMargins(marginLessonPx + lessonWidth * (Information.selectedCourses.get(i).dayOfWeek - 1),
+                    ((Information.selectedCourses.get(i).startTime - 1) * (lessonHeight)), 0, 0);
             courseParent.setLayoutParams(layoutParams);
-//            switch (bgImg) {
-//                case 1:
-//                    courseParent.setBackground(bg1);
-//                    break;
-//                case 2:
-//                    courseParent.setBackground(bg2);
-//                    break;
-//                case 3:
-//                    courseParent.setBackground(bg3);
-//                    break;
-//                case 4:
-//                    courseParent.setBackground(bg4);
-//                    break;
-//                case 5:
-//                    courseParent.setBackground(bg5);
-//                    break;
-//            }
-
             courseText = new TextView(getActivity());
             courseText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
             courseText.setGravity(Gravity.CENTER);
@@ -206,8 +189,40 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
              * 用如下方法从资源文件设置颜色*/
             courseText.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
             if(Information.weekCount >= Information.selectedCourses.get(i).startWeek && Information.weekCount <= Information.selectedCourses.get(i).endWeek){
-                courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSchedule));
-            }else               courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorNotThisWeekSchedule));
+                courseText.setText(Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "\n@" + Information.selectedCourses.get(i).classRoom);
+                switch (Information.selectedCourses.get(i).color % 8){
+                    case 0:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_1));
+                        break;
+                    case 1:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_2));
+                        break;
+                    case 2:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_3));
+                        break;
+                    case 3:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_4));
+                        break;
+                    case 4:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_5));
+                        break;
+                    case 5:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_6));
+                        break;
+                    case 6:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_7));
+                        break;
+                    case 7:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_8));
+                        break;
+                    case -1:
+                        courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_1));
+                        break;
+                }
+            }else{
+                courseText.setText("[非本周]" + Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "\n@" + Information.selectedCourses.get(i).classRoom);
+                courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorNotThisWeekSchedule));
+            }
             /** 加入视图*/
             courseParent.addView(courseText);
             mReLayout.addView(courseParent);

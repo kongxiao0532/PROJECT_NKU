@@ -1,7 +1,9 @@
 package com.kongx.nkuassistant;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -105,7 +109,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         Calendar calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);
         weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
-        dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
+        Information.dayOfWeek_int = dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
@@ -139,17 +143,26 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 Information.weekCount = weekOfYear - 28;
                 Information.semester = getString(R.string.summber_vacation);
             }
-        }
-        else if(year == 2016){
-            if(weekOfYear >= 38 && weekOfYear <= 53){
-                Information.weekCount = weekOfYear - 37;
-                Information.semester = "2016-2017 第一学期";
-                Information.semesterId = 30;
+            if(weekOfYear > 36 && weekOfYear <= 52){
+                Information.weekCount = weekOfYear - 6;
+                Information.semester = "2017-2018 第一学期";
+                Information.semesterId = 32;
             }
-            if(weekOfYear == 54){
+            if(weekOfYear == 53){
                 Information.weekCount = 0;
-                Information.semester = "2016-2017 第一学期";
-                Information.semesterId = 30;
+                Information.semester = "2017-2018 第一学期";
+                Information.semesterId = 32;
+            }
+        }
+        else if(year == 2018){
+            if(weekOfYear == 1 || weekOfYear == 2){
+                Information.weekCount = 0;
+                Information.semester = "2016-2017 第二学期";
+                Information.semesterId = 32;
+            }
+            if(weekOfYear > 2){
+                Information.weekCount = weekOfYear - 2;
+                Information.semester = getString(R.string.winter_vacation);
             }
         }
         if(Information.weekCount == 0){
@@ -192,13 +205,56 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
                 break;
             case SCORE:
-                Information.ifLoggedIn = true;
-                if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,(Connector.Callback)getActivity(),null);
-                if (Information.studiedCourses.size() == Information.studiedCourseCount) {
-                    mScoreStatus.setText("暂无成绩更新");
-                } else {
-                    mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
+                if(result.getClass() == Boolean.class){
+                    if((Boolean)result){
+                        Information.ifLoggedIn = true;
+                        if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,(Connector.Callback)getActivity(),null);
+                        if (Information.studiedCourses.size() == Information.studiedCourseCount) {
+                            mScoreStatus.setText("暂无成绩更新");
+                        } else {
+                            mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.studiedCourseCount == -1) ? 0 : Information.studiedCourseCount)) + "条成绩更新");
+                        }
+                    }else {
+                        new AlertDialog.Builder(getActivity()).setTitle("登录到南开大学VPN")
+                                .setMessage("您请求的网络无法到达，如果您是南开大学在读生，请退回登录界面重新登录。")
+                                .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Information.selectedCourseCount = -1;
+                                        Information.studiedCourseCount = -1;
+                                        Information.examCount = -1;
+                                        Connector.tmpStudiedCourseCount = -1;
+                                        Information.ids_major = null;
+                                        Information.ids_minor = null;
+                                        Information.ifLoggedIn = false;
+                                        Information.isFirstOpen = true;
+                                        SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
+                                        SharedPreferences.Editor editor = settings.edit();
+                                        Toast.makeText(getActivity().getApplicationContext(), Information.Strings.str_logout_suc , Toast.LENGTH_SHORT).show();
+                                        editor.putInt(Information.Strings.setting_selected_course_count,-1);
+                                        editor.putInt(Information.Strings.setting_studied_course_count,-1);
+                                        editor.putInt(Information.Strings.setting_exam_count,-1);
+                                        editor.putString(Information.Strings.setting_student_major_IDs,null);
+                                        editor.putString(Information.Strings.setting_student_minor_IDs,null);
+                                        editor.apply();
+                                        File file = new File(getActivity().getApplicationContext().getApplicationInfo().dataDir,"app_webview/Cookies");
+                                        Log.e("APP",file.getAbsolutePath());
+                                        file.delete();
+                                        Intent intent = new Intent(m_activity.getApplicationContext(), EduLoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+                                        m_activity.finishAffinity();
+                                    }
+                                })
+                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .show();
+                    }
                 }
+
                 break;
             default:
                 break;

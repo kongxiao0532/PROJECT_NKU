@@ -15,6 +15,7 @@ public class CourseSelected {
     int endTime;
     int startWeek;
     int endWeek;
+    int color;
     public CourseSelected(){};
     public CourseSelected(CourseSelected courseSelected){
         this.index = courseSelected.index;

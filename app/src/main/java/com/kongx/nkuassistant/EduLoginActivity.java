@@ -169,14 +169,14 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                                         Connect.disableHttpsCertVerification(false);
                                         Connector.getInformation(Connector.RequestType.LOG_TO_VPN, EduLoginActivity.this, "svpn_name="+mUsernameView.getText()+"&svpn_password=");
                                     }
-                                })
-                                .setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        showProgress(false);
-                                    }
-                                })
+                                }).setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                showProgress(false);
+                            }
+                        })
                                 .show();
+
                     }
                 }else {                             //Login Failed
                     showProgress(false);

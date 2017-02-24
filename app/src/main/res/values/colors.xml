@@ -3,12 +3,22 @@
     <color name="colorPrimary">#009688</color>
     <color name="colorPrimaryDark">#009688</color>
     <color name="colorAccent">#009688</color>
-    <color name="colorSchedule">#009688</color>
     <color name="colorNotThisWeekSchedule">#E0E0E0</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#E0E0E0</color>
     <color name="black_overlay">#66000000</color>
     <color name="black">#000000</color>
+    <color name="curriculumHeader">#EBEAE7</color>
+    <color name="curriculum_1">#6BC5EF</color>
+    <color name="curriculum_2">#34CED9</color>
+    <color name="curriculum_3">#52CFBC</color>
+    <color name="curriculum_4">#A8D241</color>
+    <color name="curriculum_5">#FF9B59</color>
+    <color name="curriculum_6">#FA7886</color>
+    <color name="curriculum_7">#98A9F5</color>
+    <color name="curriculum_8">#AF92D7</color>
+    <color name="curriculumFont">#636362</color>
+    <color name="curriculumFont_light">#838383</color>
     <color name="zhou_normal">#00000000</color>
     <color name="zhou_pressed">#03a9f4</color>
 </resources>

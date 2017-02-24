@@ -47,10 +47,11 @@ public class Connector {
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
 
 
-    static ArrayList<CourseSelected> tmpStudiedCourses = new ArrayList<>();
-    static ArrayList<Lecture> tmpLectures = new ArrayList<Lecture>();
+    static ArrayList<CourseSelected> tmpSelectedCourses;
+    private static int curriculumColor = 0;
+    private static ArrayList<Lecture> tmpLectures = new ArrayList<Lecture>();
     static int tmpStudiedCourseCount = -1;
-    static long getTimeStamp(){ return System.currentTimeMillis();    }
+    private static long getTimeStamp(){ return System.currentTimeMillis();    }
 
     public interface Callback{
         void onConnectorComplete(RequestType requestType, Object result);
@@ -82,7 +83,8 @@ public class Connector {
                 new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new IdsConnector(uis));
                 break;
             case CURRICULUM:
-                tmpStudiedCourses = new ArrayList<>();
+                tmpSelectedCourses = new ArrayList<>();
+                curriculumColor = 0;
                 if(Information.ids_major == null)  {
                     uis.onConnectorComplete(RequestType.CURRICULUM,false);
                     return;
@@ -273,7 +275,6 @@ public class Connector {
         }
     }
 
-    //TODO:unfinished
     private static class VPNConnector implements Connect.Callback{
         Connector.Callback uis;
         private VPNConnector(Connector.Callback uis)  {  this.uis = uis; }
@@ -451,7 +452,7 @@ public class Connector {
         @Override
         public void onNetworkError(Exception exception) {
             if(exception.getClass() == SocketTimeoutException.class){
-                uis.onConnectorComplete(RequestType.LOGIN,false);
+                uis.onConnectorComplete(RequestType.SCORE,false);
             }
         }
     }
@@ -465,11 +466,11 @@ public class Connector {
             String tmpString;
             switch (response.tag()){
                 case "BEFORE_MAJOR":
-                    tmpString = String.format(currriculum_string_template,"31",Information.ids_major);
+                    tmpString = String.format(currriculum_string_template,Information.semesterId,Information.ids_major);
                     new Request.Builder().url(WEB_URL + url_curriculum).tag("MAJOR").post(tmpString,new CurriculumConnector(uis));
                     break;
                 case "BEFORE_MINOR":
-                    tmpString = String.format(currriculum_string_template,"31",Information.ids_minor);
+                    tmpString = String.format(currriculum_string_template,Information.semesterId,Information.ids_minor);
                     new Request.Builder().url(WEB_URL + url_curriculum).tag("MINOR").post(tmpString,new CurriculumConnector(uis));
                     break;
                 default:
@@ -517,12 +518,13 @@ public class Connector {
                                     tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                                     startPoint = matcher.end();
                                 }
-                                tmpStudiedCourses.add(tmpCourse);
+                                tmpCourse.color = checkForSameCourse(tmpCourse.name) == -1 ? curriculumColor++ : checkForSameCourse(tmpCourse.name);
+                                tmpSelectedCourses.add(tmpCourse);
                             } else {
                                 break;
                             }
                         }
-                        Collections.sort(tmpStudiedCourses, new Comparator<CourseSelected>() {
+                        Collections.sort(tmpSelectedCourses, new Comparator<CourseSelected>() {
                             @Override
                             public int compare(CourseSelected t1, CourseSelected t2) {
                                 if (t1.dayOfWeek == t2.dayOfWeek) {
@@ -549,6 +551,13 @@ public class Connector {
         @Override
         public void onNetworkError(Exception exception) {
 
+        }
+
+        private int checkForSameCourse(String name){
+            for(CourseSelected tmp : tmpSelectedCourses){
+                if(tmp.name.equals(name))   return tmp.color;
+            }
+            return -1;
         }
     }
 
