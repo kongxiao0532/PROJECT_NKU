@@ -218,14 +218,6 @@ public class IndexActivity extends AppCompatActivity
             share.setType("text/plain");
             startActivity(share);
             return true;
-        } else if (id == R.id.action_bugreport) {
-            Intent share = new Intent(Intent.ACTION_SEND);
-            share.putExtra(Intent.EXTRA_STREAM
-                    , Uri.fromFile(new File(getSharedPreferences(Information.PREFS_NAME, 0).getString("lastBugCheckFile", "")))
-            );
-            share.setType("*/*");
-            startActivity(share);
-            return true;
         } else return super.onOptionsItemSelected(item);
     }
 

@@ -32,16 +32,16 @@ public class Response {
         return file != null && !finished() && getHeader("Accept-Ranges") != null;
     }
     public boolean pause(){
-        //This method shouldn't be called twice.
+        //This method shouldn't be called twice on a same object.
         if(connect != null) {
             connect.shouldPause = true;
             connect.cancel(true);
+            connect = null;
             return true;
         }
         return false;
     }
     public boolean resume(){
-        //This method shouldn't be called twice.
         if(resumeRequest != null){
             connect = resumeRequest.send();
             return true;
@@ -49,7 +49,6 @@ public class Response {
         return false;
     }
     public void abort(){
-        //This method shouldn't be called twice.
         if(connect != null){
             connect.cancel(true);
             connect = null;
@@ -63,7 +62,7 @@ public class Response {
     public String body(){ return buffer == null ? null : buffer.toString(); };
     public File file(){ return file != null && file.exists() ? file : null; }
     public Request resend(){
-        Request request = new Request(originalRequest);
+        Request request = Request.copy(originalRequest, 0L);
         originalRequest = null;
         request.send();
         return request;
