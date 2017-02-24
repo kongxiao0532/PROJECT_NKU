@@ -60,7 +60,7 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity, this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if(Information.lectures == null){
             onRefresh();
         }else {
@@ -72,7 +72,7 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity(),this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 

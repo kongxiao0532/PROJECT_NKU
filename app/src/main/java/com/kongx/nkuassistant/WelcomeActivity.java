@@ -2,6 +2,8 @@ package com.kongx.nkuassistant;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -87,6 +89,7 @@ public class WelcomeActivity extends AppCompatActivity {
         //Get previous information
         isFirstOpen = true;
         ifLoggedIn = false;
+        lastVersion = settings.getString(Strings.setting_last_version,null);
         name = settings.getString(Strings.setting_student_name, null);
         facultyName = settings.getString(Strings.setting_student_faculty, null);
         id = settings.getString(Strings.setting_studentID, null);
@@ -98,8 +101,17 @@ public class WelcomeActivity extends AppCompatActivity {
         minorName = settings.getString(Strings.setting_student_minor, null);
         isDoubleMajor = settings.getBoolean(Strings.setting_student_isDoubleMajor,false);
         studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
-        if (ifRemPass) startIntent = new Intent(this, IndexActivity.class);
-        else startIntent = new Intent(this, EduLoginActivity.class);
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            version = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) { Information.version = "unknown"; }
+        if (!ifRemPass) startIntent = new Intent(this, EduLoginActivity.class);
+        else if(lastVersion == null || !lastVersion.equals(version))    {startIntent = new Intent(this, EduLoginActivity.class);}
+        else startIntent = new Intent(this, IndexActivity.class);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Strings.setting_last_version,version);
+        editor.apply();
 
         //get Curriculum Preferences
         settings = getSharedPreferences(COURSE_PREFS_NAME, 0);

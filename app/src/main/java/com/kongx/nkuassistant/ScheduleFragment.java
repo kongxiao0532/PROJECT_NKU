@@ -73,7 +73,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if(Information.selectedCourseCount == -1){
             onRefresh();
         }else loadCurriculum();
@@ -82,7 +82,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity(),this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 

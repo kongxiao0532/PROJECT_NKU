@@ -53,13 +53,15 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
-        try {
-            PackageManager manager = this.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
-            //TODO: Show update logs between versions
-            Information.version = info.versionName;
-        } catch (PackageManager.NameNotFoundException e) { Information.version = "unknown"; }
-        JAnalyticsInterface.onPageStart(this, this.getClass().getCanonicalName());
+        Information.selectedCourseCount = -1;
+        Information.studiedCourseCount = -1;
+        Information.examCount = -1;
+        Connector.tmpStudiedCourseCount = -1;
+        Information.ids_major = null;
+        Information.ids_minor = null;
+        Information.ifLoggedIn = false;
+        Information.isFirstOpen = true;
+        JAnalyticsInterface.onPageStart(getApplicationContext(), this.getClass().getCanonicalName());
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
@@ -220,7 +222,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
     }
 
     private void startIndexActivity(){
-        JAnalyticsInterface.onPageStart(this, this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageEnd(getApplicationContext(), this.getClass().getCanonicalName());
         LoginEvent loginEvent = new LoginEvent("Eamis",true);
         loginEvent.addKeyValue("AppVersion",Information.version);
         Intent intent = new Intent(getApplicationContext(), IndexActivity.class);

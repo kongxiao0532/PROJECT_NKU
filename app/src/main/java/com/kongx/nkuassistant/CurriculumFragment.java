@@ -52,7 +52,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if (Information.selectedCourseCount == -1) {
             onRefresh();
         } else if (Information.selectedCourseCount == 0) {
@@ -68,7 +68,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageStart(getActivity(),this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 

@@ -220,14 +220,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                                 .setPositiveButton("同意", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Information.selectedCourseCount = -1;
-                                        Information.studiedCourseCount = -1;
-                                        Information.examCount = -1;
-                                        Connector.tmpStudiedCourseCount = -1;
-                                        Information.ids_major = null;
-                                        Information.ids_minor = null;
-                                        Information.ifLoggedIn = false;
-                                        Information.isFirstOpen = true;
                                         SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
                                         SharedPreferences.Editor editor = settings.edit();
                                         Toast.makeText(getActivity().getApplicationContext(), Information.Strings.str_logout_suc , Toast.LENGTH_SHORT).show();
@@ -265,13 +257,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onResume(){
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity,this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
     }
     @Override
     public void onPause(){
         super.onPause();
         m_activity = null;
-        JAnalyticsInterface.onPageEnd(m_activity,this.getClass().getCanonicalName());
+        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
     }
 
     @Override

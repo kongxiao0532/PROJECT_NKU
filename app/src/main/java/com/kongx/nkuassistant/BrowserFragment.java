@@ -14,6 +14,8 @@ import android.webkit.WebViewClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
+
 public class BrowserFragment extends Fragment {
     private static final String URL = "URL";
     private static List<BrowserFragment> list = new ArrayList<>();
@@ -43,6 +45,18 @@ public class BrowserFragment extends Fragment {
         if (getArguments() != null) {
             mUrl = getArguments().getString(URL);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        JAnalyticsInterface.onPageStart(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
     }
 
     @SuppressLint("SetJavaScriptEnabled")
