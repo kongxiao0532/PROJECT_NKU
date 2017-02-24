@@ -18,7 +18,7 @@ public class Request{
         return newRequest;
     }
 
-    /*package-private*/ Request(Request request){
+    private Request(Request request){
         this.tag = request.tag;
         this.method = request.method;
         this.url = request.url;

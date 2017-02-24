@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -108,36 +109,36 @@ public class Connect extends AsyncTask<Void, Long, Void> {
         Connect.defaultHeaders = defaultHeaders;
     }
     public static void disableHttpsCertVerification (boolean enable) {
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public X509Certificate[] getAcceptedIssuers() {
-                            return null;
-                        }
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
                     }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                    }
+
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }
+        };
+
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HostnameVerifier hv = new HostnameVerifier() {
+                public boolean verify(String urlHostName, SSLSession session) {
+                    return true;
+                }
             };
-
-            try {
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                HostnameVerifier hv = new HostnameVerifier() {
-                    public boolean verify(String urlHostName, SSLSession session) {
-                        return true;
-                    }
-                };
-                HttpsURLConnection.setDefaultHostnameVerifier(hv);
-                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            } catch (NoSuchAlgorithmException | KeyManagementException e) {
-                e.printStackTrace();
-            }
+            HttpsURLConnection.setDefaultHostnameVerifier(hv);
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
     }
     public static void addDefaultHeaders(String key, String value) {
         defaultHeaders.put(key, value);
@@ -186,6 +187,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                     }
                 }
             }
+            request.connect = null;
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -223,7 +225,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (!response.finished()) network.onNetworkComplete(response);
+                        if (response != null && !response.finished()) network.onNetworkComplete(response);
                     }
                 }).start();
             }
@@ -238,9 +240,14 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             }
             if (stream != null) {
                 long downloadedBytes = 0;
-                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                int nRead;
-                byte[] data = new byte[8192];
+                String contentLength = connection.getHeaderField("Content-Length");
+                long totalBytes;
+                if (contentLength == null) totalBytes = -1L;
+                else try {
+                    totalBytes = Long.parseLong(contentLength);
+                } catch (NumberFormatException e) {
+                    totalBytes = -1L;
+                }
 
                 File file = request.file();
                 FileOutputStream fileOutputStream = null;
@@ -269,30 +276,32 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                         request.setFile(file);
                     }
                 } else fileOutputStream = new FileOutputStream(file, true);
-                String contentLength = connection.getHeaderField("Content-Length");
-                long totalBytes;
+                ByteArrayOutputStream buffer;
                 try {
-                    if (contentLength == null) totalBytes = -1L;
-                    else try {
-                        totalBytes = Long.parseLong(contentLength);
-                    } catch (NumberFormatException e) {
-                        totalBytes = -1L;
-                    }
+                    if(totalBytes == -1L){
+                        buffer = new ByteArrayOutputStream();
+                    }else buffer = new ByteArrayOutputStream(((int) totalBytes + 1024));
+                    int nRead;
+                    byte[] data = new byte[8192];
                     int bytes;
-                    while ((nRead = stream.read(data, 0, data.length)) != -1) {
-                        buffer.write(data, 0, nRead);
-                        downloadedBytes += nRead;
-                        if (progress != null) publishProgress(downloadedBytes, totalBytes);
-                        if (fileOutputStream != null && (bytes = buffer.size()) >= 0x100000) {
-                            fileOutputStream.write(buffer.toByteArray());
-                            fileOutputStream.flush();
-                            finishedBytes += bytes;
-                            buffer.reset();
-                            if (isCancelled()) {
-                                stream.close();
-                                break;
+                    try {
+                        while ((nRead = stream.read(data, 0, data.length)) != -1) {
+                            buffer.write(data, 0, nRead);
+                            downloadedBytes += nRead;
+                            if (progress != null) publishProgress(downloadedBytes, totalBytes);
+                            if (fileOutputStream != null && (bytes = buffer.size()) >= 0x100000) {
+                                fileOutputStream.write(buffer.toByteArray());
+                                fileOutputStream.flush();
+                                finishedBytes += bytes;
+                                buffer.reset();
+                                if (isCancelled()) {
+                                    stream.close();
+                                    break;
+                                }
                             }
                         }
+                    }catch (ProtocolException e){
+                        exception = e;
                     }
                     if (fileOutputStream != null) fileOutputStream.write(buffer.toByteArray());
                 } catch (OutOfMemoryError e) {
@@ -308,14 +317,14 @@ public class Connect extends AsyncTask<Void, Long, Void> {
             }
         } catch (IOException e) {
             exception = e;
-            if (network != null) {
-                network.onNetworkError(e);
-            }
+            response = null;
         }finally {
-            if(request != null)
-                request.connect = null;
+            request.connect = null;
             if(response != null)
                 response.connect = null;
+            if(exception != null && network != null){
+                    network.onNetworkError(exception);
+            }
         }
         return null;
     }
@@ -340,7 +349,7 @@ public class Connect extends AsyncTask<Void, Long, Void> {
     protected void onPostExecute(Void aVoid) {
         if (ui == null) return;
         if (exception != null) ui.onNetworkError(exception);
-        else ui.onNetworkComplete(response);
+        if (response != null) ui.onNetworkComplete(response);
     }
 
     public interface Callback {
