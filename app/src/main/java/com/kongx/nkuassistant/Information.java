@@ -89,8 +89,8 @@ public class Information {
     //related to Internet Connection
     static boolean ifRemPass;
     static boolean sessionUseVPN = false;
-    static final String PREFS_NAME = "PersonalFile";
-    static final String COURSE_PREFS_NAME = "CourseFile";
+    static final String PREFS_NAME = "PreferenceFile";
+    static final String COURSE_PREFS_NAME = "CourseFile_new";
     static final String EXAM_PREFS_NAME = "ExamFile";
     public final static class Strings {
         final static String setting_notice = "newestNotice";

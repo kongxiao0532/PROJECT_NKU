@@ -109,6 +109,7 @@ public class WelcomeActivity extends AppCompatActivity {
         if (!ifRemPass) startIntent = new Intent(this, EduLoginActivity.class);
         else if(lastVersion == null || !lastVersion.equals(version))    {startIntent = new Intent(this, EduLoginActivity.class);}
         else startIntent = new Intent(this, IndexActivity.class);
+        lastVersion = version;
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(Strings.setting_last_version,version);
         editor.apply();

@@ -97,7 +97,7 @@
 
                     <TextView
                     android:textAlignment="center"
-                        android:textColor="?colorPrimary"
+                        android:textColor="@color/colorPrimary"
                         android:text="2016年12月1日"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -106,7 +106,7 @@
 
                     <TextView
                         android:textAlignment="center"
-                        android:textColor="?colorPrimary"
+                        android:textColor="@color/colorPrimary"
                         android:text="星期四"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
 
                 <TextView
                     android:text="@string/details"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:background="@color/white"
                     android:paddingTop="5dp"
                     android:paddingBottom="20dp"
@@ -213,7 +213,7 @@
                 <TextView
                     android:text="@string/details"
                     android:background="@color/white"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
                     android:layout_width="match_parent"
@@ -272,7 +272,7 @@
                 <TextView
                     android:text="@string/details"
                     android:background="@color/white"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
                     android:layout_width="match_parent"
@@ -333,7 +333,7 @@
                 <TextView
                     android:text="@string/details"
                     android:background="@color/white"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
                     android:layout_width="match_parent"
@@ -485,7 +485,7 @@
                     android:text="@string/bus_schedule_sourse"
                     android:textSize="10dp"
                     android:background="@color/white"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -495,7 +495,7 @@
                 <TextView
                     android:text="@string/details"
                     android:background="@color/white"
-                    android:textColor="?colorPrimary"
+                    android:textColor="@color/colorPrimary"
                     android:paddingTop="10dp"
                     android:paddingBottom="20dp"
                     android:layout_width="match_parent"

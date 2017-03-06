@@ -68,7 +68,6 @@
     <string name="action_start_record">Enable Logging...</string>
     <string name="drawer_icspace">IC Space</string>
     <string name="drawer_tycg">Gym Reserving</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_color_select">Color Picker</string>
     <string name="drawer_lecture">Lectures</string>
 
