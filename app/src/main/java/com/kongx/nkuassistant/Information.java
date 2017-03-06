@@ -17,6 +17,7 @@ public class Information {
     public static boolean isFirstOpen;
 
     static String bugCheckFile;
+    static boolean isBeta = false;
 
     //related to Index Activity
     static final String UPDATE_URL = "http://kongxiao0532.cn/projectnku/update.html";
@@ -30,7 +31,7 @@ public class Information {
     static String majorName;
     static String minorName;
     static String password;
-    static String id;
+    static String id = null;
     static String ids_major = null;
     static String ids_minor = null;
     static boolean isDoubleMajor;

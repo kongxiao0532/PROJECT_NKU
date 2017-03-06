@@ -3,6 +3,9 @@ package com.kongx.nkuassistant;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +21,7 @@ import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 
 public class Connector {
     enum RequestType{
+        STATISTIC,
         CHECK_FOR_UPDATE,
         CHECK_FOR_NOTICE,
         LOG_TO_VPN,
@@ -27,14 +31,15 @@ public class Connector {
         CURRICULUM,
         SCORE,
         LECTURE,
+        FEEDBACK,
         LOGOUT
     };
     static String WEB_URL = "http://eamis.nankai.edu.cn";
     final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
-    final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
+    private final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
     private final static String url_login = "/eams/login.action";
-    final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
-    final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
+    private final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
+    private final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
     final static String url_logout = "/eams/logout.action";
     private final static String url_vpn_login = "https://221.238.246.69/por/login_psw.csp?sfrnd=2346912324982305";
     private final static String url_student_basic_info = "/eams/stdDetail.action?_=";
@@ -45,6 +50,12 @@ public class Connector {
     private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
     private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
+    private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
+    private final static String api_feedback_post = "http://kongxiao0532.cn/projectnku/api/feedback.php";
+    final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s";
+    private final static String api_statis_post = "http://kongxiao0532.cn/projectnku/api/statis.php";
+    private final static String statis_post_template = "appVersion=%s&id=%s";
+
 
 
     static ArrayList<CourseSelected> tmpSelectedCourses;
@@ -58,8 +69,12 @@ public class Connector {
     }
     public static void getInformation(RequestType requestType, final Connector.Callback uis,@Nullable String strToPost){
         switch (requestType){
+            case STATISTIC:
+                String tmpString = String.format(statis_post_template,Information.version,Information.id);
+                new Request.Builder().url(api_statis_post).post(tmpString,null);
+                break;
             case CHECK_FOR_UPDATE:
-                new Request.Builder().url(Information.UPDATE_URL).build().send(new UpdateConnector(uis));
+                new Request.Builder().url(api_update_get + (Information.isBeta ? 1 : 0)).build().send(new UpdateConnector(uis));
                 break;
             case CHECK_FOR_NOTICE:
                 new Request.Builder().url(Information.NOTICE_URL).build().send(new NoticeConnector(uis));
@@ -104,6 +119,9 @@ public class Connector {
                 tmpLectures.clear();
                 new Request.Builder().url(url_lectures).get(new LectureConnector(uis));
                 break;
+            case FEEDBACK:
+                new Request.Builder().url(api_feedback_post).post(strToPost,new FeedbackConnector(uis));
+                break;
             case LOGOUT:
                 break;
 
@@ -114,32 +132,17 @@ public class Connector {
         public UpdateConnector(Connector.Callback uis)  {  this.uis = uis; }
         @Override
         public void onNetworkComplete(Response response) {
-            Pattern pattern;
-            Matcher matcher;
-            String retString = response.body();
-            String versionNew = "";
-            String apkSize = "";
-            String updateTime = "";
-            String updateLog = "";
-            String downloadLink = "";
-            pattern = Pattern.compile("<version>(.+)(</version>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  versionNew = matcher.group(1);
-            pattern = Pattern.compile("<size>(.+)(</size>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  apkSize = matcher.group(1);
-            pattern = Pattern.compile("<updateTime>(.+)(</updateTime>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  updateTime = matcher.group(1);
-            pattern = Pattern.compile("<updateLog>(.+)(</updateLog>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  updateLog = matcher.group(1);
-            pattern = Pattern.compile("<downloadLink>(.+)(</downloadLink>)");
-            matcher = pattern.matcher(retString);
-            if(matcher.find())  downloadLink = matcher.group(1);
-            String stringToShow = "新版本："+versionNew+"\n更新包大小："+apkSize+"\n更新时间："+updateTime+"\n更新内容："+updateLog;
-            String[] result = new String[]{versionNew,downloadLink,stringToShow};
-            uis.onConnectorComplete(RequestType.CHECK_FOR_UPDATE,result);
+            if(Information.version.contains("beta"))    return;
+            JSONObject jsonObject;
+            try {
+                jsonObject = new JSONObject(response.body());
+                String versionNew = jsonObject.getString("MainVersion") + "." + jsonObject.getString("SecondVersion") + "." + jsonObject.getString("ThirdVersion");
+                String stringToShow = "新版本："+versionNew+"\n更新包大小："+jsonObject.getString("apkVolume")+"MB\n更新时间："+jsonObject.getString("releaseDate")+"\n更新内容："+jsonObject.getString("updateLog");
+                String[] result = new String[]{versionNew,jsonObject.getString("downloadUrl"),stringToShow};
+                uis.onConnectorComplete(RequestType.CHECK_FOR_UPDATE,result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -607,6 +610,21 @@ public class Connector {
             });
             Information.lectures = tmpLectures;
             uis.onConnectorComplete(RequestType.LECTURE,true);
+        }
+
+        @Override
+        public void onNetworkError(Exception exception) {
+
+        }
+    }
+
+    private static class FeedbackConnector implements Connect.Callback{
+        Callback uis;
+        public FeedbackConnector(Callback uis)   {this.uis = uis;}
+
+        @Override
+        public void onNetworkComplete(Response response) {
+            uis.onConnectorComplete(RequestType.FEEDBACK,response.body());
         }
 
         @Override

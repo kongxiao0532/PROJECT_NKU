@@ -154,12 +154,12 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         readBusFile();
+        Connector.getInformation(Connector.RequestType.STATISTIC,null,null);
         componentReady = true;
         synchronized (timerTask) {
             timerTask.notifyAll();
         }
     }
-
     private void readBusFile() {
         Element element = null;
         InputStream inputStream = null;

@@ -83,5 +83,6 @@
     <string name="connection_error">网络连接失败</string>
     <string name="Unlogged">未登录</string>
     <string name="title_activity_color_select">颜色选择</string>
+    <string name="title_activity_feedback_api">FeedbackApiActivity</string>
 
 </resources>
