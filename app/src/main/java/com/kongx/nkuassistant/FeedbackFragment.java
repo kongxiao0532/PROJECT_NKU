@@ -41,10 +41,12 @@ public class FeedbackFragment extends Fragment implements View.OnClickListener, 
             Connector.getInformation(Connector.RequestType.CHECK_FOR_UPDATE,this,null);
 
         }else if(view.getId() == R.id.button_feedback){
-            Intent seedEmail=new Intent(Intent.ACTION_SENDTO);
-            seedEmail.setData(Uri.parse(Information.FEEDBACK_EMAIL));
-            seedEmail.putExtra(Intent.EXTRA_SUBJECT, Information.FEEDBACK_SUBJECT);
-            startActivity(seedEmail);
+            Intent feedback = new Intent(getActivity(),FeedbackApiActivity.class);
+            startActivity(feedback);
+//            Intent seedEmail=new Intent(Intent.ACTION_SENDTO);
+//            seedEmail.setData(Uri.parse(Information.FEEDBACK_EMAIL));
+//            seedEmail.putExtra(Intent.EXTRA_SUBJECT, Information.FEEDBACK_SUBJECT);
+//            startActivity(seedEmail);
         }
     }
 

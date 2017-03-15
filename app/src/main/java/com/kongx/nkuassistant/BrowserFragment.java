@@ -14,7 +14,6 @@ import android.webkit.WebViewClient;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 
 public class BrowserFragment extends Fragment {
     private static final String URL = "URL";
@@ -50,13 +49,11 @@ public class BrowserFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        JAnalyticsInterface.onPageStart(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
     }
 
     @SuppressLint("SetJavaScriptEnabled")

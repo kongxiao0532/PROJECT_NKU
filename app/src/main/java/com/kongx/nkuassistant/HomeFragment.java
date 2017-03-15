@@ -25,7 +25,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private SwipeRefreshLayout mReFresh;
@@ -107,9 +106,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mBusDetail.setOnClickListener((View.OnClickListener) m_activity);
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        year = calendar.get(Calendar.YEAR);
+        Information.year = year = calendar.get(Calendar.YEAR);
+        Information.month = calendar.get(Calendar.MONTH) + 1;
+        Information.day = calendar.get(Calendar.DAY_OF_MONTH);
         weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
         Information.dayOfWeek_int = dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
+        if(Information.dayOfWeek_int == 7)  weekOfYear--;
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
@@ -257,13 +259,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onResume(){
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
     }
     @Override
     public void onPause(){
         super.onPause();
         m_activity = null;
-        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
     }
 
     @Override
@@ -359,41 +359,41 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private void updateBus(){
         int minute_after = hour * 60 + minute;
-        int toJinnanID = -1;
-        int toBalitaiID = -1;
+        Information.toJinnanID = -1;
+        Information.toBalitaiID = -1;
         if(dayOfWeek <= 5){
-            for(toJinnanID = 0;toJinnanID < Information.weekdays_tojinnan.size();toJinnanID++){
+            for(Information.toJinnanID = 0;Information.toJinnanID < Information.weekdays_tojinnan.size();Information.toJinnanID++){
                 if(minute_after > Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("minute")){
-                    toJinnanID = -1;
+                    Information.toJinnanID = -1;
                     break;
                 }
-                if(minute_after < Information.weekdays_tojinnan.get(toJinnanID).get("hour") * 60 + Information.weekdays_tojinnan.get(toJinnanID).get("minute")){
+                if(minute_after < Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")){
                     break;
                 }
             }
-            for(toBalitaiID = 0;toBalitaiID < Information.weekdays_tobalitai.size();toBalitaiID++){
+            for(Information.toBalitaiID = 0;Information.toBalitaiID < Information.weekdays_tobalitai.size();Information.toBalitaiID++){
                 if(minute_after > Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("minute")){
-                    toBalitaiID = -1;
+                    Information.toBalitaiID = -1;
                     break;
                 }
-                if(minute_after < Information.weekdays_tobalitai.get(toBalitaiID).get("hour") * 60 + Information.weekdays_tobalitai.get(toBalitaiID).get("minute")){
+                if(minute_after < Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")){
                     break;
                 }
             }
-            if(toJinnanID != -1){
-                mBusToJinnan.setText(String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tojinnan.get(toJinnanID).get("minute"))));
-                mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
+            if(Information.toJinnanID != -1){
+                mBusToJinnan.setText(String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute"))));
+                mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
                 mBusToJinnanWay.setVisibility(View.VISIBLE);
             }else{
                 mBusToJinnan.setText(getString(R.string.no_available_buses));
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToJinnanWay.setVisibility(View.GONE);
             }
-            if(toBalitaiID != -1){
-                mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tobalitai.get(toBalitaiID).get("minute"))));
-                mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
+            if(Information.toBalitaiID != -1){
+                mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute"))));
+                mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
                 mBusToBalitaiWay.setVisibility(View.VISIBLE);
             }else{
                 mBusToBalitai.setText(getString(R.string.no_available_buses));
@@ -403,38 +403,38 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             return;
 
         }else {
-            for(toJinnanID = 0;toJinnanID < Information.weekends_tojinnan.size();toJinnanID++){
+            for(Information.toJinnanID = 0;Information.toJinnanID < Information.weekends_tojinnan.size();Information.toJinnanID++){
                 if(minute_after > Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("hour") * 60 + Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("minute")){
-                    toJinnanID = -1;
+                    Information.toJinnanID = -1;
                     break;
                 }
-                if(minute_after < Information.weekends_tojinnan.get(toJinnanID).get("hour") * 60 + Information.weekends_tojinnan.get(toJinnanID).get("minute")){
+                if(minute_after < Information.weekends_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")){
                     break;
                 }
             }
-            for(toBalitaiID = 0;toBalitaiID < Information.weekends_tobalitai.size();toBalitaiID++){
+            for(Information.toBalitaiID = 0;Information.toBalitaiID < Information.weekends_tobalitai.size();Information.toBalitaiID++){
                 if(minute_after > Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("hour") * 60 + Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("minute")){
-                    toBalitaiID = -1;
+                    Information.toBalitaiID = -1;
                     break;
                 }
-                if(minute_after < Information.weekends_tobalitai.get(toBalitaiID).get("hour") * 60 + Information.weekends_tobalitai.get(toBalitaiID).get("minute")){
+                if(minute_after < Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")){
                     break;
                 }
             }
-            if(toJinnanID != -1){
-                mBusToJinnan.setText(String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tojinnan.get(toJinnanID).get("minute"))));
-                mBusToJinnanWay.setText(Information.weekends_tojinnan.get(toJinnanID).get("way") == 1 ? "点" : "快");
+            if(Information.toJinnanID != -1){
+                mBusToJinnan.setText(String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute"))));
+                mBusToJinnanWay.setText(Information.weekends_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
                 mBusToJinnanWay.setVisibility(View.VISIBLE);
             }else{
                 mBusToJinnan.setText(getString(R.string.no_available_buses));
                 mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
                 mBusToJinnanWay.setVisibility(View.GONE);
             }
-            if(toBalitaiID != -1){
-                mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tobalitai.get(toBalitaiID).get("minute"))));
-                mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(toBalitaiID).get("way") == 1 ? "点" : "快");
+            if(Information.toBalitaiID != -1){
+                mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour"))+":"+
+                        ((String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute"))));
+                mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
                 mBusToBalitaiWay.setVisibility(View.VISIBLE);
             }else{
                 mBusToBalitai.setText(getString(R.string.no_available_buses));

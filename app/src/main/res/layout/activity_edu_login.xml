@@ -184,18 +184,6 @@
                         </LinearLayout>
 
 
-                        <ImageView
-                            android:visibility="gone"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            app:srcCompat="@drawable/validatecode"
-                            android:id="@+id/imageView_ValidateCode"
-                            android:scaleType="fitCenter"
-                            android:layout_width="95dp"
-                            android:cropToPadding="false"
-                            android:adjustViewBounds="false"
-                            android:onClick="getValidateCode"/>
-
                     </LinearLayout>
 
                 </LinearLayout>

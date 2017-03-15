@@ -35,9 +35,9 @@ dependencies {
     })
     compile 'cn.jiguang.sdk:jpush:3.0.0'
     compile 'cn.jiguang.sdk:jcore:1.0.0'
-    compile 'cn.jiguang.sdk:janalytics:1.1.0'
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:design:25.1.1'
     compile 'com.android.support:support-v4:25.1.1'
+    compile 'com.android.support.constraint:constraint-layout:+'
     testCompile 'junit:junit:4.12'
 }

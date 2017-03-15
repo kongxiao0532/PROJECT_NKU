@@ -35,6 +35,18 @@
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
     </style>
+    <style name="MyDialogStyle" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:inAnimation">@android:style/Animation.Toast</item>
+        <item name="android:outAnimation">@android:style/Animation.Toast</item>
+
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 
 
 </resources>

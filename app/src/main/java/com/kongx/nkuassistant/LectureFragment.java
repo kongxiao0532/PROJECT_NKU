@@ -16,30 +16,15 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedInputStream;
-import java.math.BigDecimal;
-import java.net.SocketTimeoutException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import tk.sunrisefox.httprequest.Connect;
-import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
 
 
 public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private SwipeRefreshLayout mRefresh;
     private ListView mLectureList;
     private Activity m_activity;
+    private MyAdapter adapter;
+    private int todayLectureID;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +37,8 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.lecture_refresh);
         mRefresh.setOnRefreshListener(this);
         mLectureList = (ListView) myView.findViewById(R.id.lecture_list);
-
+        todayLectureID = -1;
+        adapter = new MyAdapter(getActivity());
         return myView;
     }
 
@@ -60,7 +46,6 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if(Information.lectures == null){
             onRefresh();
         }else {
@@ -72,7 +57,6 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 
@@ -87,12 +71,29 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
         if(result.getClass() == Boolean.class){
             if(m_activity == null) return;
             mRefresh.setRefreshing(false);
-            if((Boolean)result)
-                mLectureList.setAdapter(new MyAdapter(m_activity));
+            if((Boolean)result){
+                calculateToday();
+                mLectureList.setAdapter(adapter);
+                if(todayLectureID > 0)  todayLectureID -= 2;
+                mLectureList.setSelection(todayLectureID);
+                adapter.notifyDataSetChanged();
+            }
             else Toast.makeText(m_activity, R.string.connection_error, Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void calculateToday(){
+        int tmpID = 0;
+        for(Lecture tmp : Information.lectures){
+            tmpID++;
+            if(tmp.year == Information.year && tmp.month == Information.month){
+                if(tmp.day <= Information.day){
+                    todayLectureID = tmpID;
+                    break;
+                }
+            }
+        }
+    }
 
     private class MyAdapter extends BaseAdapter {
         private LayoutInflater mInflater;

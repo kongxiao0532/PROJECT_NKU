@@ -30,11 +30,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import cn.jiguang.api.JAnalyticsAction;
-import cn.jpush.android.api.JPushInterface;
-import tk.sunrisefox.httprequest.Connect;
-
 import static com.kongx.nkuassistant.Information.*;
 
 
@@ -70,17 +65,6 @@ public class WelcomeActivity extends AppCompatActivity {
         startImg1.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.splash_fade_in));
         startImg2.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.splash_move_in));
 
-        JPushInterface.setDebugMode(true);
-        JPushInterface.init(getApplication());
-        JAnalyticsInterface.init(getApplication());
-        JAnalyticsInterface.setDebugMode(true);
-
-        //Initialize network
-        System.setProperty("java.net.useSystemProxies", "true");
-        CookieManager cookieManager = new CookieManager();
-        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-        Connect.initialize(cookieManager);
-        Connect.addDefaultHeaders("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 PROJECT");
 
         //Get configuration
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);

@@ -20,23 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import tk.sunrisefox.httprequest.Connect;
-import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
 
 
 public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback {
@@ -73,7 +59,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if(Information.selectedCourseCount == -1){
             onRefresh();
         }else loadCurriculum();
@@ -82,7 +67,6 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 
@@ -175,6 +159,16 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             courseText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
             courseText.setGravity(Gravity.CENTER);
             courseText.setText(Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "@" + Information.selectedCourses.get(i).classRoom);
+            courseText.setId(i);
+            courseText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    final int index = i;
+                    Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
+//                    intent.putExtra("index",i);
+                    startActivity(intent);
+                }
+            });
             float textSize;
             textSize=getResources().getDimensionPixelSize(R.dimen.course_text_today_size);
 

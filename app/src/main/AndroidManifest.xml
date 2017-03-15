@@ -2,11 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.kongx.nkuassistant">
 
+    <uses-sdk android:minSdkVersion="8" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="com.xiaomi.market.sdk.UPDATE" />
+
+    <receiver android:name="com.xiaomi.market.sdk.DownloadCompleteReceiver">
+        <intent-filter>
+            <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
+        </intent-filter>
+    </receiver>
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".NKUApplication"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@drawable/icon2"
@@ -45,7 +59,14 @@
         <activity
             android:name=".FeedbackApiActivity"
             android:label="@string/title_activity_feedback_api"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:launchMode="singleTop"
+            android:parentActivityName=".IndexActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CourseModifierActivity"
+            android:label="修改课程信息"
+            android:launchMode="singleTop"
+            android:parentActivityName=".IndexActivity"
+            android:theme="@style/MyDialogStyle"/>
     </application>
 
 </manifest>

@@ -344,6 +344,10 @@
 				<hour>13</hour>
 				<minute>30</minute>
 			</busItem>
+			<busItem id = "3" way = "1">
+				<hour>21</hour>
+				<minute>15</minute>
+			</busItem>
 		</toJinnan>
 		<toBalitai>
 			<busItem id = "1" way = "1">
@@ -353,6 +357,10 @@
 			<busItem id = "2" way = "1">
 				<hour>18</hour>
 				<minute>00</minute>
+			</busItem>
+			<busItem id = "3" way = "1">
+				<hour>21</hour>
+				<minute>15</minute>
 			</busItem>
 		</toBalitai>
 	</weekends>

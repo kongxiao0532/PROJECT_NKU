@@ -29,8 +29,6 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import cn.jiguang.analytics.android.api.LoginEvent;
 import tk.sunrisefox.httprequest.Connect;
 
 import static com.kongx.nkuassistant.Information.Strings;
@@ -59,7 +57,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
         Information.ids_minor = null;
         Information.ifLoggedIn = false;
         Information.isFirstOpen = true;
-        JAnalyticsInterface.onPageStart(getApplicationContext(), this.getClass().getCanonicalName());
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
@@ -220,9 +217,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
     }
 
     private void startIndexActivity(){
-        JAnalyticsInterface.onPageEnd(getApplicationContext(), this.getClass().getCanonicalName());
-        LoginEvent loginEvent = new LoginEvent("Eamis",true);
-        loginEvent.addKeyValue("AppVersion",Information.version);
         Intent intent = new Intent(getApplicationContext(), IndexActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

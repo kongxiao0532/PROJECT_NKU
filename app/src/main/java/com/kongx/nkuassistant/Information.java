@@ -1,5 +1,7 @@
 package com.kongx.nkuassistant;
 
+import android.content.res.ColorStateList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +17,6 @@ public class Information {
     public static final String[] startTime = new String[]{"","8:00","8:55","10:00","10:55","12:00","12:55","14:00","14:55","16:00","16:55","18:30","19:25","20:20","21:25"};
     public static final String[] endTime = new String[]{"","8:45","9:40","10:45","11:40","12:45","13:40","14:45","15:40","16:45","17:40","18:30","20:10","21:05","22:00"};
     public static boolean isFirstOpen;
-
     static String bugCheckFile;
     static boolean isBeta = false;
 
@@ -37,6 +38,9 @@ public class Information {
     static boolean isDoubleMajor;
 
     //related to Home Page
+    static int year;
+    static int month;
+    static int day;
     static int dayOfWeek_int;
     static int weekCount;
     static String semester;
@@ -82,6 +86,8 @@ public class Information {
     static ArrayList<HashMap<String,Integer>> weekdays_tobalitai;
     static ArrayList<HashMap<String,Integer>> weekends_tojinnan;
     static ArrayList<HashMap<String,Integer>> weekends_tobalitai;
+    static int toJinnanID;
+    static int toBalitaiID;
     //related to Feedback
     static final String FEEDBACK_EMAIL = "mailto:kongxiao0532@163.com";
     static final String FEEDBACK_SUBJECT = "[Project NKU] 用户意见反馈";

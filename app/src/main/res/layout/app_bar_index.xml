@@ -17,7 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:weightSum="1"
+            app:popupTheme="@style/AppTheme.PopupOverlay">
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="273dp"
+                android:layout_height="19dp"
+                android:foregroundGravity="center_horizontal"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/appbar" />
+        </android.support.v7.widget.Toolbar>
+
+
 
     </android.support.design.widget.AppBarLayout>
 

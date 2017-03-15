@@ -17,23 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.math.BigDecimal;
-import java.net.SocketTimeoutException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import cn.jiguang.analytics.android.api.JAnalyticsInterface;
-import tk.sunrisefox.httprequest.Connect;
-import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
 
 
 public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
@@ -94,7 +78,6 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        JAnalyticsInterface.onPageStart(m_activity.getApplicationContext(), this.getClass().getCanonicalName());
         if(Connector.tmpStudiedCourseCount == -1){
             onRefresh();
         }else onConnectorComplete(Connector.RequestType.SCORE,true);
@@ -103,7 +86,6 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     @Override
     public void onPause() {
         super.onPause();
-        JAnalyticsInterface.onPageEnd(getActivity().getApplicationContext(), this.getClass().getCanonicalName());
         m_activity = null;
     }
 

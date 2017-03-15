@@ -52,7 +52,7 @@ public class Connector {
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
     private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
     private final static String api_feedback_post = "http://kongxiao0532.cn/projectnku/api/feedback.php";
-    final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s";
+    final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
     private final static String api_statis_post = "http://kongxiao0532.cn/projectnku/api/statis.php";
     private final static String statis_post_template = "appVersion=%s&id=%s";
 
@@ -589,15 +589,13 @@ public class Connector {
                             tmpLecture.topic = text;
                             break;
                         case 4:
-                            text = text.replace("&nbsp;","   ");
-                            tmpLecture.time = text.substring(3,text.length());
+                            tmpLecture.setTime(text);
                             break;
                         case 5:
                             tmpLecture.location = text.substring(3,text.length());
                             break;
                         case 6:
-                           if(text.contains("\n"))  text = text.replace("\n","");
-                            tmpLecture.lecturer = text.substring(4,text.length());
+                            tmpLecture.setLecturer(text);
                             tmpLectures.add(tmpLecture);
                             break;
                     }

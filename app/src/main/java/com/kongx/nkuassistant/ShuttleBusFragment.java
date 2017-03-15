@@ -1,8 +1,11 @@
 package com.kongx.nkuassistant;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.DrawableRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -10,6 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +23,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 
-public class ShuttleBusFragment extends Fragment {
+public class  ShuttleBusFragment extends Fragment {
     private ListView mToJinnanList;
     private ListView mToBalitaiList;
 
@@ -74,7 +78,11 @@ public class ShuttleBusFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_shuttle_bus_page1, container, false);
-            ((ListView)view.findViewById(R.id.list_tojinnan)).setAdapter(new ToJinnanAdapter(getActivity()));
+            ListView list = (ListView)view.findViewById(R.id.list_tojinnan);
+            ToJinnanAdapter adapter = new ToJinnanAdapter(getActivity());
+            list.setAdapter(adapter);
+            list.setSelection(Information.toJinnanID == -1 ? 0 : Information.toJinnanID);
+            adapter.notifyDataSetChanged();
             return view;
         }
 
@@ -98,14 +106,13 @@ public class ShuttleBusFragment extends Fragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                if(convertView == null){
-                    convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
-                    holder = new ViewHolder();
-                    holder.way = (TextView) convertView.findViewById(R.id.textView_way);
-                    holder.time = (TextView) convertView.findViewById(R.id.textView_time);
-                    convertView.setTag(holder);//绑定ViewHolder对象
-                } else{
-                    holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
+                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                holder = new ViewHolder();
+                holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                holder.time = (TextView) convertView.findViewById(R.id.textView_time);
+                if(position == Information.toJinnanID) {
+                    holder.way.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
+                    holder.time.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
                 }
                 holder.way.setText(Information.weekdays_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
                 holder.time.setText(Information.weekdays_tojinnan.get(position).get("hour") + ":" +
@@ -125,7 +132,11 @@ public class ShuttleBusFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_shuttle_bus_page2, container, false);
-            ((ListView)view.findViewById(R.id.list_tobalitai)).setAdapter(new ToBalitaiAdapter(getActivity()));
+            ListView list = (ListView)view.findViewById(R.id.list_tobalitai);
+            ToBalitaiAdapter adapter = new ToBalitaiAdapter(getActivity());
+            list.setAdapter(adapter);
+            list.setSelection(Information.toBalitaiID == -1 ? 0 : Information.toBalitaiID);
+            adapter.notifyDataSetChanged();
             return view;
         }
 
@@ -149,14 +160,13 @@ public class ShuttleBusFragment extends Fragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                if(convertView == null){
-                    convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
-                    holder = new ViewHolder();
-                    holder.way = (TextView) convertView.findViewById(R.id.textView_way);
-                    holder.time = (TextView) convertView.findViewById(R.id.textView_time);
-                    convertView.setTag(holder);//绑定ViewHolder对象
-                } else{
-                    holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
+                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                holder = new ViewHolder();
+                holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                holder.time = (TextView) convertView.findViewById(R.id.textView_time);
+                if(position == Information.toBalitaiID) {
+                    holder.way.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
+                    holder.time.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
                 }
                 holder.way.setText(Information.weekdays_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
                 holder.time.setText(Information.weekdays_tobalitai.get(position).get("hour") + ":" +

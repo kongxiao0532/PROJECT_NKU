@@ -30,7 +30,6 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.jpush.android.api.JPushInterface;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
@@ -83,13 +82,11 @@ public class IndexActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        JPushInterface.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        JPushInterface.onPause(this);
     }
 
     @Override
