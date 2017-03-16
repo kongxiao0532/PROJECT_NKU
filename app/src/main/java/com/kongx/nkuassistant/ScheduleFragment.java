@@ -1,7 +1,9 @@
 package com.kongx.nkuassistant;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -71,9 +73,21 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void onRefresh() {
-        Log.e("SCHEDULE",Information.ids_major+" "+Information.ids_minor);
-        mRefresh.setRefreshing(true);
-        Connector.getInformation(Connector.RequestType.CURRICULUM,this,null);
+        new AlertDialog.Builder(m_activity).setTitle("请注意")
+                .setMessage("刷新会导致课程信息与教务系统同步，您修改的课程表信息将不再保存。是否要继续刷新？")
+                .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mRefresh.setRefreshing(true);
+                        Connector.getInformation(Connector.RequestType.CURRICULUM,ScheduleFragment.this,null);
+                    }
+                }).setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mRefresh.setRefreshing(false);
+            }
+        })
+                .show();
     }
 
     @Override
@@ -128,6 +142,11 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
             editor.putInt("color" + i, Information.selectedCourses.get(i).color);
         }
+        for(int i = 0;i < 14;i++){
+            for(int j = 0;j < 7;j++){
+                editor.putBoolean("isBusy"+i+j,Information.scheduleTimeIsBusy[i][j]);
+            }
+        }
         editor.putString("curriculum_lastUpdate",Information.curriculum_lastUpdate);
         return editor.commit();
     }
@@ -163,9 +182,8 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
             courseText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    final int index = i;
                     Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
-//                    intent.putExtra("index",i);
+                    intent.putExtra("index",view.getId());
                     startActivity(intent);
                 }
             });

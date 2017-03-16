@@ -72,6 +72,7 @@ public class Information {
     static int selectedCourseCount = -1;
     static ArrayList<CourseSelected> selectedCourses = new ArrayList<>();
     static String curriculum_lastUpdate;
+    static boolean[][] scheduleTimeIsBusy;
 
 
     //related to Exams

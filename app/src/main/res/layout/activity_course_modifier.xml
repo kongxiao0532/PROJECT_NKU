@@ -26,7 +26,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center"
+                android:gravity="center_vertical|start"
                 android:textColor="@color/white"
                 android:text="课程："
                 android:textSize="16sp" />
@@ -36,9 +36,10 @@
                 android:background="@drawable/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:textColor="@color/grey"
                 android:layout_marginStart="10dp"
-                android:ems="6"
-                android:inputType="textPersonName" />
+                android:textSize="15sp"
+                android:ems="6" />
         </TableRow>
 
         <TableRow
@@ -62,9 +63,10 @@
                 android:background="@drawable/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:textColor="@color/grey"
                 android:layout_marginStart="10dp"
-                android:ems="6"
-                android:inputType="textPersonName" />
+                android:textSize="15sp"
+                android:ems="6" />
         </TableRow>
 
         <TableRow
@@ -88,39 +90,83 @@
                 android:background="@drawable/transparent"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:textColor="@color/grey"
                 android:layout_marginStart="10dp"
-                android:ems="6"
-                android:inputType="textPersonName" />
+                android:textSize="15sp"
+                android:ems="6" />
 
         </TableRow>
 
         <TableRow
-            android:background="@drawable/greyrect"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_marginTop="10dp"
+            android:background="@drawable/greyrect"
+            android:gravity="center"
             android:padding="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textColor="@color/white"
                 android:text="时间："
+                android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <EditText
-                android:id="@+id/modifier_time"
-                android:background="@drawable/transparent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_marginStart="10dp"
-                android:ems="6"
-                android:inputType="textPersonName" />
+                android:orientation="vertical">
+
+                <Spinner
+                    android:id="@+id/modifier_spinner_dayOfWeek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="6"
+                    android:entries="@array/dayOfWeek" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="6dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/modifier_spinner_startTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/transparent"
+                        android:entries="@array/courseTime"/>
+
+                    <TextView
+                        android:layout_width="6dip"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textColor="@color/white" />
+
+                    <Spinner
+                        android:id="@+id/modifier_spinner_endTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/transparent"
+                        android:entries="@array/courseTime"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
 
         </TableRow>
+
     </TableLayout>
+
 
 
     <LinearLayout
@@ -130,23 +176,23 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/modifier_accpet_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:background="@drawable/white_button"
-        android:text="确定"
-        android:textColor="@color/colorPrimary" />
+        <Button
+            android:id="@+id/modifier_dismiss_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/white_button"
+            android:text="取消"
+            android:textColor="@color/colorPrimary" />
 
-    <Button
-        android:id="@+id/modifier_dismiss_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:background="@drawable/white_button"
-        android:text="取消"
-        android:textColor="@color/colorPrimary" />
+        <Button
+            android:id="@+id/modifier_accept_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:background="@drawable/white_button"
+            android:text="确定"
+            android:textColor="@color/colorPrimary" />
     </LinearLayout>
 
 </LinearLayout>

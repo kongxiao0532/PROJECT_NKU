@@ -99,6 +99,7 @@ public class Connector {
                 break;
             case CURRICULUM:
                 tmpSelectedCourses = new ArrayList<>();
+                Information.scheduleTimeIsBusy = new boolean[14][7];
                 curriculumColor = 0;
                 if(Information.ids_major == null)  {
                     uis.onConnectorComplete(RequestType.CURRICULUM,false);
@@ -521,6 +522,7 @@ public class Connector {
                                     tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                                     startPoint = matcher.end();
                                 }
+                                for(int i = tmpCourse.startTime;i <= tmpCourse.endTime;i++) Information.scheduleTimeIsBusy[i - 1][tmpCourse.dayOfWeek - 1] = true;
                                 tmpCourse.color = checkForSameCourse(tmpCourse.name) == -1 ? curriculumColor++ : checkForSameCourse(tmpCourse.name);
                                 tmpSelectedCourses.add(tmpCourse);
                             } else {

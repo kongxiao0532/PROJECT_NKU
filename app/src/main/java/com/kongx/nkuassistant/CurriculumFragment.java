@@ -2,8 +2,10 @@ package com.kongx.nkuassistant;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,6 +47,14 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
         mRefresh.setOnRefreshListener(CurriculumFragment.this);
         mNoCurrirulumView.setVisibility(View.GONE);
         m_activity = getActivity();
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
+                intent.putExtra("index",i);
+                startActivity(intent);
+            }
+        });
         return myView;
     }
 
@@ -70,8 +81,21 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     public void onRefresh() {
-        mRefresh.setRefreshing(true);
-        Connector.getInformation(Connector.RequestType.CURRICULUM,this,null);
+        new AlertDialog.Builder(m_activity).setTitle("请注意")
+                .setMessage("刷新会导致课程信息与教务系统同步，您修改的课程表信息将不再保存。是否要继续刷新？")
+                .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mRefresh.setRefreshing(true);
+                        Connector.getInformation(Connector.RequestType.CURRICULUM,CurriculumFragment.this,null);
+                    }
+                }).setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mRefresh.setRefreshing(false);
+            }
+        })
+                .show();
     }
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
         if (m_activity == null) return;
@@ -124,6 +148,11 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
             editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
             editor.putInt("color" + i, Information.selectedCourses.get(i).color);
         }
+        for(int i = 0;i < 14;i++){
+            for(int j = 0;j < 7;j++){
+                editor.putBoolean("isBusy"+i+j,Information.scheduleTimeIsBusy[i][j]);
+            }
+        }
         editor.putString("curriculum_lastUpdate", Information.curriculum_lastUpdate);
         return editor.commit();
     }
@@ -166,11 +195,6 @@ private class MyAdapter extends BaseAdapter {
             holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
             holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
             holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
-//                    convertView.setTag(holder);
-//                }
-//                else{
-//                    holder = (ViewHolder)convertView.getTag();
-//                }
             holder.name.setText(Information.selectedCourses.get(position).name + "（" + Information.selectedCourses.get(position).teacherName + "）");
             holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).dayOfWeek]);
             holder.index.setText(Information.selectedCourses.get(position).index);

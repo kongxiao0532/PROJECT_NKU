@@ -1,6 +1,8 @@
 package com.kongx.nkuassistant;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+
 import com.xiaomi.market.sdk.XiaomiUpdateAgent;
 
 import java.net.CookieManager;
@@ -35,5 +37,6 @@ public class NKUApplication extends Application {
         Connect.initialize(cookieManager);
         Connect.addDefaultHeaders("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 PROJECT");
     }
+
 
 }

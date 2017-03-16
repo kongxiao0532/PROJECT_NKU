@@ -99,6 +99,7 @@ public class WelcomeActivity extends AppCompatActivity {
         editor.apply();
 
         //get Curriculum Preferences
+        scheduleTimeIsBusy = new boolean[14][7];
         settings = getSharedPreferences(COURSE_PREFS_NAME, 0);
         selectedCourseCount = settings.getInt(Strings.setting_selected_course_count, -1);
         curriculum_lastUpdate = settings.getString(Strings.setting_last_update_time, null);
@@ -118,6 +119,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 tmpCourse.endWeek = settings.getInt("endWeek" + i, -1);
                 tmpCourse.color = settings.getInt("color" + i, -1);
                 selectedCourses.add(tmpCourse);
+            }
+            for(int i = 0;i < 14;i++){
+                for(int j = 0;j < 7;j++){
+                    Information.scheduleTimeIsBusy[i][j] = settings.getBoolean("isBusy"+i+j,false);
+                }
             }
         }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="dayOfWeek">
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+        <item>星期日</item>
+    </string-array>
+    <string-array name="courseTime">
+        <item>第1节</item>
+        <item>第2节</item>
+        <item>第3节</item>
+        <item>第4节</item>
+        <item>第5节</item>
+        <item>第6节</item>
+        <item>第7节</item>
+        <item>第8节</item>
+        <item>第9节</item>
+        <item>第10节</item>
+        <item>第11节</item>
+        <item>第12节</item>
+        <item>第13节</item>
+        <item>第14节</item>
+    </string-array>
+</resources>
