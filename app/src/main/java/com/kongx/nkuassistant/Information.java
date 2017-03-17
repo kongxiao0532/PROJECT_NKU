@@ -41,7 +41,7 @@ public class Information {
     static int year;
     static int month;
     static int day;
-    static int dayOfWeek_int;
+    static int dayOfWeek_int;       //start at 1
     static int weekCount;
     static String semester;
     static int semesterId;

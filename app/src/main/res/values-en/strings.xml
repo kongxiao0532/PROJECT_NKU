@@ -60,7 +60,7 @@
     <string name="details">Details</string>
     <string name="next_bus">NEXT</string>
     <string name="no_available_buses">N/A</string>
-    <string name="bus_schedule_sourse">Data in Oct. 2016</string>
+    <string name="bus_schedule_sourse">Data in March.2017</string>
     <string name="no_course_today">No Courses Today</string>
     <string name="pull_to_refresh">Pull down to refresh</string>
     <string name="no_curriculum_info">No Curriculum Info</string>

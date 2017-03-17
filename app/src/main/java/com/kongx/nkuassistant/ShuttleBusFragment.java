@@ -3,6 +3,7 @@ package com.kongx.nkuassistant;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.DrawableRes;
@@ -18,14 +19,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 
 public class  ShuttleBusFragment extends Fragment {
     private ListView mToJinnanList;
     private ListView mToBalitaiList;
+    private ToggleButton m_toggle;
+    private static boolean isWeekdays;
+    private static ShuttleBusPage1.ToJinnanAdapter j_adapter;
+    private static ShuttleBusPage2.ToBalitaiAdapter b_adapter;
 
 
     @Override
@@ -44,7 +51,18 @@ public class  ShuttleBusFragment extends Fragment {
 
         final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager, true);
-
+        m_toggle = (ToggleButton) view.findViewById(R.id.toggleButton);
+        if(Information.dayOfWeek_int <= 5)  isWeekdays = true;
+        else      isWeekdays = false;
+        m_toggle.setChecked(isWeekdays);
+        m_toggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isWeekdays = !isWeekdays;
+                j_adapter.notifyDataSetChanged();
+                b_adapter.notifyDataSetChanged();
+            }
+        });
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -79,10 +97,10 @@ public class  ShuttleBusFragment extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_shuttle_bus_page1, container, false);
             ListView list = (ListView)view.findViewById(R.id.list_tojinnan);
-            ToJinnanAdapter adapter = new ToJinnanAdapter(getActivity());
-            list.setAdapter(adapter);
+            j_adapter = new ToJinnanAdapter(getActivity());
+            list.setAdapter(j_adapter);
             list.setSelection(Information.toJinnanID == -1 ? 0 : Information.toJinnanID);
-            adapter.notifyDataSetChanged();
+            j_adapter.notifyDataSetChanged();
             return view;
         }
 
@@ -93,11 +111,11 @@ public class  ShuttleBusFragment extends Fragment {
             }
             @Override
             public int getCount() {
-                return Information.weekdays_tojinnan.size();
+                return isWeekdays ? Information.weekdays_tojinnan.size() : Information.weekends_tojinnan.size();
             }
             @Override
             public Object getItem(int position) {
-                return Information.weekdays_tojinnan.get(position);
+                return isWeekdays ? Information.weekdays_tojinnan.get(position) : Information.weekends_tojinnan.get(position);
             }
             @Override
             public long getItemId(int position) {
@@ -109,20 +127,30 @@ public class  ShuttleBusFragment extends Fragment {
                 convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
                 holder = new ViewHolder();
                 holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                holder.image = (ImageView) convertView.findViewById(R.id.bus_item_image);
                 holder.time = (TextView) convertView.findViewById(R.id.textView_time);
                 if(position == Information.toJinnanID) {
                     holder.way.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
+                    holder.image.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.nextbus));
                     holder.time.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
                 }
-                holder.way.setText(Information.weekdays_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
-                holder.time.setText(Information.weekdays_tojinnan.get(position).get("hour") + ":" +
-                        ((Information.weekdays_tojinnan.get(position).get("minute") == 0) ? "00" : Information.weekdays_tojinnan.get(position).get("minute")));
+                if(isWeekdays){
+                    holder.way.setText(Information.weekdays_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
+                    holder.time.setText(Information.weekdays_tojinnan.get(position).get("hour") + ":" +
+                            ((Information.weekdays_tojinnan.get(position).get("minute") == 0) ? "00" : Information.weekdays_tojinnan.get(position).get("minute")));
+                }else {
+                    holder.way.setText(Information.weekends_tojinnan.get(position).get("way") == 1 ? "点对点" : "快线");
+                    holder.time.setText(Information.weekends_tojinnan.get(position).get("hour") + ":" +
+                            ((Information.weekends_tojinnan.get(position).get("minute") == 0) ? "00" : Information.weekends_tojinnan.get(position).get("minute")));
+
+                }
                 return convertView;
             }
         }
 
         class ViewHolder {
             TextView way;
+            ImageView image;
             TextView time;
         }
     }
@@ -133,10 +161,10 @@ public class  ShuttleBusFragment extends Fragment {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_shuttle_bus_page2, container, false);
             ListView list = (ListView)view.findViewById(R.id.list_tobalitai);
-            ToBalitaiAdapter adapter = new ToBalitaiAdapter(getActivity());
-            list.setAdapter(adapter);
+            b_adapter = new ToBalitaiAdapter(getActivity());
+            list.setAdapter(b_adapter);
             list.setSelection(Information.toBalitaiID == -1 ? 0 : Information.toBalitaiID);
-            adapter.notifyDataSetChanged();
+            b_adapter.notifyDataSetChanged();
             return view;
         }
 
@@ -147,11 +175,11 @@ public class  ShuttleBusFragment extends Fragment {
             }
             @Override
             public int getCount() {
-                return Information.weekdays_tobalitai.size();
+                return isWeekdays ? Information.weekdays_tobalitai.size() : Information.weekends_tobalitai.size();
             }
             @Override
             public Object getItem(int position) {
-                return Information.weekdays_tobalitai.get(position);
+                return isWeekdays ? Information.weekdays_tobalitai.get(position) : Information.weekends_tobalitai.get(position);
             }
             @Override
             public long getItemId(int position) {
@@ -163,19 +191,28 @@ public class  ShuttleBusFragment extends Fragment {
                 convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
                 holder = new ViewHolder();
                 holder.way = (TextView) convertView.findViewById(R.id.textView_way);
+                holder.image = (ImageView) convertView.findViewById(R.id.bus_item_image);
                 holder.time = (TextView) convertView.findViewById(R.id.textView_time);
                 if(position == Information.toBalitaiID) {
                     holder.way.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
+                    holder.image.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.nextbus));
                     holder.time.setTextColor(getActivity().getResources().getColorStateList(R.color.colorPrimary));
                 }
-                holder.way.setText(Information.weekdays_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
-                holder.time.setText(Information.weekdays_tobalitai.get(position).get("hour") + ":" +
-                        ((Information.weekdays_tobalitai.get(position).get("minute") == 0) ? "00" : Information.weekdays_tobalitai.get(position).get("minute")));
+                if(isWeekdays){
+                    holder.way.setText(Information.weekdays_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
+                    holder.time.setText(Information.weekdays_tobalitai.get(position).get("hour") + ":" +
+                            ((Information.weekdays_tobalitai.get(position).get("minute") == 0) ? "00" : Information.weekdays_tobalitai.get(position).get("minute")));
+                }else {
+                    holder.way.setText(Information.weekends_tobalitai.get(position).get("way") == 1 ? "点对点" : "快线");
+                    holder.time.setText(Information.weekends_tobalitai.get(position).get("hour") + ":" +
+                            ((Information.weekends_tobalitai.get(position).get("minute") == 0) ? "00" : Information.weekends_tobalitai.get(position).get("minute")));
+                }
                 return convertView;
             }
         }
         class ViewHolder {
             TextView way;
+            ImageView image;
             TextView time;
         }
     }

@@ -29,7 +29,7 @@
     <string name="no_course_today">今天没有课哦~</string>
     <string name="next_bus">下一班</string>
     <string name="no_available_buses">无可用车辆</string>
-    <string name="bus_schedule_sourse">（根据2017年2月数据）</string>
+    <string name="bus_schedule_sourse">（根据2017年3月数据）</string>
     <!-- Strings related to login -->
     <string name="prompt_email">学号</string>
     <string name="prompt_password">信息门户密码</string>

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -154,7 +155,8 @@ public class WelcomeActivity extends AppCompatActivity {
         Element element = null;
         InputStream inputStream = null;
         try {
-            inputStream = getAssets().open("timetable.xml");
+            Calendar calendar = Calendar.getInstance();
+            inputStream = getAssets().open(!(calendar.get(Calendar.MONTH) <= 3 && calendar.get(Calendar.DAY_OF_MONTH) < 27)  ? "timetable.xml" : "oldtimetable.xml");
         } catch (Exception e) {
             Log.e("WelcomeActivity", "Open bus file failed.");
         }
