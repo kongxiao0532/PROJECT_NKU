@@ -73,21 +73,26 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void onRefresh() {
-        new AlertDialog.Builder(m_activity).setTitle("请注意")
-                .setMessage("刷新会导致课程信息与教务系统同步，您修改的课程表信息将不再保存。是否要继续刷新？")
-                .setPositiveButton("同意", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mRefresh.setRefreshing(true);
-                        Connector.getInformation(Connector.RequestType.CURRICULUM,ScheduleFragment.this,null);
-                    }
-                }).setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mRefresh.setRefreshing(false);
-            }
-        })
-                .show();
+        if(Information.selectedCourseCount == -1){
+            mRefresh.setRefreshing(true);
+            Connector.getInformation(Connector.RequestType.CURRICULUM,ScheduleFragment.this,null);
+        }else {
+            new AlertDialog.Builder(m_activity).setTitle("请注意")
+                    .setMessage("刷新会导致课程信息与教务系统同步，您修改的课程表信息将不再保存。是否要继续刷新？")
+                    .setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mRefresh.setRefreshing(true);
+                            Connector.getInformation(Connector.RequestType.CURRICULUM,ScheduleFragment.this,null);
+                        }
+                    }).setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mRefresh.setRefreshing(false);
+                }
+            })
+                    .show();
+        }
     }
 
     @Override

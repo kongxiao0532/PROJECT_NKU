@@ -20,22 +20,10 @@
         <android.support.v4.view.ViewPager
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/pager_bus"/>
+            android:id="@+id/pager_tv"/>
 
 
 
     </LinearLayout>
-
-    <ToggleButton
-        android:id="@+id/toggleButton"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:background="@drawable/themecolorrect"
-        android:text="ToggleButton"
-        android:textColor="@color/white"
-        android:textOff="节假日（快线20-30分钟一班）"
-        android:textOn="工作日" />
 
 </RelativeLayout>

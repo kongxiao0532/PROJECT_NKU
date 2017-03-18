@@ -244,8 +244,10 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
             } else if (id == R.id.nav_tycg) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://tycg.nankai.edu.cn/"));
-            }   else if (id == R.id.nav_lecture) {
+            } else if (id == R.id.nav_lecture) {
                 fragmentTransaction.replace(R.id.fragment_container, new LectureFragment());
+            } else if (id == R.id.nav_livetv) {
+                fragmentTransaction.replace(R.id.fragment_container, new LiveFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

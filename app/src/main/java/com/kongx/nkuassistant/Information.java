@@ -89,6 +89,11 @@ public class Information {
     static ArrayList<HashMap<String,Integer>> weekends_tobalitai;
     static int toJinnanID;
     static int toBalitaiID;
+
+    //related to Live TV
+    static ArrayList<LiveFragment.TVChannel> CCTVChannels;
+    static ArrayList<LiveFragment.TVChannel> LocalChannels;
+
     //related to Feedback
     static final String FEEDBACK_EMAIL = "mailto:kongxiao0532@163.com";
     static final String FEEDBACK_SUBJECT = "[Project NKU] 用户意见反馈";

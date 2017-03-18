@@ -62,11 +62,18 @@
             android:launchMode="singleTop"
             android:parentActivityName=".IndexActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CourseModifierActivity"
+        <activity
+            android:name=".CourseModifierActivity"
             android:label="修改课程信息"
             android:launchMode="singleTop"
             android:parentActivityName=".IndexActivity"
-            android:theme="@style/MyDialogStyle"/>
+            android:theme="@style/MyDialogStyle" />
+        <activity
+            android:name=".VideoActivity"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
+            android:screenOrientation="landscape">
+
+        </activity>
     </application>
 
 </manifest>

@@ -81,6 +81,13 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mReFresh = (SwipeRefreshLayout) myView.findViewById(R.id.home_refresh);
         mReFresh.setOnRefreshListener(this);
         mWeekText = (TextView) myView.findViewById(R.id.textView_weekCount);
+        mWeekText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(m_activity,VideoActivity.class);
+                startActivity(intent);
+            }
+        });
         mSememText = (TextView) myView.findViewById(R.id.textView_semester);
         mDate = (TextView) myView.findViewById(R.id.textView_date);
         mDay = (TextView) myView.findViewById(R.id.textView_day);

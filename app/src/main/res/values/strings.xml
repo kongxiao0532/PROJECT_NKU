@@ -13,6 +13,7 @@
     <string name="drawer_select">选课退课</string>
     <string name="drawer_information_divider">信息查询</string>
     <string name="drawer_612bus">612时刻表</string>
+    <string name="drawer_livetv">电视直播</string>
     <string name="drawer_lecture">讲座信息</string>
     <string name="drawer_about_divider">关于</string>
     <string name="drawer_about_projectnku">关于Project NKU</string>
@@ -63,6 +64,11 @@
     <string name="tab_tobalitai">津南-八里台</string>
     <string name="pointToPoint">点对点</string>
     <string name="FastLine">快线</string>
+    <!--String related to Live TV-->
+    <string name="tab_CCTV">央视频道</string>
+    <string name="tab_locals">其他频道</string>
+    <string name="sd_channel">标清</string>
+    <string name="hd_channel">高清</string>
     <!--String related to Feedback-->
     <string name="feedback">意见反馈</string>
     <string name="check_for_update">检查更新</string>
@@ -84,5 +90,8 @@
     <string name="Unlogged">未登录</string>
     <string name="title_activity_color_select">颜色选择</string>
     <string name="title_activity_feedback_api">FeedbackApiActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

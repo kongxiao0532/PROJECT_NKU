@@ -114,7 +114,7 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            convertView = mInflater.inflate(R.layout.lecture_list_item,null);
+            convertView = mInflater.inflate(R.layout.item_lecture_list,null);
             holder = new ViewHolder();
             holder.topic = (TextView) convertView.findViewById(R.id.lecture_list_item_topic);
             holder.time = (TextView) convertView.findViewById(R.id.lecture_list_item_time);

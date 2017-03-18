@@ -1,12 +1,8 @@
 package com.kongx.nkuassistant;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.DrawableRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -14,21 +10,17 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 
 public class  ShuttleBusFragment extends Fragment {
-    private ListView mToJinnanList;
-    private ListView mToBalitaiList;
     private ToggleButton m_toggle;
     private static boolean isWeekdays;
     private static ShuttleBusPage1.ToJinnanAdapter j_adapter;
@@ -46,7 +38,7 @@ public class  ShuttleBusFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shuttle_bus, container, false);
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager);
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager_bus);
         viewPager.setAdapter(new ScreenSlidePagerAdapter(((AppCompatActivity)getActivity()).getSupportFragmentManager()));
 
         final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
@@ -95,8 +87,8 @@ public class  ShuttleBusFragment extends Fragment {
         public ShuttleBusPage1(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_shuttle_bus_page1, container, false);
-            ListView list = (ListView)view.findViewById(R.id.list_tojinnan);
+            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            ListView list = (ListView)view.findViewById(R.id.simple_list);
             j_adapter = new ToJinnanAdapter(getActivity());
             list.setAdapter(j_adapter);
             list.setSelection(Information.toJinnanID == -1 ? 0 : Information.toJinnanID);
@@ -159,8 +151,8 @@ public class  ShuttleBusFragment extends Fragment {
         public ShuttleBusPage2(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_shuttle_bus_page2, container, false);
-            ListView list = (ListView)view.findViewById(R.id.list_tobalitai);
+            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            ListView list = (ListView)view.findViewById(R.id.simple_list);
             b_adapter = new ToBalitaiAdapter(getActivity());
             list.setAdapter(b_adapter);
             list.setSelection(Information.toBalitaiID == -1 ? 0 : Information.toBalitaiID);

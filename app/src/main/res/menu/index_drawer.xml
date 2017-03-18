@@ -61,6 +61,12 @@
                     android:checked="false"
                     android:title="@string/drawer_lecture" />
                 <item
+                    android:id="@+id/nav_livetv"
+                    android:icon="@drawable/ic_live_tv_black_48dp"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/drawer_livetv" />
+                <item
                     android:id="@+id/nav_icHome"
                     android:icon="@drawable/ic_library_books_white_48dp"
                     android:checkable="true"

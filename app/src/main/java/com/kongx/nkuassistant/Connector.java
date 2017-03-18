@@ -31,6 +31,7 @@ public class Connector {
         CURRICULUM,
         SCORE,
         LECTURE,
+        TV_CHANNEL,
         FEEDBACK,
         LOGOUT
     };
@@ -50,6 +51,7 @@ public class Connector {
     private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
     private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
+    private final static String url_livetv_list = "https://tv.byr.cn/mobile/";
     private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
     private final static String api_feedback_post = "http://kongxiao0532.cn/projectnku/api/feedback.php";
     final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
@@ -120,6 +122,11 @@ public class Connector {
                 tmpLectures.clear();
                 new Request.Builder().url(url_lectures).get(new LectureConnector(uis));
                 break;
+            case TV_CHANNEL:
+                Information.CCTVChannels = new ArrayList<>();
+                Information.LocalChannels = new ArrayList<>();
+                new Request.Builder().url(url_livetv_list).get(new TVChannelConnector(uis));
+                break;
             case FEEDBACK:
                 new Request.Builder().url(api_feedback_post).post(strToPost,new FeedbackConnector(uis));
                 break;
@@ -128,6 +135,7 @@ public class Connector {
 
         }
     }
+
     private static class UpdateConnector implements Connect.Callback{
         Connector.Callback uis;
         public UpdateConnector(Connector.Callback uis)  {  this.uis = uis; }
@@ -610,6 +618,75 @@ public class Connector {
             });
             Information.lectures = tmpLectures;
             uis.onConnectorComplete(RequestType.LECTURE,true);
+        }
+
+        @Override
+        public void onNetworkError(Exception exception) {
+
+        }
+    }
+
+    private static class TVChannelConnector implements Connect.Callback{
+        Callback uis;
+        public TVChannelConnector(Callback uis)   {this.uis = uis;}
+
+        @Override
+        public void onNetworkComplete(Response response) {
+            String returnString  = response.body();
+            Log.e("TV",returnString);
+            if(returnString.isEmpty())  return;
+            String HDString = returnString.substring(returnString.indexOf("高清频道"),returnString.indexOf("央视标清"));
+            String CCTVSDString = returnString.substring(returnString.indexOf("央视标清"),returnString.indexOf("卫视标清"));
+            String LocalSDString = returnString.substring(returnString.indexOf("卫视标清"),returnString.indexOf("PC版"));
+            Pattern pattern;
+            LiveFragment.TVChannel tmpChannel;
+            //HD Channels
+            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(.+)<\\/a>");
+            Matcher matcher = pattern.matcher(HDString);
+            while(matcher.find()){
+                tmpChannel = new LiveFragment.TVChannel();
+                tmpChannel.name = matcher.group(2).contains("高清") ? matcher.group(2).replace("高清","") : matcher.group(2);
+                tmpChannel.isHDAvailable = true;
+                tmpChannel.HDUrl = matcher.group(1);
+                if(tmpChannel.name.contains("CCTV")) Information.CCTVChannels.add(tmpChannel);
+                else Information.LocalChannels.add(tmpChannel);
+            }
+            //CCTV SD Channels
+            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(\\w*-\\d*)(.*)<\\/a>");
+            matcher = pattern.matcher(CCTVSDString);
+nxt_line_1: while(matcher.find()){
+                for(LiveFragment.TVChannel m : Information.CCTVChannels){
+                    if(m.name.equals(matcher.group(2))){
+                        m.isSDAvailable = true;
+                        m.SDUrl = matcher.group(1);
+                        continue nxt_line_1;
+                    }
+                }
+            tmpChannel = new LiveFragment.TVChannel();
+            tmpChannel.name = matcher.group(2);
+            tmpChannel.isSDAvailable = true;
+            tmpChannel.SDUrl = matcher.group(1);
+            Information.CCTVChannels.add(tmpChannel);
+            }
+            //Local Channels
+            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(.+)<\\/a>");
+            matcher = pattern.matcher(LocalSDString);
+nxt_line_2: while(matcher.find()){
+                for(LiveFragment.TVChannel m : Information.LocalChannels){
+                    if(m.name.equals(matcher.group(2))){
+                        m.isSDAvailable = true;
+                        m.SDUrl = matcher.group(1);
+                        continue nxt_line_2;
+                    }
+                }
+                tmpChannel = new LiveFragment.TVChannel();
+                tmpChannel.name = matcher.group(2);
+                tmpChannel.isSDAvailable = true;
+                tmpChannel.SDUrl = matcher.group(1);
+                Information.LocalChannels.add(tmpChannel);
+            }
+            uis.onConnectorComplete(RequestType.TV_CHANNEL,true);
+
         }
 
         @Override
