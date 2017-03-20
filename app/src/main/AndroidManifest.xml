@@ -70,10 +70,9 @@
             android:theme="@style/MyDialogStyle" />
         <activity
             android:name=".VideoActivity"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
-            android:screenOrientation="landscape">
-
-        </activity>
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+        <activity android:name=".ImageNoticeActivity"></activity>
     </application>
 
 </manifest>
