@@ -4,8 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="20dp"
+    android:gravity="center"
     android:orientation="horizontal"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
     android:padding="5dip"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
     android:weightSum="1"
     app:layout_collapseParallaxMultiplier="0.0">
 
@@ -14,14 +19,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="20sp"
-        android:text="CCTV-1" />
+        android:text="CCTV-1"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/button_livetv_sd"
         android:layout_width="56dp"
         android:layout_height="30dp"
         android:layout_weight="1"
+        android:layout_margin="10dp"
         android:background="@drawable/greyrect"
         android:padding="5dp"
         android:text="@string/sd_channel"
@@ -32,6 +38,7 @@
         android:layout_width="56dp"
         android:layout_height="30dp"
         android:layout_marginStart="10dp"
+        android:layout_margin="10dp"
         android:layout_weight="1"
         android:background="@drawable/greyrect"
         android:padding="5dp"

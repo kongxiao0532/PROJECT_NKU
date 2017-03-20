@@ -633,17 +633,57 @@ public class Connector {
         @Override
         public void onNetworkComplete(Response response) {
             String returnString  = response.body();
-            Log.e("TV",returnString);
             if(returnString.isEmpty())  return;
             String HDString = returnString.substring(returnString.indexOf("高清频道"),returnString.indexOf("央视标清"));
             String CCTVSDString = returnString.substring(returnString.indexOf("央视标清"),returnString.indexOf("卫视标清"));
             String LocalSDString = returnString.substring(returnString.indexOf("卫视标清"),returnString.indexOf("PC版"));
             Pattern pattern;
+            Matcher matcher;
             LiveFragment.TVChannel tmpChannel;
+            //CCTV SD Channels
+            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(\\w*-\\d*)(.*)<\\/a>");
+            matcher = pattern.matcher(CCTVSDString);
+            while(matcher.find()){
+            tmpChannel = new LiveFragment.TVChannel();
+            tmpChannel.name = matcher.group(2);
+            tmpChannel.isSDAvailable = true;
+            tmpChannel.SDUrl = matcher.group(1);
+            Information.CCTVChannels.add(tmpChannel);
+            }
+//            Collections.sort(Information.CCTVChannels, new Comparator<LiveFragment.TVChannel>() {
+//                @Override
+//                public int compare(LiveFragment.TVChannel t1, LiveFragment.TVChannel t2) {
+//                    return t1.name.compareTo(t2.name);
+//                }
+//            });
+            //Local Channels
+            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(.+)<\\/a>");
+            matcher = pattern.matcher(LocalSDString);
+            while(matcher.find()){
+                tmpChannel = new LiveFragment.TVChannel();
+                tmpChannel.name = matcher.group(2);
+                tmpChannel.isSDAvailable = true;
+                tmpChannel.SDUrl = matcher.group(1);
+                Information.LocalChannels.add(tmpChannel);
+            }
             //HD Channels
             pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(.+)<\\/a>");
-            Matcher matcher = pattern.matcher(HDString);
-            while(matcher.find()){
+            matcher = pattern.matcher(HDString);
+nxt_line:   while(matcher.find()){
+                for(LiveFragment.TVChannel m : Information.CCTVChannels){
+                    if(m.name.equals(matcher.group(2).contains("高清") ? matcher.group(2).replace("高清","") : matcher.group(2))){
+                        m.isHDAvailable = true;
+                        m.HDUrl = matcher.group(1);
+                        continue nxt_line;
+                    }
+                }
+                for(LiveFragment.TVChannel m : Information.LocalChannels){
+                    if(m.name.equals(matcher.group(2).contains("高清") ? matcher.group(2).replace("高清","") : matcher.group(2))){
+                        m.isHDAvailable = true;
+                        m.HDUrl = matcher.group(1);
+                        continue nxt_line;
+                    }
+                }
                 tmpChannel = new LiveFragment.TVChannel();
                 tmpChannel.name = matcher.group(2).contains("高清") ? matcher.group(2).replace("高清","") : matcher.group(2);
                 tmpChannel.isHDAvailable = true;
@@ -651,42 +691,13 @@ public class Connector {
                 if(tmpChannel.name.contains("CCTV")) Information.CCTVChannels.add(tmpChannel);
                 else Information.LocalChannels.add(tmpChannel);
             }
-            //CCTV SD Channels
-            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(\\w*-\\d*)(.*)<\\/a>");
-            matcher = pattern.matcher(CCTVSDString);
-nxt_line_1: while(matcher.find()){
-                for(LiveFragment.TVChannel m : Information.CCTVChannels){
-                    if(m.name.equals(matcher.group(2))){
-                        m.isSDAvailable = true;
-                        m.SDUrl = matcher.group(1);
-                        continue nxt_line_1;
-                    }
-                }
-            tmpChannel = new LiveFragment.TVChannel();
-            tmpChannel.name = matcher.group(2);
-            tmpChannel.isSDAvailable = true;
-            tmpChannel.SDUrl = matcher.group(1);
-            Information.CCTVChannels.add(tmpChannel);
-            }
-            //Local Channels
-            pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(.+)<\\/a>");
-            matcher = pattern.matcher(LocalSDString);
-nxt_line_2: while(matcher.find()){
-                for(LiveFragment.TVChannel m : Information.LocalChannels){
-                    if(m.name.equals(matcher.group(2))){
-                        m.isSDAvailable = true;
-                        m.SDUrl = matcher.group(1);
-                        continue nxt_line_2;
-                    }
-                }
-                tmpChannel = new LiveFragment.TVChannel();
-                tmpChannel.name = matcher.group(2);
-                tmpChannel.isSDAvailable = true;
-                tmpChannel.SDUrl = matcher.group(1);
-                Information.LocalChannels.add(tmpChannel);
-            }
+//            Collections.sort(Information.LocalChannels, new Comparator<LiveFragment.TVChannel>() {
+//                @Override
+//                public int compare(LiveFragment.TVChannel t1, LiveFragment.TVChannel t2) {
+//                    return t1.name.compareTo(t2.name);
+//                }
+//            });
             uis.onConnectorComplete(RequestType.TV_CHANNEL,true);
-
         }
 
         @Override

@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import android.widget.TextView;
 public class  LiveFragment extends Fragment implements Connector.Callback{
     private static LivePage1.CCTVAdapter c_adapter;
     private static LivePage2.LocalAdapter l_adapter;
-
+    private TabLayout tabLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,9 +38,8 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.pager_tv);
         viewPager.setAdapter(new ScreenSlidePagerAdapter(((AppCompatActivity)getActivity()).getSupportFragmentManager()));
 
-        final TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
+        tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager, true);
-
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -72,8 +72,13 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
     @Override
     public void onConnectorComplete(Connector.RequestType requestType, Object result) {
         if(result.getClass() == Boolean.class && (Boolean)result){
-            c_adapter.notifyDataSetChanged();
             l_adapter.notifyDataSetChanged();
+            c_adapter.notifyDataSetChanged();
+//            if(tabLayout.getSelectedTabPosition() == 1){
+//                l_adapter.notifyDataSetChanged();
+//            }else {
+//                c_adapter.notifyDataSetChanged();
+//            }
         }
     }
 
@@ -97,7 +102,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
             return view;
         }
 
-        private class CCTVAdapter extends BaseAdapter {
+        public class CCTVAdapter extends BaseAdapter {
             private LayoutInflater mInflater;
             public CCTVAdapter(Context context) {
                 this.mInflater = LayoutInflater.from(context);
@@ -117,12 +122,13 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                convertView = mInflater.inflate(R.layout.item_livetv_list,null);
                 holder = new ViewHolder();
                 holder.name = (TextView) convertView.findViewById(R.id.textView_livetv_channelname);
                 holder.button_sd = (Button) convertView.findViewById(R.id.button_livetv_sd);
-                holder.button_sd = (Button) convertView.findViewById(R.id.button_livetv_hd);
+                holder.button_hd = (Button) convertView.findViewById(R.id.button_livetv_hd);
                 TVChannel tmpChannel = Information.CCTVChannels.get(position);
+                Log.e("CCTV",""+position+tmpChannel.name);
                 holder.name.setText(tmpChannel.name);
                 if(tmpChannel.isSDAvailable){
                     holder.button_sd.setBackground(getActivity().getResources().getDrawable(R.drawable.themecolorrect));
@@ -131,7 +137,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(),VideoActivity.class);
-                            intent.putExtra("url","http://tv6.byr.cn/hls"+view.getContentDescription());
+                            intent.putExtra("url","http://tv6.byr.cn/hls/"+view.getContentDescription());
                             startActivity(intent);
                         }
                     });
@@ -143,7 +149,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(),VideoActivity.class);
-                            intent.putExtra("url","http://tv6.byr.cn/hls"+view.getContentDescription());
+                            intent.putExtra("url","http://tv6.byr.cn/hls/"+view.getContentDescription());
                             startActivity(intent);
                         }
                     });
@@ -170,7 +176,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
             return view;
         }
 
-        private class LocalAdapter extends BaseAdapter {
+        public class LocalAdapter extends BaseAdapter {
             private LayoutInflater mInflater;
             public LocalAdapter(Context context) {
                 this.mInflater = LayoutInflater.from(context);
@@ -190,11 +196,11 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                convertView = mInflater.inflate(R.layout.item_livetv_list,null);
                 holder = new ViewHolder();
                 holder.name = (TextView) convertView.findViewById(R.id.textView_livetv_channelname);
                 holder.button_sd = (Button) convertView.findViewById(R.id.button_livetv_sd);
-                holder.button_sd = (Button) convertView.findViewById(R.id.button_livetv_hd);
+                holder.button_hd = (Button) convertView.findViewById(R.id.button_livetv_hd);
                 TVChannel tmpChannel = Information.LocalChannels.get(position);
                 holder.name.setText(tmpChannel.name);
                 if(tmpChannel.isSDAvailable){
@@ -204,7 +210,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(),VideoActivity.class);
-                            intent.putExtra("url",view.getContentDescription());
+                            intent.putExtra("url","http://tv6.byr.cn/hls/"+view.getContentDescription());
                             startActivity(intent);
                         }
                     });
@@ -216,7 +222,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(getActivity(),VideoActivity.class);
-                            intent.putExtra("url",view.getContentDescription());
+                            intent.putExtra("url","http://tv6.byr.cn/hls/"+view.getContentDescription());
                             startActivity(intent);
                         }
                     });
@@ -237,7 +243,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
             super(supportFragmentManager);
         }        @Override
         public android.support.v4.app.Fragment getItem(int position) {
-            if(position==1) return new LivePage1();
+            if(position==1) return new LivePage2();
             return new LivePage1();
         }
 

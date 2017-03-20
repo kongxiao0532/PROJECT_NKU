@@ -3,7 +3,7 @@ package com.kongx.nkuassistant;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import com.xiaomi.market.sdk.XiaomiUpdateAgent;
+//import com.xiaomi.market.sdk.XiaomiUpdateAgent;
 
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -23,7 +23,7 @@ public class NKUApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        XiaomiUpdateAgent.update(this);
+//        XiaomiUpdateAgent.update(this);
 
 
 
