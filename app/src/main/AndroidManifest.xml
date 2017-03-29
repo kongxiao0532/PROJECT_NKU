@@ -71,8 +71,9 @@
         <activity
             android:name=".VideoActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
-        <activity android:name=".ImageNoticeActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
+        <activity android:name=".ImageNoticeActivity" />
+        <activity android:name=".BrowserActivity"></activity>
     </application>
 
 </manifest>

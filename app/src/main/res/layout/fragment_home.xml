@@ -20,6 +20,16 @@
             android:layout_height="wrap_content">
 
 
+            <TextView
+                android:id="@+id/ad_textview"
+                android:background="#A7FFEB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:gravity="center"
+                android:text="点击进入“职场扛把子”——《职来职往》沙龙报名\n2017年4月7日晚18:30 我们不见不散"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"

@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private SwipeRefreshLayout mReFresh;
     private Activity m_activity;
+    private TextView mAd;
     //Schedule Module
     private View myView = null;
     private TextView mWeekText;
@@ -80,14 +81,8 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         m_activity = getActivity();
         mReFresh = (SwipeRefreshLayout) myView.findViewById(R.id.home_refresh);
         mReFresh.setOnRefreshListener(this);
+        mAd = (TextView) myView.findViewById(R.id.ad_textview);
         mWeekText = (TextView) myView.findViewById(R.id.textView_weekCount);
-        mWeekText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(m_activity,VideoActivity.class);
-                startActivity(intent);
-            }
-        });
         mSememText = (TextView) myView.findViewById(R.id.textView_semester);
         mDate = (TextView) myView.findViewById(R.id.textView_date);
         mDay = (TextView) myView.findViewById(R.id.textView_day);
@@ -123,6 +118,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         minute = calendar.get(Calendar.MINUTE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
         Information.date = dateFormat.format(calendar.getTime());
+        if(year == 2017 && Information.month == 4 && Information.day >= 4 && Information.day <= 7)  mAd.setVisibility(View.VISIBLE);
+        mAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(),BrowserActivity.class);
+                    intent.putExtra("url","http://kongxiao0532.cn/kab");
+                    startActivity(intent);
+            }
+        });
         if(year == 2017){
             if(weekOfYear == 1 || weekOfYear == 2){
                 Information.weekCount = 0;

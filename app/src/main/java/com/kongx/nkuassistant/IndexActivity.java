@@ -1,13 +1,11 @@
 package com.kongx.nkuassistant;
 
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.icu.text.IDNA;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -26,13 +24,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
+
 
 public class IndexActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, Connector.Callback {
@@ -117,9 +111,23 @@ public class IndexActivity extends AppCompatActivity
                             .setPositiveButton("更新", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Uri uri = Uri.parse(resultString[1]);
-                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
-                                    Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
+                                    final ProgressDialog progressDialog = new ProgressDialog(IndexActivity.this);
+                                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                                    progressDialog.setTitle("正在下载更新...");
+                                    progressDialog.setIndeterminate(false);
+                                    progressDialog.setCancelable(true);
+                                    progressDialog.setProgress(100);
+                                    new Request.Builder().progress(new Connect.Progress() {
+                                        @Override
+                                        public void updateProgress(Long current, Long total) {
+                                            progressDialog.setProgress((int)(current/total*100));
+                                        }
+                                    }).url("http://kongxiao0532.cn/projectnku/project_nku_1_2_0.apk"/*resultString[1]*/).get(new Connector.UpdateDownloadConnector(IndexActivity.this));
+                                    progressDialog.show();
+//                                    Uri uri = Uri.parse(resultString[1]);
+//                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);
+//                                    startActivity(intent);
+//                                    Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
                                 }
                             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                         @Override

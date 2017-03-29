@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import cn.jiguang.analytics.android.api.JAnalyticsInterface;
 import cn.jpush.android.api.JPushInterface;
 import tk.sunrisefox.httprequest.Connect;
 
@@ -29,6 +30,9 @@ public class NKUApplication extends Application {
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        JAnalyticsInterface.init(this);
+        JAnalyticsInterface.setDebugMode(true);
+
 
         //Initialize network
         System.setProperty("java.net.useSystemProxies", "true");
