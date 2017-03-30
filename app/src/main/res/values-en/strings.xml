@@ -77,6 +77,8 @@
     <string name="tab_locals">Others</string>
     <string name="title_activity_feedback_api">FeedbackApiActivity</string>
     <string name="drawer_livetv">TV Live</string>
+    <string name="beta_features">Beta Features</string>
+    <string name="card_emulation">Card Emulation</string>
 
 
 </resources>

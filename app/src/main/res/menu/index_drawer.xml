@@ -100,6 +100,16 @@
 
         </item>
 
+        <item android:title="@string/beta_features">
+            <menu>
+                <item
+                    android:id="@+id/nav_cardEmulate"
+                    android:icon="@drawable/ic_credit_card_black_48dp"
+                    android:checkable="true"
+                    android:checked="false"
+                    android:title="@string/card_emulation" />
+            </menu>
+        </item>
         <!--<item android:title="Communicate">
             <menu>
                 <item

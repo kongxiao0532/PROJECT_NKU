@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.httprequest.Response;
+import tk.sunrisefox.ran.CardFragment;
 
 
 public class IndexActivity extends AppCompatActivity
@@ -125,7 +127,19 @@ public class IndexActivity extends AppCompatActivity
                                             progressDialog.setProgress(current.intValue());
                                         }
                                     }).url("http://kongxiao0532.cn/projectnku/project_nku_1_2_0.apk"/*resultString[1]*/).saveAsFile()
-                                            .get(new Connector.UpdateDownloadConnector(IndexActivity.this));
+                                            .get(new Connect.Callback() {
+                                                @Override
+                                                public void onNetworkComplete(Response response) {
+                                                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                    intent.setDataAndType(Uri.fromFile(response.file()), "application/vnd.android.package-archive");
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    startActivity(intent);
+                                                }
+                                                @Override
+                                                public void onNetworkError(Exception exception) {
+                                                    Log.e("APP",Log.getStackTraceString(exception));
+                                                }
+                                            });
                                     progressDialog.show();
 //                                    Uri uri = Uri.parse(resultString[1]);
 //                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);
@@ -259,6 +273,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new LectureFragment());
             } else if (id == R.id.nav_livetv) {
                 fragmentTransaction.replace(R.id.fragment_container, new LiveFragment());
+            } else if (id == R.id.nav_cardEmulate) {
+                fragmentTransaction.replace(R.id.fragment_container, new CardFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }
