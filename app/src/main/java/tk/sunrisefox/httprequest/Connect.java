@@ -251,13 +251,16 @@ public class Connect extends AsyncTask<Void, Long, Void> {
 
                 File file = request.file();
                 FileOutputStream fileOutputStream = null;
+                String fileName = url.getFile();
+                fileName = fileName.substring(fileName.lastIndexOf('/')+1);
                 if (startBytes == 0L) {
                     if (file != null && !file.isFile()) {
                         try {
                             if(file.isDirectory()){
+                                file = new File(file, fileName);
                                 for (int i = 1; file.exists(); i++)
                                     file = new File(file
-                                            , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
+                                            , fileName.replaceFirst("([.][^.]+)$", "_" + i + "$1"));
                             }else if (!file.createNewFile())
                                 file = null;
                         } catch (IOException e) {
@@ -265,13 +268,14 @@ public class Connect extends AsyncTask<Void, Long, Void> {
                         }
                     }
                     if (file == null && request.saveAsFile()) {
-                        file = new File(defaultSavingDirectory, url.getFile());
+                        file = new File(defaultSavingDirectory, fileName);
                         for (int i = 1; file.exists(); i++)
                             file = new File(defaultSavingDirectory
-                                    , url.getFile().replaceFirst("([.][^.]+)$", "_" + i + "$1"));
-                        if (!file.createNewFile()) throw new IOException("No file is writable");
+                                    , fileName.replaceFirst("([.][^.]+)$", "_" + i + "$1"));
                     }
                     if (file != null) {
+                        Log.e("?",file.getAbsolutePath());
+                        if (!file.createNewFile()) throw new IOException("No file is writable");
                         fileOutputStream = new FileOutputStream(file);
                         request.setFile(file);
                     }
