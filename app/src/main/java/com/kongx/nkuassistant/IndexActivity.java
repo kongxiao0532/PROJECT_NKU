@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -116,13 +117,15 @@ public class IndexActivity extends AppCompatActivity
                                     progressDialog.setTitle("正在下载更新...");
                                     progressDialog.setIndeterminate(false);
                                     progressDialog.setCancelable(true);
-                                    progressDialog.setProgress(100);
                                     new Request.Builder().progress(new Connect.Progress() {
                                         @Override
                                         public void updateProgress(Long current, Long total) {
-                                            progressDialog.setProgress((int)(current/total*100));
+                                            Log.e("progress",current+" "+total);
+                                            progressDialog.setMax(total.intValue());
+                                            progressDialog.setProgress(current.intValue());
                                         }
-                                    }).url("http://kongxiao0532.cn/projectnku/project_nku_1_2_0.apk"/*resultString[1]*/).get(new Connector.UpdateDownloadConnector(IndexActivity.this));
+                                    }).url("http://kongxiao0532.cn/projectnku/project_nku_1_2_0.apk"/*resultString[1]*/).saveAsFile()
+                                            .get(new Connector.UpdateDownloadConnector(IndexActivity.this));
                                     progressDialog.show();
 //                                    Uri uri = Uri.parse(resultString[1]);
 //                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);
