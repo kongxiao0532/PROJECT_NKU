@@ -1,11 +1,14 @@
 package com.kongx.nkuassistant;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,10 +22,12 @@ import tk.sunrisefox.httprequest.Response;
 import tk.sunrisefox.htmlparser.HTML;
 import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 
+import static android.os.Environment.getExternalStorageDirectory;
+
 public class Connector {
     enum RequestType{
         STATISTIC,
-        CHECK_FOR_UPDATE,
+        CHECK_FOR_UPDATE, DOWNLOAD_UPDATE,
         CHECK_FOR_NOTICE,
         LOG_TO_VPN,
         LOGIN,
@@ -141,7 +146,8 @@ public class Connector {
         public UpdateDownloadConnector(Connector.Callback uis)  {  this.uis = uis; }
         @Override
         public void onNetworkComplete(Response response) {
-
+            File apkFile = response.file();
+            uis.onConnectorComplete(RequestType.DOWNLOAD_UPDATE,apkFile);
         }
 
         @Override

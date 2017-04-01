@@ -75,6 +75,17 @@
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity android:name=".ImageNoticeActivity" />
         <activity android:name=".BrowserActivity"></activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.kongx.nkuassistant.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+
+        </provider>
     </application>
 
 </manifest>

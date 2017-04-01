@@ -9,9 +9,11 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,10 +27,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
-import tk.sunrisefox.httprequest.Response;
-import tk.sunrisefox.ran.CardFragment;
 
 
 public class IndexActivity extends AppCompatActivity
@@ -106,6 +108,21 @@ public class IndexActivity extends AppCompatActivity
                 editor.apply();
                 break;
             }
+            case DOWNLOAD_UPDATE:
+                File apkFile = (File) result;
+                Intent install = new Intent(Intent.ACTION_VIEW);
+                install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    install.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.kongx.nkuassistant.fileprovider", apkFile);
+                    install.setDataAndType(contentUri, "application/vnd.android.package-archive");
+                } else {
+                    install.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+                }
+
+                startActivity(install);
+                break;
             case CHECK_FOR_UPDATE:
                 final String[] resultString = (String[]) result;
                 if (!Information.version.equals(resultString[0])) {
@@ -122,29 +139,13 @@ public class IndexActivity extends AppCompatActivity
                                     new Request.Builder().progress(new Connect.Progress() {
                                         @Override
                                         public void updateProgress(Long current, Long total) {
-                                            Log.e("progress",current+" "+total);
-                                            progressDialog.setMax(total.intValue());
-                                            progressDialog.setProgress(current.intValue());
+                                            progressDialog.setMax(total.intValue()/1000);
+                                            progressDialog.setProgress(current.intValue()/1000);
+                                            if(current == total) progressDialog.dismiss();
                                         }
-                                    }).url("http://kongxiao0532.cn/projectnku/project_nku_1_2_0.apk"/*resultString[1]*/).saveAsFile()
-                                            .get(new Connect.Callback() {
-                                                @Override
-                                                public void onNetworkComplete(Response response) {
-                                                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                                                    intent.setDataAndType(Uri.fromFile(response.file()), "application/vnd.android.package-archive");
-                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                    startActivity(intent);
-                                                }
-                                                @Override
-                                                public void onNetworkError(Exception exception) {
-                                                    Log.e("APP",Log.getStackTraceString(exception));
-                                                }
-                                            });
+                                    }).url(resultString[1]).saveAsFile()
+                                            .get(new Connector.UpdateDownloadConnector(IndexActivity.this));
                                     progressDialog.show();
-//                                    Uri uri = Uri.parse(resultString[1]);
-//                                    Intent intent =new Intent(Intent.ACTION_VIEW, uri);
-//                                    startActivity(intent);
-//                                    Toast.makeText(IndexActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
                                 }
                             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                         @Override
@@ -273,8 +274,6 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new LectureFragment());
             } else if (id == R.id.nav_livetv) {
                 fragmentTransaction.replace(R.id.fragment_container, new LiveFragment());
-            } else if (id == R.id.nav_cardEmulate) {
-                fragmentTransaction.replace(R.id.fragment_container, new CardFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }

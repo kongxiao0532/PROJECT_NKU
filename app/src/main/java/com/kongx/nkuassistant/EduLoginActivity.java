@@ -2,6 +2,7 @@ package com.kongx.nkuassistant;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,7 +10,9 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -25,11 +28,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 
 import tk.sunrisefox.httprequest.Connect;
+import tk.sunrisefox.httprequest.Request;
 
 import static com.kongx.nkuassistant.Information.Strings;
 import static com.kongx.nkuassistant.Information.sessionUseVPN;
@@ -123,24 +128,51 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
         SharedPreferences settings = getSharedPreferences(Information.PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         switch (requestType){
+            case DOWNLOAD_UPDATE:
+                File apkFile = (File) result;
+                Intent install = new Intent(Intent.ACTION_VIEW);
+                install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    install.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.kongx.nkuassistant.fileprovider", apkFile);
+                    install.setDataAndType(contentUri, "application/vnd.android.package-archive");
+                } else {
+                    install.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+                }
+
+                startActivity(install);
+                break;
             case CHECK_FOR_UPDATE:
                 final String[] resultString = (String[]) result;
                 if (!Information.version.equals(resultString[0])) {
-                new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
-                        .setMessage(resultString[2])
-                        .setPositiveButton("更新", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Uri uri = Uri.parse(resultString[1]);
-                                Intent intent =new Intent(Intent.ACTION_VIEW, uri);startActivity(intent);
-                                Toast.makeText(EduLoginActivity.this, "更新开始下载...", Toast.LENGTH_SHORT).show();
-                            }
-                        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                }).show();
-            }
+                    new AlertDialog.Builder(this).setTitle(getString(R.string.update_available))
+                            .setMessage(resultString[2])
+                            .setPositiveButton("更新", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final ProgressDialog progressDialog = new ProgressDialog(EduLoginActivity.this);
+                                    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                                    progressDialog.setTitle("正在下载更新...");
+                                    progressDialog.setIndeterminate(false);
+                                    progressDialog.setCancelable(true);
+                                    new Request.Builder().progress(new Connect.Progress() {
+                                        @Override
+                                        public void updateProgress(Long current, Long total) {
+                                            progressDialog.setMax(total.intValue()/1000);
+                                            progressDialog.setProgress(current.intValue()/1000);
+                                            if(current == total) progressDialog.dismiss();
+                                        }
+                                    }).url(resultString[1]).saveAsFile()
+                                            .get(new Connector.UpdateDownloadConnector(EduLoginActivity.this));
+                                    progressDialog.show();
+                                }
+                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    }).show();
+                }
                 break;
             case LOGIN:
                 if(result.getClass() == Boolean.class){                //Login Successfully

@@ -156,7 +156,7 @@ public class WelcomeActivity extends AppCompatActivity {
         InputStream inputStream = null;
         try {
             Calendar calendar = Calendar.getInstance();
-            inputStream = getAssets().open(!(calendar.get(Calendar.MONTH) <= 3 && calendar.get(Calendar.DAY_OF_MONTH) < 27)  ? "timetable.xml" : "oldtimetable.xml");
+            inputStream = getAssets().open("timetable.xml");
         } catch (Exception e) {
             Log.e("WelcomeActivity", "Open bus file failed.");
         }
