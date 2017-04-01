@@ -504,23 +504,28 @@ public class Connector {
                     break;
                 default:
                     final String returnString = response.body();
+                    Log.e("CHECKPOINT0",response.code()+"");
+
                     if (response.code() == 200 || response.code() == 206) {
+                        Log.e("CHECKPOINT1",response.code()+"");
                         Pattern pattern;
                         Matcher matcher;
                         CourseSelected tmpCourse;
                         int startPoint = 0;
                         while (true) {
-                            pattern = Pattern.compile("(,name:\")(.+)(\",lab:false\\})");
+                            pattern = Pattern.compile("var actTeachers = \\[\\{id:(.+),name:\"(.+)\",lab:(.+)\\}\\];");
                             matcher = pattern.matcher(returnString);
                             if (matcher.find(startPoint)) {
+                                Log.e("CHECKPOINT2",matcher.group());
                                 tmpCourse = new CourseSelected();
                                 startPoint = matcher.end();
-                                if (matcher.find(startPoint)) {
-                                    tmpCourse.teacherName = matcher.group(2);
-                                }
+                                Log.e("CHECKPOINT3",matcher.group());
+                                tmpCourse.teacherName = matcher.group(2);
+
                                 pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
+                                    Log.e("CHECKPOINT4",matcher.group());
                                     tmpCourse.name = matcher.group(1);
                                     tmpCourse.index = matcher.group(2);
                                     tmpCourse.classRoom = matcher.group(3);
@@ -535,18 +540,24 @@ public class Connector {
                                     tmpCourse.startWeek = startWeek;
                                     tmpCourse.endWeek = startWeek + duration - 1;
                                 }
-                                pattern = Pattern.compile("\\);\\n...index =(\\d+)\\*unitCount\\+(\\d+);");
+
+                                pattern = Pattern.compile("\\);\\r\\n.+index =(\\d.*)\\*unitCount\\+(\\d.*);");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
+                                    Log.e("CHECKPOINT5",matcher.group());
+                                    Log.e("MATCHER1",matcher.group());
                                     tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
                                     tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
                                 }
-                                pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\n(.+)\\n...[^i]");
+
+                                pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\r\\n(.+)\\r\\n...[^i]");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
+                                    Log.e("CHECKPOINT6",matcher.group());
                                     tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
                                     startPoint = matcher.end();
                                 }
+                                Log.e("CURRI",tmpCourse.startTime+" "+tmpCourse.endTime);
                                 for(int i = tmpCourse.startTime;i <= tmpCourse.endTime;i++) Information.scheduleTimeIsBusy[i - 1][tmpCourse.dayOfWeek - 1] = true;
                                 tmpCourse.color = checkForSameCourse(tmpCourse.name) == -1 ? curriculumColor++ : checkForSameCourse(tmpCourse.name);
                                 tmpSelectedCourses.add(tmpCourse);
