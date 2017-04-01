@@ -10,13 +10,6 @@
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.xiaomi.market.sdk.UPDATE" />
-
-    <receiver android:name="com.xiaomi.market.sdk.DownloadCompleteReceiver">
-        <intent-filter>
-            <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-        </intent-filter>
-    </receiver>
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
