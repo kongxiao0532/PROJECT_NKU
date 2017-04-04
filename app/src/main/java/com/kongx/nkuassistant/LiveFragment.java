@@ -128,7 +128,6 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
                 holder.button_sd = (Button) convertView.findViewById(R.id.button_livetv_sd);
                 holder.button_hd = (Button) convertView.findViewById(R.id.button_livetv_hd);
                 TVChannel tmpChannel = Information.CCTVChannels.get(position);
-                Log.e("CCTV",""+position+tmpChannel.name);
                 holder.name.setText(tmpChannel.name);
                 if(tmpChannel.isSDAvailable){
                     holder.button_sd.setBackground(getActivity().getResources().getDrawable(R.drawable.themecolorrect));

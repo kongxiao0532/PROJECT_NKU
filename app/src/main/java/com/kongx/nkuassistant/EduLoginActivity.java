@@ -167,7 +167,14 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                                             .get(new Connector.UpdateDownloadConnector(EduLoginActivity.this));
                                     progressDialog.show();
                                 }
-                            }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            }).setNeutralButton("浏览器打开", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Uri uri = Uri.parse(resultString[1]);
+                            Intent intent =new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                         }

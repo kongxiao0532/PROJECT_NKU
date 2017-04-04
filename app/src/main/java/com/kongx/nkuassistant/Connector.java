@@ -656,8 +656,8 @@ public class Connector {
             String returnString  = response.body();
             if(returnString.isEmpty())  return;
             String HDString = returnString.substring(returnString.indexOf("高清频道"),returnString.indexOf("央视标清"));
-            String CCTVSDString = returnString.substring(returnString.indexOf("央视标清"),returnString.indexOf("卫视标清"));
-            String LocalSDString = returnString.substring(returnString.indexOf("卫视标清"),returnString.indexOf("PC版"));
+            String CCTVSDString = returnString.substring(returnString.indexOf("央视标清"),returnString.indexOf("北京标清"));
+            String LocalSDString = returnString.substring(returnString.indexOf("北京标清"),returnString.indexOf("PC版"));
             Pattern pattern;
             Matcher matcher;
             LiveFragment.TVChannel tmpChannel;
@@ -665,11 +665,12 @@ public class Connector {
             pattern = Pattern.compile("<a href=\"\\/\\/tv6.byr.cn\\/hls\\/(.+)\" target=\"_blank\" class=\"btn btn-block btn-primary\">(\\w*-\\d*)(.*)<\\/a>");
             matcher = pattern.matcher(CCTVSDString);
             while(matcher.find()){
-            tmpChannel = new LiveFragment.TVChannel();
-            tmpChannel.name = matcher.group(2);
-            tmpChannel.isSDAvailable = true;
-            tmpChannel.SDUrl = matcher.group(1);
-            Information.CCTVChannels.add(tmpChannel);
+                tmpChannel = new LiveFragment.TVChannel();
+                tmpChannel.name = matcher.group(2).equals("CCTV-") ? matcher.group(2)+matcher.group(3) : matcher.group(2);
+                Log.e("CHANNELNAME",tmpChannel.name);
+                tmpChannel.isSDAvailable = true;
+                tmpChannel.SDUrl = matcher.group(1);
+                Information.CCTVChannels.add(tmpChannel);
             }
 //            Collections.sort(Information.CCTVChannels, new Comparator<LiveFragment.TVChannel>() {
 //                @Override
