@@ -79,8 +79,10 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
                 }
         }
         catch (Exception e) {
+            Log.e("SU",Log.getStackTraceString(e));
             rooted = false;
         }
+        Log.e("SU",rooted+"");
         return rooted;
     }
 
@@ -128,6 +130,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
 
     private void prepareConf() throws IOException, InterruptedException {
         Process process = Runtime.getRuntime().exec("su");
+        Log.e("A","conf");
         DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
         if (m_activity.getExternalCacheDir() == null)
             throw new IOException("Could not get external cache dir.");
@@ -138,6 +141,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
         outputStream.writeBytes("exit\n");
         outputStream.flush();
         process.waitFor();
+        Log.e("A","confa");
     }
 
     private void updateConf(String cardID) throws IOException {
@@ -173,13 +177,12 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
 
     private void writeBackAndRestartNFC() throws IOException, InterruptedException {
         if (!ensureBackup()) throw new IOException("Failed to backup. Stop for security reasons.");
-        Process process = Runtime.getRuntime().exec("su");
-        DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
-        DataInputStream inputStream = new DataInputStream(process.getInputStream());
         if (m_activity.getExternalCacheDir() == null)
             throw new IOException("Could not get external cache dir.");
         String path = m_activity.getExternalCacheDir().getAbsolutePath();
-
+        Process process = Runtime.getRuntime().exec("su");
+        DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
+        DataInputStream inputStream = new DataInputStream(process.getInputStream());
         outputStream.writeBytes("mount -o rw,remount,rw /system\n");
         outputStream.writeBytes("cp -f " + path + "/libnfc-brcm.conf /system/etc\n");
         outputStream.writeBytes("chmod 644 /system/etc/libnfc-brcm.conf\n");
@@ -187,6 +190,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
         outputStream.writeBytes("chmod 644 /system/etc/libnfc-nxp.conf\n");
         outputStream.writeBytes("mount -o ro,remount,ro /system\n");
         outputStream.writeBytes("ps | grep -w com.android.nfc\n");
+        outputStream.flush();
         Scanner scanner = new Scanner(inputStream);
         scanner.next();
         int PID = scanner.nextInt();
@@ -304,6 +308,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
         NfcAdapter nfc = NfcAdapter.getDefaultAdapter(m_activity);
         if (nfc == null || !nfc.isEnabled()) return;
         nfc.disableReaderMode(m_activity);
+        Log.e("A","read");
     }
 
     @Override
@@ -333,6 +338,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
                         @Override
                         public void run() {
                             try {
+                                Log.e("SU","lksdjf+");
                                 disableReaderMode();
                                 prepareConf();
                                 updateConf(ID);
@@ -360,6 +366,7 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
                                     @Override
                                     public void run() {
                                         addTextView(mTempLiner, Log.getStackTraceString(e), 0xFFFF0000, null);
+                                        Log.e("A",Log.getStackTraceString(e));
                                     }
                                 });
                             }

@@ -31,6 +31,7 @@ import java.io.File;
 
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
+import tk.sunrisefox.ran.CardFragment;
 
 
 public class IndexActivity extends AppCompatActivity
@@ -281,6 +282,8 @@ public class IndexActivity extends AppCompatActivity
                 fragmentTransaction.replace(R.id.fragment_container, new LectureFragment());
             } else if (id == R.id.nav_livetv) {
                 fragmentTransaction.replace(R.id.fragment_container, new LiveFragment());
+            } else if (id == R.id.nav_cardEmulate) {
+                fragmentTransaction.replace(R.id.fragment_container, new CardFragment());
             }
             fragmentTransaction.addToBackStack(null);
         }
