@@ -28,10 +28,10 @@ public class NKUApplication extends Application {
 
 
 
-        JPushInterface.setDebugMode(true);
+        //JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         JAnalyticsInterface.init(this);
-        JAnalyticsInterface.setDebugMode(true);
+        //JAnalyticsInterface.setDebugMode(true);
 
 
         //Initialize network
