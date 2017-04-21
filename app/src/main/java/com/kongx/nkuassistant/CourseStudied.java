@@ -5,7 +5,6 @@ package com.kongx.nkuassistant;
  */
 
 public class CourseStudied {
-    static final String[] classTypes = new String[]{"校公共必修课","院系公共必修课","专业必修课","专业选修课","任选课"};
     String semester;
     String name;
     String classType;
@@ -14,35 +13,28 @@ public class CourseStudied {
     float credit;
     float creditCalculated;             //防止有“通过”的情况
     float[] gpas;
-    void setSemester(String semester){
-        this.semester = semester.substring(0,9)+"年第"+semester.charAt(semester.length() - 1) + "学期";
+    public void setSemester(String semester){
+        try {
+            this.semester = semester.substring(0,9)+"年第"+semester.charAt(semester.length() - 1) + "学期";
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
     void setScore(String score){
-        if(score.charAt(0) >= '0' && score.charAt(0) <= '9'){       //课程有分数
-            creditCalculated = credit;
-            this.score = Float.parseFloat(score);
-            calculateGPA();
-        }else{              //课程为 通过
-            this.score = creditCalculated = 0;
-            gpas = new float[5];
-        }
-    }
-    void setClassType(String type){
-        if(type.contains("必")){
-            if(type.contains("校")){
-                classType = 'A';
-            }else if(type.contains("院")){
-                classType = 'B';
-            }else if(type.contains("专")){
-                classType = 'C';
+        try {
+            if(score.charAt(0) >= '0' && score.charAt(0) <= '9'){       //课程有分数
+                creditCalculated = credit;
+                this.score = Float.parseFloat(score);
+                calculateGPA();
+            }else{              //课程为 通过
+                this.score = creditCalculated = 0;
+                gpas = new float[5];
             }
         }
-        else if(type.contains("选")){
-            if(type.contains("专")){
-                classType = 'D';
-            }else if(type.contains("任")){
-                classType = 'E';
-            }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
     private void calculateGPA(){

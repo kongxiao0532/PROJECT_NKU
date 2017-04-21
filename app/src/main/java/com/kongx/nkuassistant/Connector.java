@@ -413,7 +413,8 @@ public class Connector {
                         return;
                     }
                     SimpleHTMLParser.parse(stringToBeDealt[1], new SimpleHTMLParser.Callback() {
-                        int textCount = 0, emptyCount = 0;
+                        boolean isReadingData;
+                        int singleCourseTextCount = 0;
                         ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                         CourseStudied tmpCourse;
 
@@ -424,41 +425,50 @@ public class Connector {
 
                         @Override
                         public void onText(String text) {
-                            if(text.isEmpty()){
-                                if(textCount%8 == 0)    return;
-                                else if(textCount%8 != emptyCount){
-                                    emptyCount++;
-                                    return;
+                            if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
+                                return;
+                            }else{
+                                isReadingData = true;
+                                switch (singleCourseTextCount++){
+                                    case 0:                         //get Semester
+                                        tmpCourse = new CourseStudied();
+                                        tmpCourse.setSemester(text);
+                                        break;
+                                    case 1: break;
+                                    case 2:                         //get class ID
+                                        tmpCourse.classId = text;
+                                        break;
+                                    case 3: break;
+                                    case 4:                         //get selection ID
+                                        break;
+                                    case 5: break;
+                                    case 6:                         //get course name
+                                        tmpCourse.name = text;
+                                        break;
+                                    case 7: break;
+                                    case 8:                         //get class type
+                                        tmpCourse.classType = text;
+                                        break;
+                                    case 9: break;
+                                    case 10:                         //get credits
+                                        try{tmpCourse.credit = Float.parseFloat(text);}
+                                        catch (Exception e){e.printStackTrace();}
+                                        break;
+                                    case 11: break;
+                                    case 12:                         //get grade
+                                        break;
+                                    case 13: break;
+                                    case 14:                         //get score
+                                        tmpCourse.setScore(text);
+                                    case 15: break;
+                                    case 16:                            //get so-called gpa
+                                        tmpScore.add(tmpCourse);
+                                        singleCourseTextCount = 0;
+                                        isReadingData = false;
+                                        break;
                                 }
                             }
-                            switch ((textCount++)%8){
-                                case 0:                         //get Semester
-                                    tmpCourse = new CourseStudied();
-                                    tmpCourse.setSemester(text);
-                                    break;
-                                case 1:                         //get class ID
-                                    tmpCourse.classId = text;
-                                    break;
-                                case 2:                         //get selection ID
-                                    break;
-                                case 3:                         //get course name
-                                    tmpCourse.name = text;
-                                    break;
-                                case 4:                         //get class type
-                                    tmpCourse.setClassType(text);
-                                    break;
-                                case 5:                         //get credits
-                                    tmpCourse.credit = Float.parseFloat(text);
-                                    break;
-                                case 6:                         //get grade
-                                    break;
-                                case 7:                         //get score
-                                    tmpCourse.setScore(text);
-                                    tmpScore.add(tmpCourse);
-                                    emptyCount = 0;
-                                    break;
-                            }
-                            if(textCount == tmpStudiedCourseCount * 8){
+                            if(tmpScore.size() == tmpStudiedCourseCount){
                                 Information.studiedCourses = tmpScore;
                                 uis.onConnectorComplete(RequestType.SCORE,true);
                             }
