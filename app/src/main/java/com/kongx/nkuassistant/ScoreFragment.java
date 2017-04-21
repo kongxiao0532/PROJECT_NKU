@@ -125,7 +125,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         Information.gpaABCED[i] = gpaSumABCDE[i] / creditABCDE;
                     }
                     Information.average_abcde = sumABCDE / creditABCDE;
-        //        Set<String> keySet = Information.scores.keySet();
+//                Set<String> keySet = Information.scores.keySet();
         //        List<String> keyList = new ArrayList<String>(keySet);
         //        Collections.sort(keyList);
         //        for (String key : keyList){

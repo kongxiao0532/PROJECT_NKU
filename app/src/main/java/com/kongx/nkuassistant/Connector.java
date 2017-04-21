@@ -445,7 +445,7 @@ public class Connector {
                                     tmpCourse.name = text;
                                     break;
                                 case 4:                         //get class type
-                                    tmpCourse.classType = text;
+                                    tmpCourse.setClassType(text);
                                     break;
                                 case 5:                         //get credits
                                     tmpCourse.credit = Float.parseFloat(text);

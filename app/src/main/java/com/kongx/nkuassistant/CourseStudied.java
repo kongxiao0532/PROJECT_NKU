@@ -5,6 +5,7 @@ package com.kongx.nkuassistant;
  */
 
 public class CourseStudied {
+    static final String[] classTypes = new String[]{"校公共必修课","院系公共必修课","专业必修课","专业选修课","任选课"};
     String semester;
     String name;
     String classType;
@@ -13,7 +14,7 @@ public class CourseStudied {
     float credit;
     float creditCalculated;             //防止有“通过”的情况
     float[] gpas;
-    public void setSemester(String semester){
+    void setSemester(String semester){
         this.semester = semester.substring(0,9)+"年第"+semester.charAt(semester.length() - 1) + "学期";
     }
     void setScore(String score){
@@ -24,6 +25,24 @@ public class CourseStudied {
         }else{              //课程为 通过
             this.score = creditCalculated = 0;
             gpas = new float[5];
+        }
+    }
+    void setClassType(String type){
+        if(type.contains("必")){
+            if(type.contains("校")){
+                classType = 'A';
+            }else if(type.contains("院")){
+                classType = 'B';
+            }else if(type.contains("专")){
+                classType = 'C';
+            }
+        }
+        else if(type.contains("选")){
+            if(type.contains("专")){
+                classType = 'D';
+            }else if(type.contains("任")){
+                classType = 'E';
+            }
         }
     }
     private void calculateGPA(){
