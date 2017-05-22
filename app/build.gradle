@@ -7,7 +7,7 @@ android {
         applicationId "com.kongx.nkuassistant"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 170421
+        versionCode 170522
         versionName "1.3.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
