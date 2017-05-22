@@ -90,12 +90,12 @@ public class CardFragment extends Fragment implements NFCCardReader.CardIDCallba
         String path = m_activity.getExternalFilesDir("backup").getAbsolutePath();
         Process process = Runtime.getRuntime().exec("su");
         DataOutputStream outputStream = new DataOutputStream(process.getOutputStream());
-        outputStream.writeBytes("mount -o rw,remount,rw /system\n");
+        outputStream.writeBytes("mount -o rw,remount /system\n");
         outputStream.writeBytes("cp -f " + path + "/libnfc-brcm.conf /system/etc/ \n");
         outputStream.writeBytes("chmod 644 /system/etc/libnfc-brcm.conf\n");
         outputStream.writeBytes("cp -f " + path + "/libnfc-nxp.conf /system/etc/ \n");
         outputStream.writeBytes("chmod 644 /system/etc/libnfc-nxp.conf\n");
-        outputStream.writeBytes("mount -o ro,remount,ro /system\n");
+        outputStream.writeBytes("mount -o ro,remount /system\n");
         outputStream.writeBytes("exit\n");
         outputStream.flush();
         process.waitFor();
