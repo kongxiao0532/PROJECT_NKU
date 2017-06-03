@@ -268,7 +268,7 @@ public class Connector {
 
                             }
                         });
-                        tmpExam.sort(new Comparator<HashMap<String, String>>() {
+                        Collections.sort(tmpExam, new Comparator<HashMap<String, String>>() {
                             @Override
                             public int compare(HashMap<String, String> o1, HashMap<String, String> o2) {
                                 int month1 = 0,month2 = 0,day1 = 0,day2 = 0,hour1 = 0,hour2 = 0;
@@ -301,6 +301,7 @@ public class Connector {
                                 }else return month1 - month2;
                             }
                         });
+
                         Information.exams = tmpExam;
                         uis.onConnectorComplete(RequestType.EXAM,uis);
                         break;
