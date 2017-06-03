@@ -28,12 +28,12 @@
                 android:checkable="true"
                 android:checked="false"
                 android:title="@string/drawer_selected" />
-            <!--<item-->
-                <!--android:id="@+id/nav_exam"-->
-                <!--android:icon="@drawable/ic_menu_exam"-->
-                <!--android:checkable="true"-->
-                <!--android:checked="false"-->
-                <!--android:title="@string/drawer_exam" />-->
+            <item
+                android:id="@+id/nav_exam"
+                android:icon="@drawable/ic_menu_exam"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/drawer_exam" />
             <!--<item-->
                 <!--android:id="@+id/nav_select"-->
                 <!--android:icon="@drawable/ic_menu_select"-->

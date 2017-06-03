@@ -178,8 +178,8 @@ public class IndexActivity extends AppCompatActivity
     public void onClick(View view) {
         if (view.getId() == R.id.home_schedule_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_schedule));
-//        }else if(view.getId() == R.id.home_exam_details){
-//            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_exam));
+        }else if(view.getId() == R.id.home_exam_details){
+            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_exam));
         } else if (view.getId() == R.id.home_score_details) {
             onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_score));
 //        }else if(view.getId() == R.id.home_select_details){
@@ -260,8 +260,8 @@ public class IndexActivity extends AppCompatActivity
         } else {
             if (id == R.id.nav_curriculum) {
                 fragmentTransaction.replace(R.id.fragment_container, new CurriculumFragment());
-//            } else if (id == R.id.nav_exam) {
-//                fragmentTransaction.replace(R.id.fragment_container, new ExamFragment());
+            } else if (id == R.id.nav_exam) {
+                fragmentTransaction.replace(R.id.fragment_container, new ExamFragment());
             } else if (id == R.id.nav_schedule) {
                 fragmentTransaction.replace(R.id.fragment_container, new ScheduleFragment());
             } else if (id == R.id.nav_score) {

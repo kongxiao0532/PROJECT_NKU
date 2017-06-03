@@ -136,9 +136,9 @@ public class WelcomeActivity extends AppCompatActivity {
             for (int i = 0; i < examCount; i++) {
                 map = new HashMap<>();
                 map.put("name", settings.getString("name" + i, "null"));
-                map.put("startTime", settings.getString("startTime" + i, "null"));
-                map.put("endTime", settings.getString("endTime" + i, "null"));
+                map.put("time", settings.getString("time" + i, "null"));
                 map.put("classRoom", settings.getString("classRoom" + i, "null"));
+                map.put("seat", settings.getString("seat" + i, "null"));
                 map.put("date", settings.getString("date" + i, "null"));
                 exams.add(map);
             }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:paddingTop="10dp"
+    android:layout_height="30dp">
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/home_exam_item_name"
+        android:textColor="#424242"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:gravity="start"
+        android:layout_weight="1" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:id="@+id/home_exam_item_classroom"
+        android:gravity="end"
+        android:layout_weight="1" />
+</LinearLayout>

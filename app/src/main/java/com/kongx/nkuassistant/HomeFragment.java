@@ -47,6 +47,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private int courseTodayCount;
     private ArrayList<CourseSelected> courseToday;
     //Exam Module
+    private LinearLayout mExamLayout;
     private TextView mExamStatus;
     private LinearLayout mExamList;
     private TextView mExamDetail;
@@ -89,6 +90,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mScheduleStatus = (TextView) myView.findViewById(R.id.home_schedule_text);
         mScheduleList = (LinearLayout) myView.findViewById(R.id.home_schedule_list);
         mScheduleDetail = (TextView) myView.findViewById(R.id.home_schedule_details);
+        mExamLayout = (LinearLayout) myView.findViewById(R.id.home_exam_layout);
         mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
         mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
         mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
@@ -150,7 +152,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if(weekOfYear > 24 && weekOfYear <= 28){
                 Information.weekCount = weekOfYear - 24;
                 Information.semester = "2016-2017 夏季学期";
-                Information.semesterId = 32;
+                Information.semesterId = 86;
             }
             if(weekOfYear > 28 && weekOfYear <= 36){
                 Information.weekCount = weekOfYear - 28;
@@ -159,12 +161,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if(weekOfYear > 36 && weekOfYear <= 52){
                 Information.weekCount = weekOfYear - 6;
                 Information.semester = "2017-2018 第一学期";
-                Information.semesterId = 32;
+                Information.semesterId = 62;
             }
             if(weekOfYear == 53){
                 Information.weekCount = 0;
                 Information.semester = "2017-2018 第一学期";
-                Information.semesterId = 32;
+                Information.semesterId = 62;
             }
         }
         else if(year == 2018){
@@ -193,6 +195,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         } else{
             updateSchedule();
             updateBus();
+            updateExam();
             onConnectorComplete(Connector.RequestType.SCORE,true);
 //            mSelectStatus.setText(getString(R.string.pull_to_refresh));
         }
@@ -308,11 +311,24 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mExamList.setVisibility(View.VISIBLE);
             mExamStatus.setVisibility(View.GONE);
             LayoutInflater mInflater = LayoutInflater.from(m_activity);
+            Pattern pattern;
+            Matcher matcher;
             for(int i = 0; i< Information.examCount; i++) {
-                View view = mInflater.inflate(R.layout.home_schedule_item, null);
-                TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
-                TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
-                item_name.setText(Information.exams.get(i).get("name"));
+                int month = 0,day = 0;
+                pattern = Pattern.compile("(\\d\\d)月(\\d\\d)日");
+                matcher = pattern.matcher(Information.exams.get(i).get("date"));
+                if(matcher.find()){
+                    month = Integer.parseInt(matcher.group(1));
+                    day = Integer.parseInt(matcher.group(2));
+                }
+                if(month < Information.month) continue;
+                else if (month == Information.month){
+                    if(day < Information.day) continue;
+                }
+                View view = mInflater.inflate(R.layout.home_exam_item, null);
+                TextView item_name = (TextView) view.findViewById(R.id.home_exam_item_name);
+                TextView item_classroom = (TextView) view.findViewById(R.id.home_exam_item_classroom);
+                item_name.setText((Information.exams.get(i).get("name").length() <= 7) ? Information.exams.get(i).get("name") : Information.exams.get(i).get("name").substring(0,3) + "..." + Information.exams.get(i).get("name").substring(Information.exams.get(i).get("name").length() - 3,Information.exams.get(i).get("name").length()));
                 item_classroom.setText(Information.exams.get(i).get("date"));
                 mExamList.addView(view);
             }

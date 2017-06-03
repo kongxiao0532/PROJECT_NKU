@@ -2,6 +2,7 @@ package com.kongx.nkuassistant;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -11,8 +12,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +39,7 @@ public class Connector {
         USER_IDS,USER_MAJOR_IDS,USER_MINOR_IDS,
         CURRICULUM,
         SCORE,
+        EXAM,
         LECTURE,
         TV_CHANNEL,
         FEEDBACK,
@@ -55,6 +60,8 @@ public class Connector {
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
     private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
     private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
+    private final static String api_exam_id = "http://kongxiao0532.cn/projectnku/api/examid.php";
+    private final static String url_exam_info = "/eams/stdExam!examTable.action?examBatch.id=%s&_=%s";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
     private final static String url_livetv_list = "https://tv.byr.cn/mobile/";
     private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
@@ -123,6 +130,8 @@ public class Connector {
                 if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new ScoreConnector(uis));
                 else    new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
                 break;
+            case EXAM:
+                new Request.Builder().url(api_exam_id).tag("ID").get(new ExamConnector(uis));
             case LECTURE:
                 tmpLectures.clear();
                 new Request.Builder().url(url_lectures).get(new LectureConnector(uis));
@@ -137,6 +146,170 @@ public class Connector {
                 break;
             case LOGOUT:
                 break;
+
+        }
+    }
+
+    public static class ExamConnector implements Connect.Callback{
+        Connector.Callback uis;
+        public ExamConnector(Connector.Callback uis)  {  this.uis = uis; }
+        @Override
+        public void onNetworkComplete(Response response) {
+            if(response.code()==200){
+                switch (response.tag()){
+                    case "ID":
+                        int id=0;
+                        try{
+                            id=Integer.parseInt(response.body());
+                        }catch (Exception e){e.printStackTrace();}
+                        if(id == -1)    return; //kill switch
+                        String tmpUrl;
+                        tmpUrl = String.format(url_exam_info,id,getTimeStamp());
+                        new Request.Builder().url(WEB_URL+tmpUrl).tag("EXAMINFO").get(new ExamConnector(uis));
+                        break;
+                    case "EXAMINFO":
+                        final ArrayList<HashMap<String,String>> tmpExam = new ArrayList<>();
+                        String returnString = response.body();
+                        if(!returnString.contains("考试安排"))   return;
+                        String stringToBeDealt = returnString.substring(returnString.indexOf("</thead>"),returnString.indexOf("</tbody>"));
+                        SimpleHTMLParser.parse(stringToBeDealt, new SimpleHTMLParser.Callback() {
+                            int count = -1;
+                            HashMap<String,String> tmpExamCourse;
+                            Pattern pattern;
+                            Matcher matcher;
+                            @Override
+                            public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+
+                            }
+
+                            @Override
+                            public void onText(String text) {
+                                if(text.length() == 4 && count == -1){
+                                    tmpExamCourse = new HashMap<String, String>();
+                                    tmpExamCourse.put("index",text);
+                                    count = 1;
+                                    return;
+                                }
+                                switch (count){
+                                    case -1:break;
+                                    case 1:     //next:CourseName
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("name",text);
+                                            count++;
+                                        }
+                                        break;
+                                    case 2:     //next:ExamType
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("examType",text);
+                                            count++;
+                                        }
+                                        break;
+                                    case 3:     //next:date
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            pattern = Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)");
+                                            matcher = pattern.matcher(text);
+                                            if(matcher.find()){
+                                                tmpExamCourse.put("date",matcher.group(2)+"月"+matcher.group(3)+"日");
+                                            }
+                                            count++;
+                                        }
+                                        break;
+                                    case 4:     //next:timeRange
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("time",text);
+                                            count++;
+                                        }
+                                        break;
+                                    case 5:     //next:Classroom
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("classRoom",text);
+                                            count++;
+                                        }
+                                        break;
+                                    case 6:     //next:Seat
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("seat",text);
+                                            count++;
+                                        }
+                                        break;
+                                    case 7:     //next:status
+                                        if(text.equals("exam.time.noArrange")){
+                                            count=-1;
+                                            break;
+                                        }else if(!text.isEmpty()){
+                                            tmpExamCourse.put("status",text);
+                                            tmpExam.add(tmpExamCourse);
+                                            count=-1;
+                                        }
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void onTagEnd(HTML.Tag tag) {
+
+                            }
+                        });
+                        tmpExam.sort(new Comparator<HashMap<String, String>>() {
+                            @Override
+                            public int compare(HashMap<String, String> o1, HashMap<String, String> o2) {
+                                int month1 = 0,month2 = 0,day1 = 0,day2 = 0,hour1 = 0,hour2 = 0;
+                                Pattern pattern = Pattern.compile("(\\d\\d)月(\\d\\d)日");
+                                Matcher matcher = pattern.matcher(o1.get("date"));
+                                if(matcher.find()){
+                                    month1 = Integer.parseInt(matcher.group(1));
+                                    day1 = Integer.parseInt(matcher.group(2));
+                                }
+                                matcher = pattern.matcher(o2.get("date"));
+                                if(matcher.find()){
+                                    month2 = Integer.parseInt(matcher.group(1));
+                                    day2 = Integer.parseInt(matcher.group(2));
+                                }
+                                pattern = Pattern.compile("(\\d\\d):\\d\\d~\\d\\d:\\d\\d");
+                                matcher = pattern.matcher(o1.get("time"));
+                                if(matcher.find()){
+                                    hour1 = Integer.parseInt(matcher.group(1));
+                                }
+                                matcher = pattern.matcher(o2.get("time"));
+                                if(matcher.find()){
+                                    hour2 = Integer.parseInt(matcher.group(1));
+                                }
+                                if(month1 == month2){
+                                    if(day1 == day2){
+                                        if(hour1 == hour2){
+                                            return 0;
+                                        }else return hour1 - hour2;
+                                    }else return day1 - day2;
+                                }else return month1 - month2;
+                            }
+                        });
+                        Information.exams = tmpExam;
+                        uis.onConnectorComplete(RequestType.EXAM,uis);
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onNetworkError(Exception exception) {
 
         }
     }
