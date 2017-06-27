@@ -34,7 +34,7 @@
             android:theme="@style/AppTheme.NoActionBar.TranslucentStatus"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".PersonalPage"
+            android:name=".PersonalPageActivity"
             android:label="个人信息"
             android:parentActivityName=".IndexActivity"
             android:screenOrientation="portrait"
@@ -51,7 +51,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FeedbackApiActivity"
+            android:name=".FeedbackActivity"
             android:label="@string/title_activity_feedback_api"
             android:launchMode="singleTop"
             android:parentActivityName=".IndexActivity"

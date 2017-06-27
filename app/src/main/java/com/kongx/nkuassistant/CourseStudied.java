@@ -48,7 +48,8 @@ public class CourseStudied {
                 this.score = Float.parseFloat(score);
                 calculateGPA();
             }else{              //课程为 通过
-                this.score = creditCalculated = 0;
+                this.score = 60;
+                creditCalculated = 0;
                 gpas = new float[5];
             }
         }

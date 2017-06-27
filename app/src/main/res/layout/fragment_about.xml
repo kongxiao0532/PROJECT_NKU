@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.kongx.nkuassistant.AboutFragment"
+    tools:context="com.kongx.nkuassistant.DeveloperFragment"
     android:paddingTop="16dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"

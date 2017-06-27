@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -190,7 +189,7 @@ public class IndexActivity extends AppCompatActivity
     }
 
     public void headerClicked(View view) {
-        startActivity(new Intent(getApplicationContext(), PersonalPage.class));
+        startActivity(new Intent(getApplicationContext(), PersonalPageActivity.class));
     }
 
     @Override
@@ -269,11 +268,11 @@ public class IndexActivity extends AppCompatActivity
 //            } else if (id == R.id.nav_select) {
 //                fragmentTransaction.replace(R.id.fragment_container, new SelectFragment());
             } else if (id == R.id.nav_about) {
-                fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new DeveloperFragment());
             } else if (id == R.id.nav_612bus) {
                 fragmentTransaction.replace(R.id.fragment_container, new ShuttleBusFragment());
             } else if (id == R.id.nav_feedback) {
-                fragmentTransaction.replace(R.id.fragment_container, new FeedbackFragment());
+                fragmentTransaction.replace(R.id.fragment_container, new AboutFragment());
             } else if (id == R.id.nav_icHome) {
                 fragmentTransaction.replace(R.id.fragment_container, BrowserFragment.newInstance("http://ic.lib.nankai.edu.cn/ClientWeb/m/ic2/Default.aspx"));
             } else if (id == R.id.nav_tycg) {

@@ -62,7 +62,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public void onResume() {
         super.onResume();
         m_activity = getActivity();
-        if(Information.studiedCourses.isEmpty()){
+        if(Information.studiedCourses == null){
             onRefresh();
         }else onConnectorComplete(Connector.RequestType.SCORE,true);
     }
@@ -123,8 +123,8 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             //本学期有未完成的评教
             //TODO:automatically evaluate
             new AlertDialog.Builder(m_activity).setTitle("本学期评教未完成")
-                    .setMessage("本学期评教未完成，部分成绩信息未显示。是否一键完成评教？")
-                    .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    .setMessage("本学期评教未完成，部分成绩信息未显示。请到教务网站进行评教操作。")
+                    .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Connector.getInformation(Connector.RequestType.EVALUATE,ScoreFragment.this,null);

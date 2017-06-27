@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="com.kongx.nkuassistant.FeedbackApiActivity">
+    tools:context="com.kongx.nkuassistant.FeedbackActivity">
 
 
         <android.support.v7.widget.Toolbar

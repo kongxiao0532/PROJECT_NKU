@@ -1,10 +1,7 @@
 package com.kongx.nkuassistant;
 
-import android.content.res.ColorStateList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by kongx on 2016/11/17 0017.

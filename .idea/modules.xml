@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NKU_ASSISTANT.iml" filepath="$PROJECT_DIR$/NKU_ASSISTANT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PROJECT_NKU.iml" filepath="$PROJECT_DIR$/PROJECT_NKU.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

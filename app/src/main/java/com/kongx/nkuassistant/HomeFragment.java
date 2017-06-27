@@ -471,10 +471,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             return;
         }
     }
-//
-//    private static class RequestType {
-//        static final String SCORE_COUNT = "Get score count";
-//    }
 
 } 
 
