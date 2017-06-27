@@ -39,6 +39,7 @@ public class Connector {
         USER_IDS,USER_MAJOR_IDS,USER_MINOR_IDS,
         CURRICULUM,
         SCORE,
+        EVALUATE,//TODO:评教
         EXAM,
         LECTURE,
         TV_CHANNEL,
@@ -364,9 +365,11 @@ public class Connector {
             Matcher matcher;
             pattern = Pattern.compile("<id>([0-9])(</id>)");
             matcher = pattern.matcher(retString);
-            matcher.find();
+
             String tmpHeadline="",tmpContent="",tmpTarget="",tmpTargetVersion="";
-            String tmpId = matcher.group(1);
+            String tmpId;
+            if(matcher.find())  tmpId = matcher.group(1);
+            else return;
             if (Information.newestNotice != Integer.parseInt(tmpId)) {
                 Information.newestNotice = Integer.parseInt(tmpId);
                 pattern = Pattern.compile("<headline>(.+)(</headline>)");
@@ -551,109 +554,26 @@ public class Connector {
                     new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
                     break;
                 case "SCORE":
-                    ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                     String returnString = response.body();
+
                     if(!returnString.contains("<th colSpan=\"2\">在校汇总</th>"))   return;
+                    //将ReturnString划分为统计信息和下方显示的实际信息两部分
                     String[] stringToBeDealt = new String[]{
                             returnString.substring(returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"),returnString.indexOf("/tr",returnString.indexOf("<th colSpan=\"2\">在校汇总</th>"))),
                             returnString.substring(returnString.indexOf("<tbody",returnString.indexOf(">学分</th>")),returnString.indexOf("</table",returnString.indexOf(">学分</th>")))
                     };
-                    SimpleHTMLParser.parse(stringToBeDealt[0], new SimpleHTMLParser.Callback() {
-                        int count = 0;
-                        @Override
-                        public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+                    //字符串处理匹配
+                    dealWithStatisticData(stringToBeDealt[0]);
+                    dealWithScoreData(stringToBeDealt[1]);
 
-                        }
-
-                        @Override
-                        public void onText(String text) {
-                            if(count == 3){
-                                tmpStudiedCourseCount = Integer.parseInt(text);
-                            }else
-                            if(count == 5){
-                                Information.credits_All = Float.parseFloat(text);
-                            }
-                            count++;
-                        }
-
-                        @Override
-                        public void onTagEnd(HTML.Tag tag) {
-
-                        }
-                    });
-                    if(tmpStudiedCourseCount == 0){
-                        Information.studiedCourses = tmpScore;
+                    if(Information.studiedCourseAllCount == 0){
+                        Information.studiedCourses = new ArrayList<>();
                         uis.onConnectorComplete(RequestType.SCORE,true);
                         return;
                     }
-                    SimpleHTMLParser.parse(stringToBeDealt[1], new SimpleHTMLParser.Callback() {
-                        boolean isReadingData;
-                        int singleCourseTextCount = 0;
-                        ArrayList<CourseStudied> tmpScore = new ArrayList<>();
-                        CourseStudied tmpCourse;
-
-                        @Override
-                        public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
-
-                        }
-
-                        @Override
-                        public void onText(String text) {
-                            if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
-                                return;
-                            }else{
-                                isReadingData = true;
-                                switch (singleCourseTextCount++){
-                                    case 0:                         //get Semester
-                                        tmpCourse = new CourseStudied();
-                                        tmpCourse.setSemester(text);
-                                        break;
-                                    case 1: break;
-                                    case 2:                         //get class ID
-                                        tmpCourse.classId = text;
-                                        break;
-                                    case 3: break;
-                                    case 4:                         //get selection ID
-                                        break;
-                                    case 5: break;
-                                    case 6:                         //get course name
-                                        tmpCourse.name = text;
-                                        break;
-                                    case 7: break;
-                                    case 8:                         //get class type
-                                        tmpCourse.classType = text;
-                                        break;
-                                    case 9: break;
-                                    case 10:                         //get credits
-                                        try{tmpCourse.credit = Float.parseFloat(text);}
-                                        catch (Exception e){e.printStackTrace();}
-                                        break;
-                                    case 11: break;
-                                    case 12:                         //get grade
-                                        break;
-                                    case 13: break;
-                                    case 14:                         //get score
-                                        tmpCourse.setScore(text);
-                                    case 15: break;
-                                    case 16:                            //get so-called gpa
-                                        tmpScore.add(tmpCourse);
-                                        singleCourseTextCount = 0;
-                                        isReadingData = false;
-                                        break;
-                                }
-                            }
-                            if(tmpScore.size() == tmpStudiedCourseCount){
-                                Information.studiedCourses = tmpScore;
-                                uis.onConnectorComplete(RequestType.SCORE,true);
-                            }
-                        }
-
-                        @Override
-                        public void onTagEnd(HTML.Tag tag) {
-
-                        }
-                    });
-
+                    else {
+                        uis.onConnectorComplete(RequestType.SCORE,true);
+                    }
                     break;
                 }
             }else if(response.code() == 302){
@@ -667,6 +587,101 @@ public class Connector {
             if(exception.getClass() == SocketTimeoutException.class){
                 uis.onConnectorComplete(RequestType.SCORE,false);
             }
+        }
+
+        private void dealWithStatisticData(String statisticString){
+            //获取统计数据
+            SimpleHTMLParser.parse(statisticString, new SimpleHTMLParser.Callback() {
+                int count = 0;
+                @Override
+                public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+
+                }
+
+                @Override
+                public void onText(String text) {
+                    if(count == 3){
+                        try {
+                            Information.studiedCourseAllCount = Integer.parseInt(text);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                    count++;
+                }
+
+                @Override
+                public void onTagEnd(HTML.Tag tag) {
+
+                }
+            });
+        }
+        private void dealWithScoreData(String scoreString){
+            final ArrayList<CourseStudied> tmpScore = new ArrayList<>();
+            //获取详细课程信息
+            SimpleHTMLParser.parse(scoreString, new SimpleHTMLParser.Callback() {
+                boolean isReadingData;
+                int singleCourseTextCount = 0;
+                CourseStudied tmpCourse;
+
+                @Override
+                public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
+
+                }
+
+                @Override
+                public void onText(String text) {
+                    if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
+                        return;
+                    }else{
+                        isReadingData = true;
+                        switch (singleCourseTextCount++){
+                            case 0:                         //get Semester
+                                tmpCourse = new CourseStudied(CourseStudied.DoubleCourseMark.MAJORCOURSE);
+                                tmpCourse.setSemester(text);
+                                break;
+                            case 1: break;
+                            case 2:                         //get class ID
+                                tmpCourse.classId = text;
+                                break;
+                            case 3: break;
+                            case 4:                         //get selection ID
+                                break;
+                            case 5: break;
+                            case 6:                         //get course name
+                                tmpCourse.setName(text);
+                                break;
+                            case 7: break;
+                            case 8:                         //get class type
+                                tmpCourse.setClassType(text);
+                                break;
+                            case 9: break;
+                            case 10:                         //get credits
+                                try{tmpCourse.credit = Float.parseFloat(text);}
+                                catch (Exception e){e.printStackTrace();}
+                                break;
+                            case 11: break;
+                            case 12:                         //get grade
+                                break;
+                            case 13: break;
+                            case 14:                         //get score
+                                tmpCourse.setScore(text);
+                            case 15: break;
+                            case 16:                            //get so-called gpa
+                                tmpScore.add(tmpCourse);
+                                singleCourseTextCount = 0;
+                                isReadingData = false;
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onTagEnd(HTML.Tag tag) {
+
+                }
+            });
+            Information.studiedCourses=tmpScore;
         }
     }
 

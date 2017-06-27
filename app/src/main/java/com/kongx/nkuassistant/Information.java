@@ -49,25 +49,9 @@ public class Information {
 
     //related to Scores
     static int studiedCourseCount = -1;
-    static ArrayList<CourseStudied> studiedCourses = new ArrayList<>();
-    static Map<String,Float>  credits         = new HashMap<>();
-    static Map<String,Float>  credits_counted = new HashMap<>();
-    static Map<String,Float>  scores          = new HashMap<>();
-    static Map<String,Float>  averages        = new HashMap<>();
-    static float credits_All;
-    static float credits_All_counted;
-    static float scores_All;
-    static float average_abcd;
-    static float average_abcde;
-    static float[] gpaABCED;
-    static float average_f;
-    static public void resetScores(){
-        credits.clear();
-        scores.clear();
-        averages.clear();
-        credits_counted.clear();
-        credits_All_counted = credits_All = scores_All = average_abcd = average_abcde = average_f = 0;
-    }
+    static ArrayList<CourseStudied> studiedCourses;     //实际显示的成绩信息
+    static int studiedCourseAllCount = -1;   //已经出的所有成绩的数量，包括部分已经出成绩但由于没有评价无法查看的科目
+
     //related to Curriculum
     static int selectedCourseCount = -1;
     static ArrayList<CourseSelected> selectedCourses = new ArrayList<>();

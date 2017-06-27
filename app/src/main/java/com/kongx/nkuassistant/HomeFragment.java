@@ -283,7 +283,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onRefresh(){
         mReFresh.setRefreshing(true);
-        Information.resetScores();
+//        Information.resetScores();
         Connector.getInformation(Connector.RequestType.SCORE,this,null);
 //        new Request.Builder().url(Connector.WEB_URL + Connector.url_score).tag(RequestType.SCORE_COUNT).build().send(this);
         try{

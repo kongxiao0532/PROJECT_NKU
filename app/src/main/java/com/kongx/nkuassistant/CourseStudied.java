@@ -5,15 +5,34 @@ package com.kongx.nkuassistant;
  */
 
 public class CourseStudied {
-    String semester;
-    String name;
-    String classType;
+    private String semester;
+    private String name;
+    private char classType;
     String classId;
+    private boolean isDoubleCourse;
     float score;
     float credit;
     float creditCalculated;             //防止有“通过”的情况
-    float[] gpas;
-    public void setSemester(String semester){
+    private float[] gpas;
+    boolean isDivider;
+    enum DoubleCourseMark{MAJORCOURSE,MINORCOURSE};
+    CourseStudied(DoubleCourseMark doubleCourseMark){
+        switch (doubleCourseMark){
+            case MAJORCOURSE:
+                isDoubleCourse = false;
+                break;
+            case MINORCOURSE:
+                isDoubleCourse = true;
+                break;
+        }
+        isDivider = false;
+    }
+    CourseStudied(char dividerType){        //for Divider Initialization
+        isDivider = true;
+        classType = dividerType;
+    }
+    void setName(String name){this.name = name;}
+    void setSemester(String semester){
         try {
             this.semester = semester.substring(0,9)+"年第"+semester.charAt(semester.length() - 1) + "学期";
         }
@@ -37,6 +56,26 @@ public class CourseStudied {
             e.printStackTrace();
         }
     }
+    void setClassType(String type){
+        if(type.contains("任选课")){
+            classType = 'E';
+        }else if(type.contains("专业") && type.contains("选修")){
+            classType = 'D';
+        }else if(type.contains("专业") && type.contains("必修")){
+            classType = 'C';
+        }else if(type.contains("院系") && type.contains("必修")){
+            classType = 'B';
+        }else{
+            classType = 'A';
+        }
+    }
+
+    char getClassType(){return classType;}
+    String getName(){return name;}
+    float getScore(){return score;}
+    float getCredit(){return credit;}
+    float[] getGpas(){return gpas;}
+
     private void calculateGPA(){
         gpas = new float[5];
         //Standart GPA
