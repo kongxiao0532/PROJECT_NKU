@@ -351,10 +351,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         private TextView mExamDetail;
 
         ExamSegment() {
-            mExamLayout = (LinearLayout) myView.findViewById(R.id.home_exam_layout);
-            mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
-            mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
-            mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
+            mExamLayout = myView.findViewById(R.id.home_exam_layout);
+            mExamStatus = myView.findViewById(R.id.home_exam_text);
+            mExamList = myView.findViewById(R.id.home_exam_list);
+            mExamDetail = myView.findViewById(R.id.home_exam_details);
             mExamDetail.setOnClickListener((View.OnClickListener) m_activity);
             ArrayList<ExamCourse> examsToBeShown = getExamsToBeShown();
             if (examsToBeShown == null || examsToBeShown.size() == 0) {
