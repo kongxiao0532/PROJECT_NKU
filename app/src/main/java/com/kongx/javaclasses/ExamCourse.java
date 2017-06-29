@@ -1,4 +1,4 @@
-package com.kongx.nkuassistant;
+package com.kongx.javaclasses;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,19 +21,19 @@ public class ExamCourse {
     private String classRoom;
     private String seatNum;
 
-    String getCourseSelectNum() {
+    public String getCourseSelectNum() {
         return courseSelectNum;
     }
 
-    void setCourseSelectNum(String input) {
+    public void setCourseSelectNum(String input) {
         courseSelectNum = input;
     }
 
-    Date getDate() {
+    public Date getDate() {
         return date;
     }
 
-    void setDate(String input) {
+    public void setDate(String input) {
         Pattern pattern = Pattern.compile("(\\d\\d\\d\\d-\\d\\d-\\d\\d)");
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
@@ -47,48 +47,48 @@ public class ExamCourse {
         }
     }
 
-    String getDateString() {
+    public String getDateString() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }
 
-    String getTimePeriod() {
+    public String getTimePeriod() {
         return timePeriod;
     }
 
-    void setTimePeriod(String input) {
+    public void setTimePeriod(String input) {
         timePeriod = input;
     }
 
-    String getCourseName() {
+    public String getCourseName() {
         return courseName;
     }
 
-    void setCourseName(String input) {
+    public void setCourseName(String input) {
         courseName = input;
     }
 
-    String getClassRoom() {
+    public String getClassRoom() {
         return classRoom;
     }
 
-    void setClassRoom(String input) {
+    public void setClassRoom(String input) {
         classRoom = input;
     }
 
-    String getExamType() {
+    public String getExamType() {
         return examType;
     }
 
-    void setExamType(String input) {
+    public void setExamType(String input) {
         examType = input;
     }
 
-    String getSeatNum() {
+    public String getSeatNum() {
         return seatNum;
     }
 
-    void setSeatNum(String input) {
+    public void setSeatNum(String input) {
         seatNum = input;
     }
 

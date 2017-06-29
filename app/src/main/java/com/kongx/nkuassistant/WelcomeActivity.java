@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.kongx.javaclasses.CourseSelected;
+import com.kongx.javaclasses.ExamCourse;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,10 +43,8 @@ import static com.kongx.nkuassistant.Information.facultyName;
 import static com.kongx.nkuassistant.Information.id;
 import static com.kongx.nkuassistant.Information.ids_major;
 import static com.kongx.nkuassistant.Information.ids_minor;
-import static com.kongx.nkuassistant.Information.ifLoggedIn;
 import static com.kongx.nkuassistant.Information.ifRemPass;
 import static com.kongx.nkuassistant.Information.isDoubleMajor;
-import static com.kongx.nkuassistant.Information.isFirstOpen;
 import static com.kongx.nkuassistant.Information.lastVersion;
 import static com.kongx.nkuassistant.Information.majorName;
 import static com.kongx.nkuassistant.Information.minorName;
@@ -98,8 +99,6 @@ public class WelcomeActivity extends AppCompatActivity {
         ifRemPass = settings.getBoolean(Strings.setting_remember_pwd, false);
 
         //Get previous information
-        isFirstOpen = true;
-        ifLoggedIn = false;
         lastVersion = settings.getString(Strings.setting_last_version,null);
         name = settings.getString(Strings.setting_student_name, null);
         facultyName = settings.getString(Strings.setting_student_faculty, null);

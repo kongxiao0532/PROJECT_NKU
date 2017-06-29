@@ -14,6 +14,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kongx.javaclasses.CourseSelected;
+
 import java.util.Collections;
 
 public class CourseModifierActivity extends AppCompatActivity {

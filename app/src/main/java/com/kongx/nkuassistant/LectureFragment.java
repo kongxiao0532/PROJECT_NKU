@@ -3,12 +3,8 @@ package com.kongx.nkuassistant;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +12,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.kongx.javaclasses.Lecture;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
@@ -84,10 +84,18 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void calculateToday(){
         int tmpID = 0;
-        for(Lecture tmp : Information.lectures){
+        for (Lecture tmpLecture : Information.lectures) {
             tmpID++;
-            if(tmp.year == Information.year && tmp.month == Information.month){
-                if(tmp.day <= Information.day){
+            int year = 0, month = 0, day = 0;
+            if (tmpLecture.getDatetime() != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(tmpLecture.getDatetime());
+                year = cal.get(Calendar.YEAR);
+                month = cal.get(Calendar.MONTH);
+                day = cal.get(Calendar.DAY_OF_MONTH);
+            }
+            if (year == Information.year && month == Information.month) {
+                if (day <= Information.day) {
                     todayLectureID = tmpID;
                     break;
                 }
@@ -116,14 +124,14 @@ public class LectureFragment extends Fragment implements SwipeRefreshLayout.OnRe
             ViewHolder holder;
             convertView = mInflater.inflate(R.layout.item_lecture_list,null);
             holder = new ViewHolder();
-            holder.topic = (TextView) convertView.findViewById(R.id.lecture_list_item_topic);
-            holder.time = (TextView) convertView.findViewById(R.id.lecture_list_item_time);
-            holder.location = (TextView) convertView.findViewById(R.id.lecture_list_item_location);
-            holder.lecturer = (TextView) convertView.findViewById(R.id.lecture_list_item_lecturer);
-            holder.topic.setText(Information.lectures.get(position).topic);
-            holder.time.setText(Information.lectures.get(position).time);
-            holder.location.setText(Information.lectures.get(position).location);
-            holder.lecturer.setText(Information.lectures.get(position).lecturer);
+            holder.topic = convertView.findViewById(R.id.lecture_list_item_topic);
+            holder.time = convertView.findViewById(R.id.lecture_list_item_time);
+            holder.location = convertView.findViewById(R.id.lecture_list_item_location);
+            holder.lecturer = convertView.findViewById(R.id.lecture_list_item_lecturer);
+            holder.topic.setText(Information.lectures.get(position).getTopic());
+            holder.time.setText(Information.lectures.get(position).getDateTimeString());
+            holder.location.setText(Information.lectures.get(position).getLocation());
+            holder.lecturer.setText(Information.lectures.get(position).getLecturer());
             return convertView;
         }
     }

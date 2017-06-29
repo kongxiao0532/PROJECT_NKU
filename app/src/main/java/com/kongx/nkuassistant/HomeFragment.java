@@ -17,37 +17,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kongx.javaclasses.CourseSelected;
+import com.kongx.javaclasses.ExamCourse;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
     private Activity m_activity;
     private View myView = null;
     private SwipeRefreshLayout mReFresh;
-    private TextView mAd;
+    //    private TextView mAd;
     private int hour;
     private int minute;
-    private int year;
     private int weekOfYear;
     private int dayOfWeek;
-    //Select Module
-    private TextView mSelectStatus;
-    private TextView mSelectDetail;
-    //Bus Module
-    private TextView mBusDetail;
-    private TextView mBusToBalitai;
-    private TextView mBusToJinnan;
-    private TextView mBusToBalitaiWay;
-    private TextView mBusToJinnanWay;
-    //Network Module
-    private Pattern pattern;
-    private Matcher matcher;
+//    //Select Module
+//    private TextView mSelectStatus;
+//    private TextView mSelectDetail;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,17 +55,11 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         mReFresh = myView.findViewById(R.id.home_refresh);
         mReFresh.setOnRefreshListener(this);
-        mAd = myView.findViewById(R.id.ad_textview);
+//        mAd = myView.findViewById(R.id.ad_textview);
 
-        mSelectStatus = myView.findViewById(R.id.home_select_text);
-        mSelectDetail = myView.findViewById(R.id.home_select_details);
-        mBusDetail = myView.findViewById(R.id.home_bus_details);
-        mBusToBalitai = myView.findViewById(R.id.home_bus_jinnan);
-        mBusToJinnan = myView.findViewById(R.id.home_bus_balitai);
-        mBusToBalitaiWay = myView.findViewById(R.id.home_bus_jinnan_way);
-        mBusToJinnanWay = myView.findViewById(R.id.home_bus_balitai_way);
-        mSelectDetail.setOnClickListener((View.OnClickListener) m_activity);
-        mBusDetail.setOnClickListener((View.OnClickListener) m_activity);
+//        mSelectStatus = myView.findViewById(R.id.home_select_text);
+//        mSelectDetail = myView.findViewById(R.id.home_select_details);
+//        mSelectDetail.setOnClickListener((View.OnClickListener) m_activity);
 
 //        if(year == 2017 && Information.month == 4 && Information.day >= 4 && Information.day <= 7)  mAd.setVisibility(View.VISIBLE);
 //        mAd.setOnClickListener(new View.OnClickListener() {
@@ -85,15 +70,12 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 //                    startActivity(intent);
 //            }
 //        });
-        new ScheduleSegment();
-        new ExamSegment();
-        if(Information.isFirstOpen){
+
+        //如果当前未获取过成绩信息，则联网刷新，否则本地刷新
+        if (Information.studiedCourses == null) {
             onRefresh();
-            Information.isFirstOpen = false;
-        } else{
-            updateBus();
-            onConnectorComplete(Connector.RequestType.SCORE,true);
-//            mSelectStatus.setText(getString(R.string.pull_to_refresh));
+        } else {
+            localRefresh();
         }
         return myView;
     }
@@ -118,7 +100,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             case SCORE:
                 if(result.getClass() == Boolean.class){
                     if((Boolean)result){
-                        Information.ifLoggedIn = true;
                         if(Information.ids_major == null)   Connector.getInformation(Connector.RequestType.USER_IDS,(Connector.Callback)getActivity(),null);
                         new ScoreSegment();
                     }else {
@@ -172,98 +153,192 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     @Override
-    public void onRefresh(){
+    public void onRefresh() {            //联网刷新
         mReFresh.setRefreshing(true);
+        //本地部分
+        new ScheduleSegment();
+        new BusSegment();
+        new ExamSegment();
+        //联网部分
         Connector.getInformation(Connector.RequestType.SCORE,this,null);
-        try{
-            updateBus();
-        }catch (IndexOutOfBoundsException e){
-            Log.e("HomeFragment","Maybe you changed the fragment too quick.");
-        }
         mReFresh.setRefreshing(false);
     }
 
-    private void updateBus(){
-        int minute_after = hour * 60 + minute;
-        Information.toJinnanID = -1;
-        Information.toBalitaiID = -1;
-        if(dayOfWeek <= 5){
-            for(Information.toJinnanID = 0;Information.toJinnanID < Information.weekdays_tojinnan.size();Information.toJinnanID++){
-                if(minute_after > Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("minute")){
-                    Information.toJinnanID = -1;
-                    break;
+    private void localRefresh() {
+        new ScheduleSegment();
+        new BusSegment();
+        new ExamSegment();
+        new ScoreSegment();
+    }
+
+    private class ScheduleSegment {
+        //Schedule Module
+        private TextView mWeekText;
+        private TextView mSememText;
+        private TextView mDate;
+        private TextView mDay;
+        private TextView mScheduleStatus;
+        private TextView mScheduleDetail;
+        private LinearLayout mScheduleList;
+
+        ScheduleSegment() {
+            mWeekText = myView.findViewById(R.id.textView_weekCount);
+            mSememText = myView.findViewById(R.id.textView_semester);
+            mDate = myView.findViewById(R.id.textView_date);
+            mDay = myView.findViewById(R.id.textView_day);
+            mScheduleStatus = myView.findViewById(R.id.home_schedule_text);
+            mScheduleList = myView.findViewById(R.id.home_schedule_list);
+            mScheduleDetail = myView.findViewById(R.id.home_schedule_details);
+            mScheduleDetail.setOnClickListener((View.OnClickListener) m_activity);
+            setBasicTimeInfo();
+            ArrayList<CourseSelected> courseToday = getCourseToday();
+            showScheduleToday(courseToday);
+        }
+
+        void setBasicTimeInfo() {
+            Calendar calendar = Calendar.getInstance();
+            Information.year = calendar.get(Calendar.YEAR);
+            Information.month = calendar.get(Calendar.MONTH) + 1;
+            Information.day = calendar.get(Calendar.DAY_OF_MONTH);
+            weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+            Information.dayOfWeek_int = dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
+            if (Information.dayOfWeek_int == 7) weekOfYear--;
+            hour = calendar.get(Calendar.HOUR_OF_DAY);
+            minute = calendar.get(Calendar.MINUTE);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
+            Information.date = dateFormat.format(calendar.getTime());
+
+            if (Information.year == 2017) {
+                if (weekOfYear == 1 || weekOfYear == 2) {
+                    Information.weekCount = 0;
+                    Information.semester = "2016-2017 第一学期";
+                    Information.semesterId = 30;
                 }
-                if(minute_after < Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")){
-                    break;
+                if (weekOfYear > 2 && weekOfYear <= 6) {
+                    Information.weekCount = weekOfYear - 2;
+                    Information.semester = getString(R.string.winter_vacation);
+                }
+                if (weekOfYear > 6 && weekOfYear <= 22) {
+                    Information.weekCount = weekOfYear - 6;
+                    Information.semester = "2016-2017 第二学期";
+                    Information.semesterId = 31;
+                }
+                if (weekOfYear > 22 && weekOfYear <= 24) {
+                    Information.weekCount = 0;
+                    Information.semester = "2016-2017 第二学期";
+                    Information.semesterId = 31;
+                }
+                if (weekOfYear > 24 && weekOfYear <= 28) {
+                    Information.weekCount = weekOfYear - 24;
+                    Information.semester = "2016-2017 夏季学期";
+                    Information.semesterId = 86;
+                }
+                if (weekOfYear > 28 && weekOfYear <= 36) {
+                    Information.weekCount = weekOfYear - 28;
+                    Information.semester = getString(R.string.summber_vacation);
+                }
+                if (weekOfYear > 36 && weekOfYear <= 52) {
+                    Information.weekCount = weekOfYear - 6;
+                    Information.semester = "2017-2018 第一学期";
+                    Information.semesterId = 62;
+                }
+                if (weekOfYear == 53) {
+                    Information.weekCount = 0;
+                    Information.semester = "2017-2018 第一学期";
+                    Information.semesterId = 62;
+                }
+            } else if (Information.year == 2018) {
+                if (weekOfYear == 1 || weekOfYear == 2) {
+                    Information.weekCount = 0;
+                    Information.semester = "2016-2017 第二学期";
+                    Information.semesterId = 32;
+                }
+                if (weekOfYear > 2) {
+                    Information.weekCount = weekOfYear - 2;
+                    Information.semester = getString(R.string.winter_vacation);
                 }
             }
-            for(Information.toBalitaiID = 0;Information.toBalitaiID < Information.weekdays_tobalitai.size();Information.toBalitaiID++){
-                if(minute_after > Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("minute")){
-                    Information.toBalitaiID = -1;
-                    break;
-                }
-                if(minute_after < Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")){
-                    break;
-                }
+            if (Information.weekCount == 0) {
+                mWeekText.setText("考试周");
+            } else {
+                mWeekText.setText("第" + String.valueOf(Information.weekCount) + "周");
             }
-            if(Information.toJinnanID != -1){
-                mBusToJinnan.setText(String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute"))));
-                mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
-                mBusToJinnanWay.setVisibility(View.VISIBLE);
-            }else{
-                mBusToJinnan.setText(getString(R.string.no_available_buses));
-                mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToJinnanWay.setVisibility(View.GONE);
+            mSememText.setText(Information.semester);
+            mDate.setText(dateFormat.format(calendar.getTime()));
+            mDay.setText(Information.dayOfWeek[dayOfWeek]);
+        }
+
+        ArrayList<CourseSelected> getCourseToday() {
+            if (Information.selectedCourses == null || Information.selectedCourses.size() == 0) {
+                mScheduleStatus.setText("暂无课程信息");
+                return null;
             }
-            if(Information.toBalitaiID != -1){
-                mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute"))));
-                mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
-                mBusToBalitaiWay.setVisibility(View.VISIBLE);
-            }else{
-                mBusToBalitai.setText(getString(R.string.no_available_buses));
-                mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToBalitaiWay.setVisibility(View.GONE);
+            if (Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")) {
+                mScheduleStatus.setText(getString(R.string.no_course_today));
+                return null;
             }
-        }else {
-            for(Information.toJinnanID = 0;Information.toJinnanID < Information.weekends_tojinnan.size();Information.toJinnanID++){
-                if(minute_after > Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("hour") * 60 + Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("minute")){
-                    Information.toJinnanID = -1;
-                    break;
-                }
-                if(minute_after < Information.weekends_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")){
-                    break;
+            ArrayList<CourseSelected> courseToday = new ArrayList<>();
+            for (CourseSelected tmpCourse : Information.selectedCourses) {
+                if (tmpCourse.getDayOfWeek() == dayOfWeek &&
+                        Information.weekCount >= tmpCourse.getStartWeek() &&
+                        Information.weekCount <= tmpCourse.getEndWeek()) {
+                    courseToday.add(tmpCourse);
                 }
             }
-            for(Information.toBalitaiID = 0;Information.toBalitaiID < Information.weekends_tobalitai.size();Information.toBalitaiID++){
-                if(minute_after > Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("hour") * 60 + Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("minute")){
-                    Information.toBalitaiID = -1;
-                    break;
-                }
-                if(minute_after < Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")){
-                    break;
+            return courseToday;
+        }
+
+        void showScheduleToday(ArrayList<CourseSelected> courseToday) {
+            mScheduleList.removeAllViews();
+
+            if (courseToday.size() == 0) {
+                mScheduleList.setVisibility(View.GONE);
+                mScheduleStatus.setVisibility(View.VISIBLE);
+                mScheduleStatus.setText(getString(R.string.no_course_today));
+            } else {
+                mScheduleStatus.setVisibility(View.GONE);
+                mScheduleList.setVisibility(View.VISIBLE);
+            }
+            LayoutInflater mInflater = LayoutInflater.from(m_activity);
+            //显示今日课程
+            if (courseToday != null) {
+                for (CourseSelected tmpCourse : courseToday) {
+                    View view = mInflater.inflate(R.layout.item_schedule_home_list, null);
+                    TextView item_name = view.findViewById(R.id.home_schedule_item_name);
+                    TextView item_classroom = view.findViewById(R.id.home_schedule_item_classroom);
+                    ImageView item_image = view.findViewById(R.id.home_schedule_item_image);
+                    item_name.setText((tmpCourse.getCourseName().length() <= 7) ? tmpCourse.getCourseName() : tmpCourse.getCourseName().substring(0, 3) + "..." + tmpCourse.getCourseName().substring(tmpCourse.getCourseName().length() - 3, tmpCourse.getCourseName().length()));
+                    item_classroom.setText(tmpCourse.getClassRoom());
+                    //Set Image
+                    if (tmpCourse.getStartTime() == 1 || tmpCourse.getStartTime() == 2)
+                        item_image.setImageResource(R.drawable.morning);
+                    else if (tmpCourse.getStartTime() > 2 && tmpCourse.getStartTime() < 11)
+                        item_image.setImageResource(R.drawable.noon);
+                    else if (tmpCourse.getStartTime() > 10)
+                        item_image.setImageResource(R.drawable.evening);
+                    mScheduleList.addView(view);
                 }
             }
-            if(Information.toJinnanID != -1){
-                mBusToJinnan.setText(String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute"))));
-                mBusToJinnanWay.setText(Information.weekends_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
-                mBusToJinnanWay.setVisibility(View.VISIBLE);
-            }else{
-                mBusToJinnan.setText(getString(R.string.no_available_buses));
-                mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToJinnanWay.setVisibility(View.GONE);
-            }
-            if(Information.toBalitaiID != -1){
-                mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour"))+":"+
-                        ((String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00":String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute"))));
-                mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
-                mBusToBalitaiWay.setVisibility(View.VISIBLE);
-            }else{
-                mBusToBalitai.setText(getString(R.string.no_available_buses));
-                mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
-                mBusToBalitaiWay.setVisibility(View.GONE);
+        }
+    }
+
+    private class ScoreSegment {
+        //Score Module
+        private TextView mScoreStatus;
+        private TextView mScoreDetail;
+
+        ScoreSegment() {
+            mScoreStatus = myView.findViewById(R.id.home_score_text);
+            mScoreDetail = myView.findViewById(R.id.home_score_details);
+            mScoreDetail.setOnClickListener((View.OnClickListener) m_activity);
+            if (Information.studiedCourses != null) {
+                if (Information.studiedCourses.size() == Information.lastTimeStudiedCourseCount) {
+                    mScoreStatus.setText("暂无成绩更新");
+                } else {
+                    mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.lastTimeStudiedCourseCount == -1) ? 0 : Information.lastTimeStudiedCourseCount)) + "条成绩更新");
+                }
+            } else {
+                mScoreStatus.setText("获取成绩失败");
             }
         }
     }
@@ -338,168 +413,109 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-    private class ScoreSegment {
-        //Score Module
-        private TextView mScoreStatus;
-        private TextView mScoreDetail;
+    private class BusSegment {
+        //Bus Module
+        private TextView mBusDetail;
+        private TextView mBusToBalitai;
+        private TextView mBusToJinnan;
+        private TextView mBusToBalitaiWay;
+        private TextView mBusToJinnanWay;
 
-        ScoreSegment() {
-            mScoreStatus = myView.findViewById(R.id.home_score_text);
-            mScoreDetail = myView.findViewById(R.id.home_score_details);
-            mScoreDetail.setOnClickListener((View.OnClickListener) m_activity);
+        BusSegment() {
+            mBusDetail = myView.findViewById(R.id.home_bus_details);
+            mBusToBalitai = myView.findViewById(R.id.home_bus_jinnan);
+            mBusToJinnan = myView.findViewById(R.id.home_bus_balitai);
+            mBusToBalitaiWay = myView.findViewById(R.id.home_bus_jinnan_way);
+            mBusToJinnanWay = myView.findViewById(R.id.home_bus_balitai_way);
+            mBusDetail.setOnClickListener((View.OnClickListener) m_activity);
+            calculateNextBus();
+        }
 
-            if (Information.studiedCourses.size() == Information.lastTimeStudiedCourseCount) {
-                mScoreStatus.setText("暂无成绩更新");
+        private void calculateNextBus() {
+            int minute_after = hour * 60 + minute;
+            Information.toJinnanID = -1;
+            Information.toBalitaiID = -1;
+            if (dayOfWeek <= 5) {
+                for (Information.toJinnanID = 0; Information.toJinnanID < Information.weekdays_tojinnan.size(); Information.toJinnanID++) {
+                    if (minute_after > Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.weekdays_tojinnan.size() - 1).get("minute")) {
+                        Information.toJinnanID = -1;
+                        break;
+                    }
+                    if (minute_after < Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")) {
+                        break;
+                    }
+                }
+                for (Information.toBalitaiID = 0; Information.toBalitaiID < Information.weekdays_tobalitai.size(); Information.toBalitaiID++) {
+                    if (minute_after > Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.weekdays_tobalitai.size() - 1).get("minute")) {
+                        Information.toBalitaiID = -1;
+                        break;
+                    }
+                    if (minute_after < Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")) {
+                        break;
+                    }
+                }
+                if (Information.toJinnanID != -1) {
+                    mBusToJinnan.setText(String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("hour")) + ":" +
+                            ((String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00" : String.valueOf(Information.weekdays_tojinnan.get(Information.toJinnanID).get("minute"))));
+                    mBusToJinnanWay.setText(Information.weekdays_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
+                    mBusToJinnanWay.setVisibility(View.VISIBLE);
+                } else {
+                    mBusToJinnan.setText(getString(R.string.no_available_buses));
+                    mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    mBusToJinnanWay.setVisibility(View.GONE);
+                }
+                if (Information.toBalitaiID != -1) {
+                    mBusToBalitai.setText(String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("hour")) + ":" +
+                            ((String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00" : String.valueOf(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("minute"))));
+                    mBusToBalitaiWay.setText(Information.weekdays_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
+                    mBusToBalitaiWay.setVisibility(View.VISIBLE);
+                } else {
+                    mBusToBalitai.setText(getString(R.string.no_available_buses));
+                    mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    mBusToBalitaiWay.setVisibility(View.GONE);
+                }
             } else {
-                mScoreStatus.setText("有" + Math.abs(Information.studiedCourses.size() - ((Information.lastTimeStudiedCourseCount == -1) ? 0 : Information.lastTimeStudiedCourseCount)) + "条成绩更新");
+                for (Information.toJinnanID = 0; Information.toJinnanID < Information.weekends_tojinnan.size(); Information.toJinnanID++) {
+                    if (minute_after > Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("hour") * 60 + Information.weekends_tojinnan.get(Information.weekends_tojinnan.size() - 1).get("minute")) {
+                        Information.toJinnanID = -1;
+                        break;
+                    }
+                    if (minute_after < Information.weekends_tojinnan.get(Information.toJinnanID).get("hour") * 60 + Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")) {
+                        break;
+                    }
+                }
+                for (Information.toBalitaiID = 0; Information.toBalitaiID < Information.weekends_tobalitai.size(); Information.toBalitaiID++) {
+                    if (minute_after > Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("hour") * 60 + Information.weekends_tobalitai.get(Information.weekends_tobalitai.size() - 1).get("minute")) {
+                        Information.toBalitaiID = -1;
+                        break;
+                    }
+                    if (minute_after < Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour") * 60 + Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")) {
+                        break;
+                    }
+                }
+                if (Information.toJinnanID != -1) {
+                    mBusToJinnan.setText(String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("hour")) + ":" +
+                            ((String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute")).equals("0")) ? "00" : String.valueOf(Information.weekends_tojinnan.get(Information.toJinnanID).get("minute"))));
+                    mBusToJinnanWay.setText(Information.weekends_tojinnan.get(Information.toJinnanID).get("way") == 1 ? "点" : "快");
+                    mBusToJinnanWay.setVisibility(View.VISIBLE);
+                } else {
+                    mBusToJinnan.setText(getString(R.string.no_available_buses));
+                    mBusToJinnan.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    mBusToJinnanWay.setVisibility(View.GONE);
+                }
+                if (Information.toBalitaiID != -1) {
+                    mBusToBalitai.setText(String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("hour")) + ":" +
+                            ((String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute")).equals("0")) ? "00" : String.valueOf(Information.weekends_tobalitai.get(Information.toBalitaiID).get("minute"))));
+                    mBusToBalitaiWay.setText(Information.weekends_tobalitai.get(Information.toBalitaiID).get("way") == 1 ? "点" : "快");
+                    mBusToBalitaiWay.setVisibility(View.VISIBLE);
+                } else {
+                    mBusToBalitai.setText(getString(R.string.no_available_buses));
+                    mBusToBalitai.setGravity(View.TEXT_ALIGNMENT_CENTER);
+                    mBusToBalitaiWay.setVisibility(View.GONE);
+                }
+
             }
         }
     }
-
-    private class ScheduleSegment {
-        //Schedule Module
-        private TextView mWeekText;
-        private TextView mSememText;
-        private TextView mDate;
-        private TextView mDay;
-        private TextView mScheduleStatus;
-        private TextView mScheduleDetail;
-        private LinearLayout mScheduleList;
-        private ArrayList<CourseSelected> courseToday;
-
-        ScheduleSegment() {
-            mWeekText = myView.findViewById(R.id.textView_weekCount);
-            mSememText = myView.findViewById(R.id.textView_semester);
-            mDate = myView.findViewById(R.id.textView_date);
-            mDay = myView.findViewById(R.id.textView_day);
-            mScheduleStatus = myView.findViewById(R.id.home_schedule_text);
-            mScheduleList = myView.findViewById(R.id.home_schedule_list);
-            mScheduleDetail = myView.findViewById(R.id.home_schedule_details);
-            mScheduleDetail.setOnClickListener((View.OnClickListener) m_activity);
-            setBasicTimeInfo();
-            getScheduleToday();
-        }
-
-        void setBasicTimeInfo() {
-            Calendar calendar = Calendar.getInstance();
-            Information.year = year = calendar.get(Calendar.YEAR);
-            Information.month = calendar.get(Calendar.MONTH) + 1;
-            Information.day = calendar.get(Calendar.DAY_OF_MONTH);
-            weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
-            Information.dayOfWeek_int = dayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1;
-            if (Information.dayOfWeek_int == 7) weekOfYear--;
-            hour = calendar.get(Calendar.HOUR_OF_DAY);
-            minute = calendar.get(Calendar.MINUTE);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
-            Information.date = dateFormat.format(calendar.getTime());
-
-            if (year == 2017) {
-                if (weekOfYear == 1 || weekOfYear == 2) {
-                    Information.weekCount = 0;
-                    Information.semester = "2016-2017 第一学期";
-                    Information.semesterId = 30;
-                }
-                if (weekOfYear > 2 && weekOfYear <= 6) {
-                    Information.weekCount = weekOfYear - 2;
-                    Information.semester = getString(R.string.winter_vacation);
-                }
-                if (weekOfYear > 6 && weekOfYear <= 22) {
-                    Information.weekCount = weekOfYear - 6;
-                    Information.semester = "2016-2017 第二学期";
-                    Information.semesterId = 31;
-                }
-                if (weekOfYear > 22 && weekOfYear <= 24) {
-                    Information.weekCount = 0;
-                    Information.semester = "2016-2017 第二学期";
-                    Information.semesterId = 31;
-                }
-                if (weekOfYear > 24 && weekOfYear <= 28) {
-                    Information.weekCount = weekOfYear - 24;
-                    Information.semester = "2016-2017 夏季学期";
-                    Information.semesterId = 86;
-                }
-                if (weekOfYear > 28 && weekOfYear <= 36) {
-                    Information.weekCount = weekOfYear - 28;
-                    Information.semester = getString(R.string.summber_vacation);
-                }
-                if (weekOfYear > 36 && weekOfYear <= 52) {
-                    Information.weekCount = weekOfYear - 6;
-                    Information.semester = "2017-2018 第一学期";
-                    Information.semesterId = 62;
-                }
-                if (weekOfYear == 53) {
-                    Information.weekCount = 0;
-                    Information.semester = "2017-2018 第一学期";
-                    Information.semesterId = 62;
-                }
-            } else if (year == 2018) {
-                if (weekOfYear == 1 || weekOfYear == 2) {
-                    Information.weekCount = 0;
-                    Information.semester = "2016-2017 第二学期";
-                    Information.semesterId = 32;
-                }
-                if (weekOfYear > 2) {
-                    Information.weekCount = weekOfYear - 2;
-                    Information.semester = getString(R.string.winter_vacation);
-                }
-            }
-            if (Information.weekCount == 0) {
-                mWeekText.setText("考试周");
-            } else {
-                mWeekText.setText("第" + String.valueOf(Information.weekCount) + "周");
-            }
-            mSememText.setText(Information.semester);
-            mDate.setText(dateFormat.format(calendar.getTime()));
-            mDay.setText(Information.dayOfWeek[dayOfWeek]);
-        }
-
-        void getScheduleToday() {
-            mScheduleList.removeAllViews();
-
-            if (Information.selectedCourses == null || Information.selectedCourses.size() == 0) {
-                mScheduleStatus.setText("暂无课程信息");
-                return;
-            }
-            if (Information.weekCount == 0 || Information.semester.equals("寒假") || Information.semester.equals("暑假")) {
-                mScheduleStatus.setText(getString(R.string.no_course_today));
-                return;
-            }
-            courseToday = new ArrayList<>();
-            for (CourseSelected tmpCourse : Information.selectedCourses) {
-                if (tmpCourse.getDayOfWeek() == dayOfWeek &&
-                        Information.weekCount >= tmpCourse.getStartWeek() &&
-                        Information.weekCount <= tmpCourse.getEndWeek()) {
-                    courseToday.add(tmpCourse);
-                }
-            }
-
-            if (courseToday.size() == 0) {
-                mScheduleList.setVisibility(View.GONE);
-                mScheduleStatus.setVisibility(View.VISIBLE);
-                mScheduleStatus.setText(getString(R.string.no_course_today));
-            } else {
-                mScheduleStatus.setVisibility(View.GONE);
-                mScheduleList.setVisibility(View.VISIBLE);
-                LayoutInflater mInflater = LayoutInflater.from(m_activity);
-                for (CourseSelected tmpCourse : courseToday) {
-                    View view = mInflater.inflate(R.layout.item_schedule_home_list, null);
-                    TextView item_name = view.findViewById(R.id.home_schedule_item_name);
-                    TextView item_classroom = view.findViewById(R.id.home_schedule_item_classroom);
-                    ImageView item_image = view.findViewById(R.id.home_schedule_item_image);
-                    item_name.setText((tmpCourse.getCourseName().length() <= 7) ? tmpCourse.getCourseName() : tmpCourse.getCourseName().substring(0, 3) + "..." + tmpCourse.getCourseName().substring(tmpCourse.getCourseName().length() - 3, tmpCourse.getCourseName().length()));
-                    item_classroom.setText(tmpCourse.getClassRoom());
-                    //Set Image
-                    if (tmpCourse.getStartTime() == 1 || tmpCourse.getStartTime() == 2)
-                        item_image.setImageResource(R.drawable.morning);
-                    else if (tmpCourse.getStartTime() > 2 && tmpCourse.getStartTime() < 11)
-                        item_image.setImageResource(R.drawable.noon);
-                    else if (tmpCourse.getStartTime() > 10)
-                        item_image.setImageResource(R.drawable.evening);
-                    mScheduleList.addView(view);
-                }
-            }
-        }
-    }
-
 } 
 

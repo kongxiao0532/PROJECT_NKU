@@ -1,22 +1,24 @@
-package com.kongx.nkuassistant;
+package com.kongx.javaclasses;
 
 /**
  * Created by DELL on 2017/2/17 0017.
  */
 
 public class CourseStudied {
+    //from input
     private String semester;
     private String name;
     private char classType;
-    String classId;
+    private String classId;
     private boolean isDoubleCourse;
-    float score;
-    float credit;
-    float creditCalculated;             //防止有“通过”的情况
+    private float score;
+    private float credit;
+    //from inner calculation
+    private float creditCalculated;             //防止有“通过”的情况
     private float[] gpas;
-    boolean isDivider;
-    enum DoubleCourseMark{MAJORCOURSE,MINORCOURSE};
-    CourseStudied(DoubleCourseMark doubleCourseMark){
+    private boolean isDivider;
+
+    public CourseStudied(DoubleCourseMark doubleCourseMark) {
         switch (doubleCourseMark){
             case MAJORCOURSE:
                 isDoubleCourse = false;
@@ -26,13 +28,22 @@ public class CourseStudied {
                 break;
         }
         isDivider = false;
-    }
-    CourseStudied(char dividerType){        //for Divider Initialization
+    }       //for normal courses;
+
+    public CourseStudied(char dividerType) {        //for Divider Initialization
         isDivider = true;
         classType = dividerType;
+    }       //for dividers
+
+    public void setIsDoubleCourse(boolean input) {
+        isDoubleCourse = input;
     }
-    void setName(String name){this.name = name;}
-    void setSemester(String semester){
+
+    public String getSemester() {
+        return semester;
+    }
+
+    public void setSemester(String semester) {
         try {
             this.semester = semester.substring(0,9)+"年第"+semester.charAt(semester.length() - 1) + "学期";
         }
@@ -41,7 +52,50 @@ public class CourseStudied {
         }
 
     }
-    void setScore(String score){
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public char getClassType() {
+        return classType;
+    }
+
+    public void setClassType(String type) {
+        if (type.contains("任选课")) {
+            classType = 'E';
+        } else if (type.contains("专业") && type.contains("选修")) {
+            classType = 'D';
+        } else if (type.contains("专业") && type.contains("必修")) {
+            classType = 'C';
+        } else if (type.contains("院系") && type.contains("必修")) {
+            classType = 'B';
+        } else {
+            classType = 'A';
+        }
+    }
+
+    public String getClassId() {
+        return classId;
+    }
+
+    public void setClassId(String input) {
+        classId = input;
+    }
+
+    public boolean isDoubleCourse() {
+        return isDoubleCourse;
+    }
+
+    public float getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
         try {
             if(score.charAt(0) >= '0' && score.charAt(0) <= '9'){       //课程有分数
                 creditCalculated = credit;
@@ -57,25 +111,30 @@ public class CourseStudied {
             e.printStackTrace();
         }
     }
-    void setClassType(String type){
-        if(type.contains("任选课")){
-            classType = 'E';
-        }else if(type.contains("专业") && type.contains("选修")){
-            classType = 'D';
-        }else if(type.contains("专业") && type.contains("必修")){
-            classType = 'C';
-        }else if(type.contains("院系") && type.contains("必修")){
-            classType = 'B';
-        }else{
-            classType = 'A';
+
+    public float getCredit() {
+        return credit;
+    }
+
+    public void setCredit(String input) {
+        try {
+            credit = Float.parseFloat(input);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    char getClassType(){return classType;}
-    String getName(){return name;}
-    float getScore(){return score;}
-    float getCredit(){return credit;}
-    float[] getGpas(){return gpas;}
+    public float getCreditCalculated() {
+        return creditCalculated;
+    }
+
+    public float[] getGpas() {
+        return gpas;
+    }
+
+    public boolean isDivider() {
+        return isDivider;
+    }
 
     private void calculateGPA(){
         gpas = new float[5];
@@ -116,4 +175,6 @@ public class CourseStudied {
         else if(score >= 60)    gpas[4] = 2.3f;
         else gpas[4] = 0f;
     }
+
+    public enum DoubleCourseMark {MAJORCOURSE, MINORCOURSE}
 }

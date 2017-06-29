@@ -1,4 +1,4 @@
-package com.kongx.nkuassistant;
+package com.kongx.javaclasses;
 
 import java.util.Comparator;
 

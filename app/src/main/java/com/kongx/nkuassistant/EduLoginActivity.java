@@ -60,8 +60,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
         Connector.tmpStudiedCourseCount = -1;
         Information.ids_major = null;
         Information.ids_minor = null;
-        Information.ifLoggedIn = false;
-        Information.isFirstOpen = true;
         mUsernameView = (EditText) findViewById(R.id.username);
         mPasswordView = (EditText) findViewById(R.id.password);
         mRemPass = (Switch) findViewById(R.id.switch_RemPass);
@@ -239,7 +237,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                 editor.apply();
                 if(Information.isDoubleMajor)   Connector.getInformation(Connector.RequestType.USER_MINOR_INFO,this,null);
                 else{
-                    Information.ifLoggedIn = true;
                     startIndexActivity();
                 }
                 break;
@@ -248,7 +245,6 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
                 editor = settings.edit();
                 editor.putString(Strings.setting_student_minor,Information.minorName);
                 editor.apply();
-                Information.ifLoggedIn = true;
                 startIndexActivity();
                 break;
         }

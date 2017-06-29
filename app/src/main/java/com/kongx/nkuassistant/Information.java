@@ -1,5 +1,10 @@
 package com.kongx.nkuassistant;
 
+import com.kongx.javaclasses.CourseSelected;
+import com.kongx.javaclasses.CourseStudied;
+import com.kongx.javaclasses.ExamCourse;
+import com.kongx.javaclasses.Lecture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,13 +25,11 @@ public class Information {
     static final String PREFS_NAME = "PreferenceFile";
     static final String COURSE_PREFS_NAME = "CourseFile_new";
     static final String EXAM_PREFS_NAME = "ExamFile";
-    public static boolean isFirstOpen;
     static String version = "";
     static String lastVersion = null;
     static String bugCheckFile;
     static boolean isBeta = false;
     static int newestNotice;
-    static boolean ifLoggedIn = false;
     //related to Personal Information
     static String name;
     static String facultyName;

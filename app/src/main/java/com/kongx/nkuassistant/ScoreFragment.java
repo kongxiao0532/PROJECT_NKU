@@ -15,6 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kongx.javaclasses.CourseStudied;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -163,12 +165,12 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
 
         //calculate sum
         for(CourseStudied tmpCourse : Information.studiedCourses){
-            if(tmpCourse.score >=60){
-                creditsCalculatedSumOfEachType.put(tmpCourse.getClassType(),creditsCalculatedSumOfEachType.get(tmpCourse.getClassType())+tmpCourse.creditCalculated);
-                creditsSumOfEachType.put(tmpCourse.getClassType(),creditsSumOfEachType.get(tmpCourse.getClassType())+tmpCourse.credit);
-                scoreMulCreSumOfEachType.put(tmpCourse.getClassType(),scoreMulCreSumOfEachType.get(tmpCourse.getClassType())+tmpCourse.score * tmpCourse.creditCalculated);
+            if (tmpCourse.getScore() >= 60) {
+                creditsCalculatedSumOfEachType.put(tmpCourse.getClassType(), creditsCalculatedSumOfEachType.get(tmpCourse.getClassType()) + tmpCourse.getCreditCalculated());
+                creditsSumOfEachType.put(tmpCourse.getClassType(), creditsSumOfEachType.get(tmpCourse.getClassType()) + tmpCourse.getCredit());
+                scoreMulCreSumOfEachType.put(tmpCourse.getClassType(), scoreMulCreSumOfEachType.get(tmpCourse.getClassType()) + tmpCourse.getScore() * tmpCourse.getCreditCalculated());
                 for(int i = 0;i < 5;i++){
-                    gpaMulCreSum[i] += tmpCourse.getGpas()[i] * tmpCourse.creditCalculated;
+                    gpaMulCreSum[i] += tmpCourse.getGpas()[i] * tmpCourse.getCreditCalculated();
                 }
             }
         }
@@ -257,7 +259,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             CourseStudied tmpCourse = scoreList.get(position);
-            if(tmpCourse.isDivider){
+            if (tmpCourse.isDivider()) {
                 //显示一个分隔符
                 convertView = mInflater.inflate(R.layout.divider_score_list, null);
                 TextView mDividerType = convertView.findViewById(R.id.score_list_divider_type);
@@ -277,7 +279,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         tmpCourse.getClassType() + "类课  " +
                                 tmpCourse.getCredit() + "学分"
                 );
-                mScore.setText((tmpCourse.creditCalculated == 0) ? "通过" : (!String.valueOf(tmpCourse.getScore()).contains(".")) ? String.valueOf(tmpCourse.getScore()) : String.valueOf(tmpCourse.getScore()).replaceAll("0*$", "").replaceAll("\\.$", ""));
+                mScore.setText((tmpCourse.getCreditCalculated() == 0) ? "通过" : (!String.valueOf(tmpCourse.getScore()).contains(".")) ? String.valueOf(tmpCourse.getScore()) : String.valueOf(tmpCourse.getScore()).replaceAll("0*$", "").replaceAll("\\.$", ""));
             }
             return convertView;
         }

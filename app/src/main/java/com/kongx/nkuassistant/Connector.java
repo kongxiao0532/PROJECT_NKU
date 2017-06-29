@@ -3,6 +3,11 @@ package com.kongx.nkuassistant;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.kongx.javaclasses.CourseSelected;
+import com.kongx.javaclasses.CourseStudied;
+import com.kongx.javaclasses.ExamCourse;
+import com.kongx.javaclasses.Lecture;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -594,7 +599,7 @@ public class Connector {
                                 break;
                             case 1: break;
                             case 2:                         //get class ID
-                                tmpCourse.classId = text;
+                                tmpCourse.setClassId(text);
                                 break;
                             case 3: break;
                             case 4:                         //get selection ID
@@ -609,8 +614,7 @@ public class Connector {
                                 break;
                             case 9: break;
                             case 10:                         //get credits
-                                try{tmpCourse.credit = Float.parseFloat(text);}
-                                catch (Exception e){e.printStackTrace();}
+                                tmpCourse.setCredit(text);
                                 break;
                             case 11: break;
                             case 12:                         //get grade
@@ -633,7 +637,7 @@ public class Connector {
 
                 }
             });
-            Information.studiedCourses=tmpScore;
+            Information.studiedCourses = tmpScore;
         }
     }
 
@@ -743,10 +747,13 @@ public class Connector {
         public LectureConnector(Callback uis)   {this.uis = uis;}
         @Override
         public void onNetworkComplete(Response response) {
-            final String tmpStirng = response.body();
-            if(!tmpStirng.contains("<ul class=\"list-ul\">"))  { uis.onConnectorComplete(RequestType.LECTURE,false); return; }
-            String returnStirng = tmpStirng.substring(tmpStirng.indexOf("<ul class=\"list-ul\">"),tmpStirng.contains("<!-- ") ? tmpStirng.indexOf("<!-- ") : tmpStirng.indexOf("<div class=\"cright right\">"));
-            SimpleHTMLParser.parse(returnStirng, new SimpleHTMLParser.Callback() {
+            final String tmpString = response.body();
+            if (!tmpString.contains("<ul class=\"list-ul\">")) {
+                uis.onConnectorComplete(RequestType.LECTURE, false);
+                return;
+            }
+            String returnString = tmpString.substring(tmpString.indexOf("<ul class=\"list-ul\">"), tmpString.contains("<!-- ") ? tmpString.indexOf("<!-- ") : tmpString.indexOf("<div class=\"cright right\">"));
+            SimpleHTMLParser.parse(returnString, new SimpleHTMLParser.Callback() {
                 int count = 0;
                 Lecture tmpLecture;
                 @Override
@@ -760,13 +767,13 @@ public class Connector {
                     switch (count++%7){
                         case 3:
                             tmpLecture = new Lecture();
-                            tmpLecture.topic = text;
+                            tmpLecture.setTopic(text);
                             break;
                         case 4:
-                            tmpLecture.setTime(text);
+                            tmpLecture.setDateTime(text);
                             break;
                         case 5:
-                            tmpLecture.location = text.substring(3,text.length());
+                            tmpLecture.setLocation(text.substring(3, text.length()));
                             break;
                         case 6:
                             tmpLecture.setLecturer(text);

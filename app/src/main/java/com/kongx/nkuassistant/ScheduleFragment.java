@@ -21,6 +21,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kongx.javaclasses.CourseSelected;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
