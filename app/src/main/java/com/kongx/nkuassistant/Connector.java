@@ -15,11 +15,11 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tk.sunrisefox.htmlparser.HTML;
+import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
-import tk.sunrisefox.htmlparser.HTML;
-import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 
 public class Connector {
     enum RequestType{
@@ -32,7 +32,6 @@ public class Connector {
         USER_IDS,USER_MAJOR_IDS,USER_MINOR_IDS,
         CURRICULUM,
         SCORE,
-        EVALUATE,//TODO:评教
         EXAM,
         LECTURE,
         TV_CHANNEL,
@@ -52,16 +51,16 @@ public class Connector {
     private final static String url_student_minor_info = "/eams/stdDetail!innerIndex.action?projectId=2&_=";
     private final static String url_student_major_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
-    private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
-    private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
+    private final static String url_double_before_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=2&_=";
+    private final static String url_double_after_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=1&_=";
     private final static String api_exam_id = "http://kongxiao0532.cn/projectnku/api/examid.php";
     private final static String url_exam_info = "/eams/stdExam!examTable.action?examBatch.id=%s&_=%s";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
     private final static String url_livetv_list = "https://tv.byr.cn/mobile/";
-    private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
-    private final static String api_feedback_post = "http://kongxiao0532.cn/projectnku/api/feedback.php";
+    private final static String api_update_get = "http://api.kongxiao0532.cn/update.php?isBeta=";
+    private final static String api_feedback_post = "http://api.kongxiao0532.cn/feedback.php";
     final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
-    private final static String api_statis_post = "http://kongxiao0532.cn/projectnku/api/statis.php";
+    private final static String api_statis_post = "http://api.kongxiao0532.cn/projectnku/statis.php";
     private final static String statis_post_template = "appVersion=%s&id=%s";
 
 
@@ -180,7 +179,7 @@ public class Connector {
                             public void onText(String text) {
                                 if(text.length() == 4 && count == -1){
                                     tmpExamCourse = new HashMap<String, String>();
-                                    tmpExamCourse.put("index",text);
+                                    tmpExamCourse.put("courseSelectNum", text);
                                     count = 1;
                                     return;
                                 }
@@ -716,7 +715,7 @@ public class Connector {
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
                                     tmpCourse.name = matcher.group(1);
-                                    tmpCourse.index = matcher.group(2);
+                                    tmpCourse.courseSelectNum = matcher.group(2);
                                     tmpCourse.classRoom = matcher.group(3);
                                     tmpString = matcher.group(4);
                                     int duration = 0, startWeek = 1;

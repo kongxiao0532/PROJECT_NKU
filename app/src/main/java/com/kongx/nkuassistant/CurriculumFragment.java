@@ -51,7 +51,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
-                intent.putExtra("index",i);
+                intent.putExtra("courseSelectNum", i);
                 startActivity(intent);
             }
         });
@@ -141,7 +141,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
-            editor.putString("index" + i, Information.selectedCourses.get(i).index);
+            editor.putString("courseSelectNum" + i, Information.selectedCourses.get(i).courseSelectNum);
             editor.putString("name" + i, Information.selectedCourses.get(i).name);
             editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
             editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
@@ -194,7 +194,7 @@ private class MyAdapter extends BaseAdapter {
         } else {
             ViewHolder holder;
 //                if(convertView == null){
-            convertView = mInflater.inflate(R.layout.selected_list_item, null);
+            convertView = mInflater.inflate(R.layout.item_selected_list, null);
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
             holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
@@ -202,7 +202,7 @@ private class MyAdapter extends BaseAdapter {
             holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
             holder.name.setText(Information.selectedCourses.get(position).name + "（" + Information.selectedCourses.get(position).teacherName + "）");
             holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).dayOfWeek]);
-            holder.index.setText(Information.selectedCourses.get(position).index);
+            holder.index.setText(Information.selectedCourses.get(position).courseSelectNum);
             holder.time.setText(Information.startTime[Information.selectedCourses.get(position).startTime] + "-" +
                     Information.endTime[Information.selectedCourses.get(position).endTime]);
         }

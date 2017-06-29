@@ -46,11 +46,6 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     private int dayOfWeek;
     private int courseTodayCount;
     private ArrayList<CourseSelected> courseToday;
-    //Exam Module
-    private LinearLayout mExamLayout;
-    private TextView mExamStatus;
-    private LinearLayout mExamList;
-    private TextView mExamDetail;
     //Score Module
     private TextView mScoreStatus;
     private int newStudiedCourseCount;
@@ -80,6 +75,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         // Inflate the layout for this fragment
         myView = inflater.inflate(R.layout.fragment_home, container, false);
         m_activity = getActivity();
+
         mReFresh = (SwipeRefreshLayout) myView.findViewById(R.id.home_refresh);
         mReFresh.setOnRefreshListener(this);
         mAd = (TextView) myView.findViewById(R.id.ad_textview);
@@ -90,10 +86,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mScheduleStatus = (TextView) myView.findViewById(R.id.home_schedule_text);
         mScheduleList = (LinearLayout) myView.findViewById(R.id.home_schedule_list);
         mScheduleDetail = (TextView) myView.findViewById(R.id.home_schedule_details);
-        mExamLayout = (LinearLayout) myView.findViewById(R.id.home_exam_layout);
-        mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
-        mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
-        mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
+
         mScoreStatus = (TextView) myView.findViewById(R.id.home_score_text);
         mScoreDetail = (TextView) myView.findViewById(R.id.home_score_details);
         mSelectStatus = (TextView) myView.findViewById(R.id.home_select_text);
@@ -104,10 +97,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mBusToBalitaiWay = (TextView) myView.findViewById(R.id.home_bus_jinnan_way);
         mBusToJinnanWay = (TextView) myView.findViewById(R.id.home_bus_balitai_way);
         mScheduleDetail.setOnClickListener((View.OnClickListener) m_activity);
-        mExamDetail.setOnClickListener((View.OnClickListener) m_activity);
         mScoreDetail.setOnClickListener((View.OnClickListener) m_activity);
         mSelectDetail.setOnClickListener((View.OnClickListener) m_activity);
         mBusDetail.setOnClickListener((View.OnClickListener) m_activity);
+
         courseToday = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         Information.year = year = calendar.get(Calendar.YEAR);
@@ -120,15 +113,15 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         minute = calendar.get(Calendar.MINUTE);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
         Information.date = dateFormat.format(calendar.getTime());
-        if(year == 2017 && Information.month == 4 && Information.day >= 4 && Information.day <= 7)  mAd.setVisibility(View.VISIBLE);
-        mAd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(),BrowserActivity.class);
-                    intent.putExtra("url","http://kongxiao0532.cn/kab");
-                    startActivity(intent);
-            }
-        });
+//        if(year == 2017 && Information.month == 4 && Information.day >= 4 && Information.day <= 7)  mAd.setVisibility(View.VISIBLE);
+//        mAd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                    Intent intent = new Intent(getActivity(),BrowserActivity.class);
+//                    intent.putExtra("url","http://kongxiao0532.cn/kab");
+//                    startActivity(intent);
+//            }
+//        });
         if(year == 2017){
             if(weekOfYear == 1 || weekOfYear == 2){
                 Information.weekCount = 0;
@@ -297,44 +290,61 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
 
-    private void updateExam(){
-        mExamList.removeAllViews();
-        if(Information.examCount == -1){
-            mExamStatus.setText("点击“查看详情”更新");
-            return;
+    private class ExamSegment {
+        //Exam Module
+        private LinearLayout mExamLayout;
+        private TextView mExamStatus;
+        private LinearLayout mExamList;
+        private TextView mExamDetail;
+
+        ExamSegment() {
+            mExamLayout = (LinearLayout) myView.findViewById(R.id.home_exam_layout);
+            mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
+            mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
+            mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
+            mExamDetail.setOnClickListener((View.OnClickListener) m_activity);
+            update();
         }
-        if(Information.examCount == 0){
-            mExamStatus.setText("暂无考试信息");
-            return;
-        }
-        else {
-            mExamList.setVisibility(View.VISIBLE);
-            mExamStatus.setVisibility(View.GONE);
-            LayoutInflater mInflater = LayoutInflater.from(m_activity);
-            Pattern pattern;
-            Matcher matcher;
-            for(int i = 0; i< Information.examCount; i++) {
-                int month = 0,day = 0;
-                pattern = Pattern.compile("(\\d\\d)月(\\d\\d)日");
-                matcher = pattern.matcher(Information.exams.get(i).get("date"));
-                if(matcher.find()){
-                    month = Integer.parseInt(matcher.group(1));
-                    day = Integer.parseInt(matcher.group(2));
+
+        void update() {
+            mExamList.removeAllViews();
+            if (Information.examCount == -1) {
+                mExamList.setVisibility(View.GONE);
+                mExamStatus.setVisibility(View.VISIBLE);
+                mExamStatus.setText("点击“查看详情”更新");
+                return;
+            } else {
+                mExamList.setVisibility(View.VISIBLE);
+                mExamStatus.setVisibility(View.GONE);
+                Pattern pattern;
+                Matcher matcher;
+                for (int i = 0; i < Information.examCount; i++) {
+                    int month = 0, day = 0;
+                    pattern = Pattern.compile("(\\d\\d)月(\\d\\d)日");
+                    matcher = pattern.matcher(Information.exams.get(i).get("date"));
+                    if (matcher.find()) {
+                        month = Integer.parseInt(matcher.group(1));
+                        day = Integer.parseInt(matcher.group(2));
+                    }
+                    if (month < Information.month) continue;
+                    else if (month == Information.month) {
+                        if (day < Information.day) continue;
+                    }
+                    addExam();
                 }
-                if(month < Information.month) continue;
-                else if (month == Information.month){
-                    if(day < Information.day) continue;
-                }
-                View view = mInflater.inflate(R.layout.home_exam_item, null);
-                TextView item_name = (TextView) view.findViewById(R.id.home_exam_item_name);
-                TextView item_classroom = (TextView) view.findViewById(R.id.home_exam_item_classroom);
-                item_name.setText((Information.exams.get(i).get("name").length() <= 7) ? Information.exams.get(i).get("name") : Information.exams.get(i).get("name").substring(0,3) + "..." + Information.exams.get(i).get("name").substring(Information.exams.get(i).get("name").length() - 3,Information.exams.get(i).get("name").length()));
-                item_classroom.setText(Information.exams.get(i).get("date"));
-                mExamList.addView(view);
             }
         }
-    }
 
+        private void addExam() {
+            LayoutInflater mInflater = LayoutInflater.from(m_activity);
+            View view = mInflater.inflate(R.layout.item_exam_home_list, null);
+            TextView item_name = (TextView) view.findViewById(R.id.home_exam_item_name);
+            TextView item_classroom = (TextView) view.findViewById(R.id.home_exam_item_classroom);
+            item_name.setText((Information.exams.get(i).get("name").length() <= 7) ? Information.exams.get(i).get("name") : Information.exams.get(i).get("name").substring(0, 3) + "..." + Information.exams.get(i).get("name").substring(Information.exams.get(i).get("name").length() - 3, Information.exams.get(i).get("name").length()));
+            item_classroom.setText(Information.exams.get(i).get("date"));
+            mExamList.addView(view);
+        }
+    }
     private void updateSchedule() throws IndexOutOfBoundsException{
         courseToday.clear();
         mScheduleList.removeAllViews();
@@ -370,7 +380,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             mScheduleStatus.setVisibility(View.GONE);
             LayoutInflater mInflater = LayoutInflater.from(m_activity);
             for(int i=0;i<courseTodayCount;i++) {
-                View view = mInflater.inflate(R.layout.home_schedule_item, null);
+                View view = mInflater.inflate(R.layout.item_schedule_home_list, null);
                 TextView item_name = (TextView) view.findViewById(R.id.home_schedule_item_name);
                 TextView item_classroom = (TextView) view.findViewById(R.id.home_schedule_item_classroom);
                 ImageView item_image = (ImageView) view.findViewById(R.id.home_schedule_item_image);

@@ -3,8 +3,8 @@ package com.kongx.nkuassistant;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -29,7 +29,7 @@ public class CourseModifierActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_course_modifier);
         Intent intent =getIntent();
-        courseIndex = intent.getIntExtra("index",-1);
+        courseIndex = intent.getIntExtra("courseSelectNum", -1);
         if(courseIndex == -1)   finish();
         mName = (EditText) findViewById(R.id.modifier_name);
         mTeacher = (EditText) findViewById(R.id.modifier_teacher);
@@ -119,7 +119,7 @@ public class CourseModifierActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
-        editor.putString("index" + courseIndex, Information.selectedCourses.get(courseIndex).index);
+        editor.putString("courseSelectNum" + courseIndex, Information.selectedCourses.get(courseIndex).courseSelectNum);
         editor.putString("name" + courseIndex, Information.selectedCourses.get(courseIndex).name);
         editor.putInt("dayOfWeek" + courseIndex, Information.selectedCourses.get(courseIndex).dayOfWeek);
         editor.putInt("startTime" + courseIndex, Information.selectedCourses.get(courseIndex).startTime);

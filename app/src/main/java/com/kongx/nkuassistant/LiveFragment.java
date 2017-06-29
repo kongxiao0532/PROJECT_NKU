@@ -1,9 +1,9 @@
 package com.kongx.nkuassistant;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +94,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
         public LivePage1(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            View view = inflater.inflate(R.layout.list_tabpage_fragement, container, false);
             ListView list = (ListView)view.findViewById(R.id.simple_list);
             c_adapter = new CCTVAdapter(getActivity());
             list.setAdapter(c_adapter);
@@ -168,7 +167,7 @@ public class  LiveFragment extends Fragment implements Connector.Callback{
         public LivePage2(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            View view = inflater.inflate(R.layout.list_tabpage_fragement, container, false);
             ListView list = (ListView)view.findViewById(R.id.simple_list);
             l_adapter = new LocalAdapter(getActivity());
             list.setAdapter(l_adapter);

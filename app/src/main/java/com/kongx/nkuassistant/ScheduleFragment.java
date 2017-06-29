@@ -49,7 +49,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         mReLayout = (RelativeLayout) myView.findViewById(R.id.schedule_relative_layout);
         mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noSchedule);
         mListView = (ListViewNoScroll) myView.findViewById(R.id.list_schedule);
-        mListView.setAdapter(new ArrayAdapter<String>(getActivity(),R.layout.schedule_index_item,curriculumIndex));
+        mListView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item_schedule_index_list, curriculumIndex));
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.schedule_refresh);
         mRefresh.setOnRefreshListener(this);;
         mNoCurrirulumView.setVisibility(View.GONE);
@@ -134,7 +134,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
-            editor.putString("index" + i, Information.selectedCourses.get(i).index);
+            editor.putString("courseSelectNum" + i, Information.selectedCourses.get(i).courseSelectNum);
             editor.putString("name" + i, Information.selectedCourses.get(i).name);
             editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
             editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
@@ -187,7 +187,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
-                    intent.putExtra("index",view.getId());
+                    intent.putExtra("courseSelectNum", view.getId());
                     startActivity(intent);
                 }
             });

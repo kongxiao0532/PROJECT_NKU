@@ -5,7 +5,7 @@ package com.kongx.nkuassistant;
  */
 
 public class CourseSelected {
-    String index;
+    String courseSelectNum;
     String name;
     String classRoom;
     String teacherName;
@@ -18,7 +18,7 @@ public class CourseSelected {
     int color;
     public CourseSelected(){};
     public CourseSelected(CourseSelected courseSelected){
-        this.index = courseSelected.index;
+        this.courseSelectNum = courseSelected.courseSelectNum;
         this.name = courseSelected.name;
         this.classRoom = courseSelected.classRoom;
         this.teacherName = courseSelected.teacherName;

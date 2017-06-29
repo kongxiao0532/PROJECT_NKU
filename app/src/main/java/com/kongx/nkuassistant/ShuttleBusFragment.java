@@ -1,8 +1,8 @@
 package com.kongx.nkuassistant;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -87,7 +87,7 @@ public class  ShuttleBusFragment extends Fragment {
         public ShuttleBusPage1(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            View view = inflater.inflate(R.layout.list_tabpage_fragement, container, false);
             ListView list = (ListView)view.findViewById(R.id.simple_list);
             j_adapter = new ToJinnanAdapter(getActivity());
             list.setAdapter(j_adapter);
@@ -116,7 +116,7 @@ public class  ShuttleBusFragment extends Fragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                convertView = mInflater.inflate(R.layout.item_bus_timetable_list, null);
                 holder = new ViewHolder();
                 holder.way = (TextView) convertView.findViewById(R.id.textView_way);
                 holder.image = (ImageView) convertView.findViewById(R.id.bus_item_image);
@@ -151,7 +151,7 @@ public class  ShuttleBusFragment extends Fragment {
         public ShuttleBusPage2(){}
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_tab_page_list, container, false);
+            View view = inflater.inflate(R.layout.list_tabpage_fragement, container, false);
             ListView list = (ListView)view.findViewById(R.id.simple_list);
             b_adapter = new ToBalitaiAdapter(getActivity());
             list.setAdapter(b_adapter);
@@ -180,7 +180,7 @@ public class  ShuttleBusFragment extends Fragment {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 ViewHolder holder;
-                convertView = mInflater.inflate(R.layout.bus_timetable_item,null);
+                convertView = mInflater.inflate(R.layout.item_bus_timetable_list, null);
                 holder = new ViewHolder();
                 holder.way = (TextView) convertView.findViewById(R.id.textView_way);
                 holder.image = (ImageView) convertView.findViewById(R.id.bus_item_image);

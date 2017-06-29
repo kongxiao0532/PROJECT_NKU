@@ -3,11 +3,9 @@ package com.kongx.nkuassistant;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +13,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import tk.sunrisefox.httprequest.*;
 
 
 public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
@@ -134,7 +124,7 @@ public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if(convertView == null){
-                convertView = mInflater.inflate(R.layout.exam_list_item,null);
+                convertView = mInflater.inflate(R.layout.item_exam_list, null);
                 holder = new ViewHolder();
                 holder.date = (TextView) convertView.findViewById(R.id.examDateView);
                 holder.time = (TextView) convertView.findViewById(R.id.examPeriodView);

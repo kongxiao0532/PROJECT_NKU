@@ -29,7 +29,36 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import static com.kongx.nkuassistant.Information.*;
+import static com.kongx.nkuassistant.Information.COURSE_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.EXAM_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.PREFS_NAME;
+import static com.kongx.nkuassistant.Information.Strings;
+import static com.kongx.nkuassistant.Information.curriculum_lastUpdate;
+import static com.kongx.nkuassistant.Information.examCount;
+import static com.kongx.nkuassistant.Information.exams;
+import static com.kongx.nkuassistant.Information.facultyName;
+import static com.kongx.nkuassistant.Information.id;
+import static com.kongx.nkuassistant.Information.ids_major;
+import static com.kongx.nkuassistant.Information.ids_minor;
+import static com.kongx.nkuassistant.Information.ifLoggedIn;
+import static com.kongx.nkuassistant.Information.ifRemPass;
+import static com.kongx.nkuassistant.Information.isDoubleMajor;
+import static com.kongx.nkuassistant.Information.isFirstOpen;
+import static com.kongx.nkuassistant.Information.lastVersion;
+import static com.kongx.nkuassistant.Information.majorName;
+import static com.kongx.nkuassistant.Information.minorName;
+import static com.kongx.nkuassistant.Information.name;
+import static com.kongx.nkuassistant.Information.newestNotice;
+import static com.kongx.nkuassistant.Information.password;
+import static com.kongx.nkuassistant.Information.scheduleTimeIsBusy;
+import static com.kongx.nkuassistant.Information.selectedCourseCount;
+import static com.kongx.nkuassistant.Information.selectedCourses;
+import static com.kongx.nkuassistant.Information.studiedCourseCount;
+import static com.kongx.nkuassistant.Information.version;
+import static com.kongx.nkuassistant.Information.weekdays_tobalitai;
+import static com.kongx.nkuassistant.Information.weekdays_tojinnan;
+import static com.kongx.nkuassistant.Information.weekends_tobalitai;
+import static com.kongx.nkuassistant.Information.weekends_tojinnan;
 
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -107,7 +136,7 @@ public class WelcomeActivity extends AppCompatActivity {
             CourseSelected tmpCourse;
             for (int i = 0; i < selectedCourseCount; i++) {
                 tmpCourse = new CourseSelected();
-                tmpCourse.index = settings.getString("index" + i, "null");
+                tmpCourse.courseSelectNum = settings.getString("courseSelectNum" + i, "null");
                 tmpCourse.name = settings.getString("name" + i, "null");
                 tmpCourse.dayOfWeek = settings.getInt("dayOfWeek" + i, -1);
                 tmpCourse.startTime = settings.getInt("startTime" + i, -1);

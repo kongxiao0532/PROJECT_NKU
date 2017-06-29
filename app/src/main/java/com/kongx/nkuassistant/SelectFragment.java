@@ -1,9 +1,7 @@
 package com.kongx.nkuassistant;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +10,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.BufferedInputStream;
-import java.net.SocketTimeoutException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Response;
@@ -82,7 +73,7 @@ public class SelectFragment extends Fragment implements Connect.Callback {
                     Toast.makeText(getActivity(), "连接失败", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String template = "operation=xuanke&index=&xkxh1=%s&xkxh2=%s&xkxh3=%s&xkxh4=%s&xkxh5=%s&xkxh6=%s&courseindex=";
+                String template = "operation=xuanke&courseSelectNum=&xkxh1=%s&xkxh2=%s&xkxh3=%s&xkxh4=%s&xkxh5=%s&xkxh6=%s&courseindex=";
                 String strToPost = String.format
                         (template,
                                 mIndex_1.getText().toString(),
@@ -106,7 +97,7 @@ public class SelectFragment extends Fragment implements Connect.Callback {
                     Toast.makeText(getActivity(), "连接失败", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String template = "operation=tuike&index=&xkxh1=%s&xkxh2=%s&xkxh3=%s&xkxh4=%s&xkxh5=%s&xkxh6=%s&courseindex=";
+                String template = "operation=tuike&courseSelectNum=&xkxh1=%s&xkxh2=%s&xkxh3=%s&xkxh4=%s&xkxh5=%s&xkxh6=%s&courseindex=";
                 String strToPost = String.format
                         (template,
                                 mIndex_1.getText().toString(),
