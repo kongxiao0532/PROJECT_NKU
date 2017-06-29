@@ -3,11 +3,9 @@ package com.kongx.nkuassistant;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +13,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import tk.sunrisefox.httprequest.*;
 
 
 public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
@@ -102,11 +92,11 @@ public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("examCount", Information.examCount);
         for (int i = 0; i < Information.examCount; i++) {
-            editor.putString("name" + i, Information.exams.get(i).get("name"));
-            editor.putString("time" + i, Information.exams.get(i).get("time"));
-            editor.putString("classRoom" + i, Information.exams.get(i).get("classRoom"));
-            editor.putString("seat" + i, Information.exams.get(i).get("seat"));
-            editor.putString("date" + i, Information.exams.get(i).get("date"));
+            editor.putString("name" + i, Information.exams.get(i).getCourseName());
+            editor.putString("time" + i, Information.exams.get(i).getTimePeriod());
+            editor.putString("classRoom" + i, Information.exams.get(i).getClassRoom());
+            editor.putString("seat" + i, Information.exams.get(i).getSeatNum());
+            editor.putString("date" + i, Information.exams.get(i).getDateString());
         }
         return editor.commit();
     }
@@ -134,23 +124,23 @@ public class ExamFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if(convertView == null){
-                convertView = mInflater.inflate(R.layout.exam_list_item,null);
+                convertView = mInflater.inflate(R.layout.item_exam_list, null);
                 holder = new ViewHolder();
-                holder.date = (TextView) convertView.findViewById(R.id.examDateView);
-                holder.time = (TextView) convertView.findViewById(R.id.examPeriodView);
-                holder.name = (TextView) convertView.findViewById(R.id.examNameView);
-                holder.classroom = (TextView) convertView.findViewById(R.id.examLocationView);
-                holder.seat = (TextView) convertView.findViewById(R.id.examSeatView);
+                holder.date = convertView.findViewById(R.id.examDateView);
+                holder.time = convertView.findViewById(R.id.examPeriodView);
+                holder.name = convertView.findViewById(R.id.examNameView);
+                holder.classroom = convertView.findViewById(R.id.examLocationView);
+                holder.seat = convertView.findViewById(R.id.examSeatView);
                 convertView.setTag(holder);//绑定ViewHolder对象
             }
             else{
                 holder = (ViewHolder)convertView.getTag();//取出ViewHolder对象
             }
-            holder.date.setText(Information.exams.get(position).get("date"));
-            holder.time.setText(Information.exams.get(position).get("time"));
-            holder.name.setText(Information.exams.get(position).get("name"));
-            holder.classroom.setText(Information.exams.get(position).get("classRoom"));
-            holder.seat.setText("座号"+Information.exams.get(position).get("seat")+"号");
+            holder.date.setText(Information.exams.get(position).getDateString());
+            holder.time.setText(Information.exams.get(position).getTimePeriod());
+            holder.name.setText(Information.exams.get(position).getCourseName());
+            holder.classroom.setText(Information.exams.get(position).getClassRoom());
+            holder.seat.setText("座号" + Information.exams.get(position).getSeatNum() + "号");
 
             return convertView;
         }

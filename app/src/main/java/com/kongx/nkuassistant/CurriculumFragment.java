@@ -51,7 +51,7 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
-                intent.putExtra("index",i);
+                intent.putExtra("courseSelectNum", i);
                 startActivity(intent);
             }
         });
@@ -141,17 +141,17 @@ public class CurriculumFragment extends Fragment implements SwipeRefreshLayout.O
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
-            editor.putString("index" + i, Information.selectedCourses.get(i).index);
-            editor.putString("name" + i, Information.selectedCourses.get(i).name);
-            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
-            editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
-            editor.putInt("endTime" + i, Information.selectedCourses.get(i).endTime);
-            editor.putString("classRoom" + i, Information.selectedCourses.get(i).classRoom);
+            editor.putString("courseSelectNum" + i, Information.selectedCourses.get(i).getCourseSelectNum());
+            editor.putString("name" + i, Information.selectedCourses.get(i).getCourseName());
+            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).getDayOfWeek());
+            editor.putInt("startTime" + i, Information.selectedCourses.get(i).getStartTime());
+            editor.putInt("endTime" + i, Information.selectedCourses.get(i).getEndTime());
+            editor.putString("classRoom" + i, Information.selectedCourses.get(i).getClassRoom());
 //            editor.putString("classType" + i, Information.selectedCourses.get(i).classType);
-            editor.putString("teacherName" + i, Information.selectedCourses.get(i).teacherName);
-            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).startWeek);
-            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
-            editor.putInt("color" + i, Information.selectedCourses.get(i).color);
+            editor.putString("teacherName" + i, Information.selectedCourses.get(i).getTeacherName());
+            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).getStartWeek());
+            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).getEndWeek());
+            editor.putInt("color" + i, Information.selectedCourses.get(i).getColor());
         }
         for(int i = 0;i < 14;i++){
             for(int j = 0;j < 7;j++){
@@ -194,17 +194,17 @@ private class MyAdapter extends BaseAdapter {
         } else {
             ViewHolder holder;
 //                if(convertView == null){
-            convertView = mInflater.inflate(R.layout.selected_list_item, null);
+            convertView = mInflater.inflate(R.layout.item_selected_list, null);
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.selected_list_name);
             holder.day = (TextView) convertView.findViewById(R.id.selected_list_day);
             holder.index = (TextView) convertView.findViewById(R.id.selected_list_index);
             holder.time = (TextView) convertView.findViewById(R.id.selected_list_time);
-            holder.name.setText(Information.selectedCourses.get(position).name + "（" + Information.selectedCourses.get(position).teacherName + "）");
-            holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).dayOfWeek]);
-            holder.index.setText(Information.selectedCourses.get(position).index);
-            holder.time.setText(Information.startTime[Information.selectedCourses.get(position).startTime] + "-" +
-                    Information.endTime[Information.selectedCourses.get(position).endTime]);
+            holder.name.setText(Information.selectedCourses.get(position).getCourseName() + "（" + Information.selectedCourses.get(position).getTeacherName() + "）");
+            holder.day.setText(Information.dayOfWeek[Information.selectedCourses.get(position).getDayOfWeek()]);
+            holder.index.setText(Information.selectedCourses.get(position).getCourseSelectNum());
+            holder.time.setText(Information.startTime[Information.selectedCourses.get(position).getStartTime()] + "-" +
+                    Information.endTime[Information.selectedCourses.get(position).getEndTime()]);
         }
         return convertView;
     }

@@ -3,8 +3,8 @@ package com.kongx.nkuassistant;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collections;
-import java.util.Comparator;
 
 public class CourseModifierActivity extends AppCompatActivity {
     private Button a_button,c_button;
@@ -29,7 +28,7 @@ public class CourseModifierActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_course_modifier);
         Intent intent =getIntent();
-        courseIndex = intent.getIntExtra("index",-1);
+        courseIndex = intent.getIntExtra("courseSelectNum", -1);
         if(courseIndex == -1)   finish();
         mName = (EditText) findViewById(R.id.modifier_name);
         mTeacher = (EditText) findViewById(R.id.modifier_teacher);
@@ -77,23 +76,14 @@ public class CourseModifierActivity extends AppCompatActivity {
                     return;
                 }
                 //storeChanges
-                Information.selectedCourses.get(courseIndex).name = mName.getText().toString();
-                Information.selectedCourses.get(courseIndex).teacherName = mTeacher.getText().toString();
-                Information.selectedCourses.get(courseIndex).classRoom = mClassroom.getText().toString();
-                Information.selectedCourses.get(courseIndex).dayOfWeek = mDayofWeek.getSelectedItemPosition() + 1;
-                Information.selectedCourses.get(courseIndex).startTime = mStart.getSelectedItemPosition() + 1;
-                Information.selectedCourses.get(courseIndex).endTime = mEnd.getSelectedItemPosition() + 1;
+                Information.selectedCourses.get(courseIndex).setCourseName(mName.getText().toString());
+                Information.selectedCourses.get(courseIndex).setTeacherName(mTeacher.getText().toString());
+                Information.selectedCourses.get(courseIndex).setClassRoom(mClassroom.getText().toString());
+                Information.selectedCourses.get(courseIndex).setDayOfWeek(mDayofWeek.getSelectedItemPosition() + 1);
+                Information.selectedCourses.get(courseIndex).setStartTime(mStart.getSelectedItemPosition() + 1);
+                Information.selectedCourses.get(courseIndex).setEndTime(mEnd.getSelectedItemPosition() + 1);
                 storeCourse();
-                Collections.sort(Information.selectedCourses, new Comparator<CourseSelected>() {
-                    @Override
-                    public int compare(CourseSelected t1, CourseSelected t2) {
-                        if (t1.dayOfWeek == t2.dayOfWeek) {
-                            return t1.startTime - t2.startTime;
-                        } else {
-                            return t1.dayOfWeek - t2.dayOfWeek;
-                        }
-                    }
-                });
+                Collections.sort(Information.selectedCourses, new CourseSelected.SelectedCourseComparator());
                 Toast.makeText(CourseModifierActivity.this,"课程保存成功",Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -108,28 +98,28 @@ public class CourseModifierActivity extends AppCompatActivity {
 
         //set default value
         course = Information.selectedCourses.get(courseIndex);
-        mName.setText(course.name);
-        mTeacher.setText(course.teacherName);
-        mClassroom.setText(course.classRoom);
-        mDayofWeek.setSelection(course.dayOfWeek - 1);
-        mStart.setSelection(course.startTime - 1);
-        mEnd.setSelection(course.endTime - 1);
+        mName.setText(course.getCourseName());
+        mTeacher.setText(course.getTeacherName());
+        mClassroom.setText(course.getClassRoom());
+        mDayofWeek.setSelection(course.getDayOfWeek() - 1);
+        mStart.setSelection(course.getStartTime() - 1);
+        mEnd.setSelection(course.getEndTime() - 1);
     }
     private boolean storeCourse() {
         SharedPreferences settings = getSharedPreferences(Information.COURSE_PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
-        editor.putString("index" + courseIndex, Information.selectedCourses.get(courseIndex).index);
-        editor.putString("name" + courseIndex, Information.selectedCourses.get(courseIndex).name);
-        editor.putInt("dayOfWeek" + courseIndex, Information.selectedCourses.get(courseIndex).dayOfWeek);
-        editor.putInt("startTime" + courseIndex, Information.selectedCourses.get(courseIndex).startTime);
-        editor.putInt("endTime" + courseIndex, Information.selectedCourses.get(courseIndex).endTime);
-        editor.putString("classRoom" + courseIndex, Information.selectedCourses.get(courseIndex).classRoom);
+        editor.putString("courseSelectNum" + courseIndex, Information.selectedCourses.get(courseIndex).getCourseSelectNum());
+        editor.putString("name" + courseIndex, Information.selectedCourses.get(courseIndex).getCourseName());
+        editor.putInt("dayOfWeek" + courseIndex, Information.selectedCourses.get(courseIndex).getDayOfWeek());
+        editor.putInt("startTime" + courseIndex, Information.selectedCourses.get(courseIndex).getStartTime());
+        editor.putInt("endTime" + courseIndex, Information.selectedCourses.get(courseIndex).getEndTime());
+        editor.putString("classRoom" + courseIndex, Information.selectedCourses.get(courseIndex).getClassRoom());
 //            editor.putString("classType" + courseIndex, Information.selectedCourses.get(courseIndex).classType);
-        editor.putString("teacherName" + courseIndex, Information.selectedCourses.get(courseIndex).teacherName);
-        editor.putInt("startWeek" + courseIndex, Information.selectedCourses.get(courseIndex).startWeek);
-        editor.putInt("endWeek" + courseIndex, Information.selectedCourses.get(courseIndex).endWeek);
-        editor.putInt("color" + courseIndex, Information.selectedCourses.get(courseIndex).color);
+        editor.putString("teacherName" + courseIndex, Information.selectedCourses.get(courseIndex).getTeacherName());
+        editor.putInt("startWeek" + courseIndex, Information.selectedCourses.get(courseIndex).getStartWeek());
+        editor.putInt("endWeek" + courseIndex, Information.selectedCourses.get(courseIndex).getEndWeek());
+        editor.putInt("color" + courseIndex, Information.selectedCourses.get(courseIndex).getColor());
         for(int i = 0;i < 14;i++){
             for(int j = 0;j < 7;j++){
                 editor.putBoolean("isBusy"+i+j,Information.scheduleTimeIsBusy[i][j]);
@@ -140,12 +130,13 @@ public class CourseModifierActivity extends AppCompatActivity {
     }
     private boolean checkForConflict(int dayOfWeek,int startTime,int endTime,CourseSelected originCourse){
         for(int i = startTime;i<=endTime;i++){
-            if(dayOfWeek + 1 == originCourse.dayOfWeek && (i + 1 >= originCourse.startTime && i + 1 <= originCourse.endTime))   continue;
+            if (dayOfWeek + 1 == originCourse.getDayOfWeek() && (i + 1 >= originCourse.getStartTime() && i + 1 <= originCourse.getEndTime()))
+                continue;
             if(Information.scheduleTimeIsBusy[i][dayOfWeek])    return false;
         }
         //rearrange isBusy array
-        for(int i = originCourse.startTime;i<=originCourse.endTime;i++){
-            Information.scheduleTimeIsBusy[i - 1][originCourse.dayOfWeek - 1] = false;
+        for (int i = originCourse.getStartTime(); i <= originCourse.getEndTime(); i++) {
+            Information.scheduleTimeIsBusy[i - 1][originCourse.getDayOfWeek() - 1] = false;
         }
         for(int i = startTime;i <= endTime;i++){
             Information.scheduleTimeIsBusy[i][dayOfWeek] = true;

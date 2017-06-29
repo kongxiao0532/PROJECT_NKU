@@ -10,71 +10,48 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tk.sunrisefox.htmlparser.HTML;
+import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 import tk.sunrisefox.httprequest.Connect;
 import tk.sunrisefox.httprequest.Request;
 import tk.sunrisefox.httprequest.Response;
-import tk.sunrisefox.htmlparser.HTML;
-import tk.sunrisefox.htmlparser.SimpleHTMLParser;
 
 public class Connector {
-    enum RequestType{
-        STATISTIC,
-        CHECK_FOR_UPDATE, DOWNLOAD_UPDATE,
-        CHECK_FOR_NOTICE,
-        LOG_TO_VPN,
-        LOGIN,
-        USER_INFO,USER_MAJOR_INFO,USER_MINOR_INFO,
-        USER_IDS,USER_MAJOR_IDS,USER_MINOR_IDS,
-        CURRICULUM,
-        SCORE,
-        EVALUATE,//TODO:评教
-        EXAM,
-        LECTURE,
-        TV_CHANNEL,
-        FEEDBACK,
-        LOGOUT
-    };
-    static String WEB_URL = "http://eamis.nankai.edu.cn";
     final static String login_string_template = "username=%s&password=%s&encodedPassword=&session_locale=zh_CN";
+    ;
+    final static String url_logout = "/eams/logout.action";
+    final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
     private final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
     private final static String url_login = "/eams/login.action";
     private final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
     private final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
-    final static String url_logout = "/eams/logout.action";
     private final static String url_vpn_login = "https://221.238.246.69/por/login_psw.csp?sfrnd=2346912324982305";
     private final static String url_student_basic_info = "/eams/stdDetail.action?_=";
     private final static String url_student_major_info = "/eams/stdDetail!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_info = "/eams/stdDetail!innerIndex.action?projectId=2&_=";
     private final static String url_student_major_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
-    private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
-    private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
+    private final static String url_double_before_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=2&_=";
+    private final static String url_double_after_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=1&_=";
     private final static String api_exam_id = "http://kongxiao0532.cn/projectnku/api/examid.php";
     private final static String url_exam_info = "/eams/stdExam!examTable.action?examBatch.id=%s&_=%s";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
     private final static String url_livetv_list = "https://tv.byr.cn/mobile/";
-    private final static String api_update_get = "http://kongxiao0532.cn/projectnku/api/update.php?isBeta=";
-    private final static String api_feedback_post = "http://kongxiao0532.cn/projectnku/api/feedback.php";
-    final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
-    private final static String api_statis_post = "http://kongxiao0532.cn/projectnku/api/statis.php";
+    private final static String api_update_get = "http://api.kongxiao0532.cn/update.php?isBeta=";
+    private final static String api_feedback_post = "http://api.kongxiao0532.cn/feedback.php";
+    private final static String api_statis_post = "http://api.kongxiao0532.cn/statis.php";
     private final static String statis_post_template = "appVersion=%s&id=%s";
-
-
-
+    static String WEB_URL = "http://eamis.nankai.edu.cn";
     static ArrayList<CourseSelected> tmpSelectedCourses;
+    static int tmpStudiedCourseCount = -1;
     private static int curriculumColor = 0;
     private static ArrayList<Lecture> tmpLectures = new ArrayList<Lecture>();
-    static int tmpStudiedCourseCount = -1;
+
     private static long getTimeStamp(){ return System.currentTimeMillis();    }
 
-    public interface Callback{
-        void onConnectorComplete(RequestType requestType, Object result);
-    }
     public static void getInformation(RequestType requestType, final Connector.Callback uis,@Nullable String strToPost){
         switch (requestType){
             case STATISTIC:
@@ -120,7 +97,6 @@ public class Connector {
                 new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new CurriculumConnector(uis));
                 break;
             case SCORE:
-                tmpStudiedCourseCount = Information.studiedCourseCount;
                 if(Information.isDoubleMajor)   new Request.Builder().url(WEB_URL + url_double_after_student_info + getTimeStamp()).delay(500).tag("BEFORE_MAJOR").get(new ScoreConnector(uis));
                 else    new Request.Builder().url(WEB_URL + url_score).tag("SCORE").post("",new ScoreConnector(uis));
                 break;
@@ -144,6 +120,27 @@ public class Connector {
         }
     }
 
+    enum RequestType {
+        STATISTIC,
+        CHECK_FOR_UPDATE, DOWNLOAD_UPDATE,
+        CHECK_FOR_NOTICE,
+        LOG_TO_VPN,
+        LOGIN,
+        USER_INFO, USER_MAJOR_INFO, USER_MINOR_INFO,
+        USER_IDS, USER_MAJOR_IDS, USER_MINOR_IDS,
+        CURRICULUM,
+        SCORE,
+        EXAM,
+        LECTURE,
+        TV_CHANNEL,
+        FEEDBACK,
+        LOGOUT
+    }
+
+    public interface Callback {
+        void onConnectorComplete(RequestType requestType, Object result);
+    }
+
     public static class ExamConnector implements Connect.Callback{
         Connector.Callback uis;
         public ExamConnector(Connector.Callback uis)  {  this.uis = uis; }
@@ -162,13 +159,13 @@ public class Connector {
                         new Request.Builder().url(WEB_URL+tmpUrl).tag("EXAMINFO").get(new ExamConnector(uis));
                         break;
                     case "EXAMINFO":
-                        final ArrayList<HashMap<String,String>> tmpExam = new ArrayList<>();
+                        final ArrayList<ExamCourse> tmpExam = new ArrayList<>();
                         String returnString = response.body();
                         if(!returnString.contains("考试安排"))   return;
                         String stringToBeDealt = returnString.substring(returnString.indexOf("</thead>"),returnString.indexOf("</tbody>"));
                         SimpleHTMLParser.parse(stringToBeDealt, new SimpleHTMLParser.Callback() {
                             int count = -1;
-                            HashMap<String,String> tmpExamCourse;
+                            ExamCourse tmpExamCourse;
                             Pattern pattern;
                             Matcher matcher;
                             @Override
@@ -179,8 +176,8 @@ public class Connector {
                             @Override
                             public void onText(String text) {
                                 if(text.length() == 4 && count == -1){
-                                    tmpExamCourse = new HashMap<String, String>();
-                                    tmpExamCourse.put("index",text);
+                                    tmpExamCourse = new ExamCourse();
+                                    tmpExamCourse.setCourseSelectNum(text);
                                     count = 1;
                                     return;
                                 }
@@ -191,7 +188,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("name",text);
+                                            tmpExamCourse.setCourseName(text);
                                             count++;
                                         }
                                         break;
@@ -200,7 +197,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("examType",text);
+                                            tmpExamCourse.setExamType(text);
                                             count++;
                                         }
                                         break;
@@ -209,11 +206,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            pattern = Pattern.compile("(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)");
-                                            matcher = pattern.matcher(text);
-                                            if(matcher.find()){
-                                                tmpExamCourse.put("date",matcher.group(2)+"月"+matcher.group(3)+"日");
-                                            }
+                                            tmpExamCourse.setDate(text);
                                             count++;
                                         }
                                         break;
@@ -222,7 +215,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("time",text);
+                                            tmpExamCourse.setTimePeriod(text);
                                             count++;
                                         }
                                         break;
@@ -231,7 +224,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("classRoom",text);
+                                            tmpExamCourse.setClassRoom(text);
                                             count++;
                                         }
                                         break;
@@ -240,7 +233,7 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("seat",text);
+                                            tmpExamCourse.setSeatNum(text);
                                             count++;
                                         }
                                         break;
@@ -249,7 +242,6 @@ public class Connector {
                                             count=-1;
                                             break;
                                         }else if(!text.isEmpty()){
-                                            tmpExamCourse.put("status",text);
                                             tmpExam.add(tmpExamCourse);
                                             count=-1;
                                         }
@@ -262,40 +254,7 @@ public class Connector {
 
                             }
                         });
-                        Collections.sort(tmpExam, new Comparator<HashMap<String, String>>() {
-                            @Override
-                            public int compare(HashMap<String, String> o1, HashMap<String, String> o2) {
-                                int month1 = 0,month2 = 0,day1 = 0,day2 = 0,hour1 = 0,hour2 = 0;
-                                Pattern pattern = Pattern.compile("(\\d\\d)月(\\d\\d)日");
-                                Matcher matcher = pattern.matcher(o1.get("date"));
-                                if(matcher.find()){
-                                    month1 = Integer.parseInt(matcher.group(1));
-                                    day1 = Integer.parseInt(matcher.group(2));
-                                }
-                                matcher = pattern.matcher(o2.get("date"));
-                                if(matcher.find()){
-                                    month2 = Integer.parseInt(matcher.group(1));
-                                    day2 = Integer.parseInt(matcher.group(2));
-                                }
-                                pattern = Pattern.compile("(\\d\\d):\\d\\d~\\d\\d:\\d\\d");
-                                matcher = pattern.matcher(o1.get("time"));
-                                if(matcher.find()){
-                                    hour1 = Integer.parseInt(matcher.group(1));
-                                }
-                                matcher = pattern.matcher(o2.get("time"));
-                                if(matcher.find()){
-                                    hour2 = Integer.parseInt(matcher.group(1));
-                                }
-                                if(month1 == month2){
-                                    if(day1 == day2){
-                                        if(hour1 == hour2){
-                                            return 0;
-                                        }else return hour1 - hour2;
-                                    }else return day1 - day2;
-                                }else return month1 - month2;
-                            }
-                        });
-
+                        Collections.sort(tmpExam, new ExamCourse.ExamComparator());
                         Information.exams = tmpExam;
                         uis.onConnectorComplete(RequestType.EXAM,uis);
                         break;
@@ -710,14 +669,14 @@ public class Connector {
                             if (matcher.find(startPoint)) {
                                 tmpCourse = new CourseSelected();
                                 startPoint = matcher.end();
-                                tmpCourse.teacherName = matcher.group(2);
+                                tmpCourse.setTeacherName(matcher.group(2));
 
                                 pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
-                                    tmpCourse.name = matcher.group(1);
-                                    tmpCourse.index = matcher.group(2);
-                                    tmpCourse.classRoom = matcher.group(3);
+                                    tmpCourse.setCourseName(matcher.group(1));
+                                    tmpCourse.setCourseSelectNum(matcher.group(2));
+                                    tmpCourse.setClassRoom(matcher.group(3));
                                     tmpString = matcher.group(4);
                                     int duration = 0, startWeek = 1;
                                     for (int i = 0; i < tmpString.length(); i++) {
@@ -726,40 +685,32 @@ public class Connector {
                                             duration++;
                                         }
                                     }
-                                    tmpCourse.startWeek = startWeek;
-                                    tmpCourse.endWeek = startWeek + duration - 1;
+                                    tmpCourse.setStartWeek(startWeek);
+                                    tmpCourse.setEndWeek(startWeek + duration - 1);
                                 }
 
                                 pattern = Pattern.compile("\\);\\r\\n.+index =(\\d.*)\\*unitCount\\+(\\d.*);");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
-                                    tmpCourse.dayOfWeek = Integer.parseInt(matcher.group(1)) + 1;
-                                    tmpCourse.startTime = Integer.parseInt(matcher.group(2)) + 1;
+                                    tmpCourse.setDayOfWeek(Integer.parseInt(matcher.group(1)) + 1);
+                                    tmpCourse.setStartTime(Integer.parseInt(matcher.group(2)) + 1);
                                 }
 
                                 pattern = Pattern.compile("index =(\\d+)\\*unitCount\\+(\\d+);\\r\\n(.+)\\r\\n...[^i]");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
-                                    tmpCourse.endTime = Integer.parseInt(matcher.group(2)) + 1;
+                                    tmpCourse.setEndTime(Integer.parseInt(matcher.group(2)) + 1);
                                     startPoint = matcher.end();
                                 }
-                                for(int i = tmpCourse.startTime;i <= tmpCourse.endTime;i++) Information.scheduleTimeIsBusy[i - 1][tmpCourse.dayOfWeek - 1] = true;
-                                tmpCourse.color = checkForSameCourse(tmpCourse.name) == -1 ? curriculumColor++ : checkForSameCourse(tmpCourse.name);
+                                for (int i = tmpCourse.getStartTime(); i <= tmpCourse.getEndTime(); i++)
+                                    Information.scheduleTimeIsBusy[i - 1][tmpCourse.getDayOfWeek() - 1] = true;
+                                tmpCourse.setColor(checkForSameCourse(tmpCourse.getCourseName()) == -1 ? curriculumColor++ : checkForSameCourse(tmpCourse.getCourseName()));
                                 tmpSelectedCourses.add(tmpCourse);
                             } else {
                                 break;
                             }
                         }
-                        Collections.sort(tmpSelectedCourses, new Comparator<CourseSelected>() {
-                            @Override
-                            public int compare(CourseSelected t1, CourseSelected t2) {
-                                if (t1.dayOfWeek == t2.dayOfWeek) {
-                                    return t1.startTime - t2.startTime;
-                                } else {
-                                    return t1.dayOfWeek - t2.dayOfWeek;
-                                }
-                            }
-                        });
+                        Collections.sort(tmpSelectedCourses, new CourseSelected.SelectedCourseComparator());
                         uis.onConnectorComplete(RequestType.CURRICULUM,true);
                     }else if(response.code() == 302){
                         String strToPost = String.format(login_string_template, Information.id, Information.password);
@@ -781,7 +732,7 @@ public class Connector {
 
         private int checkForSameCourse(String name){
             for(CourseSelected tmp : tmpSelectedCourses){
-                if(tmp.name.equals(name))   return tmp.color;
+                if (tmp.getCourseName().equals(name)) return tmp.getColor();
             }
             return -1;
         }

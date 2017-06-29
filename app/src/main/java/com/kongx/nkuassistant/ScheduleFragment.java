@@ -49,7 +49,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         mReLayout = (RelativeLayout) myView.findViewById(R.id.schedule_relative_layout);
         mNoCurrirulumView = (TextView) myView.findViewById(R.id.textView_noSchedule);
         mListView = (ListViewNoScroll) myView.findViewById(R.id.list_schedule);
-        mListView.setAdapter(new ArrayAdapter<String>(getActivity(),R.layout.schedule_index_item,curriculumIndex));
+        mListView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item_schedule_index_list, curriculumIndex));
         mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.schedule_refresh);
         mRefresh.setOnRefreshListener(this);;
         mNoCurrirulumView.setVisibility(View.GONE);
@@ -134,17 +134,17 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt("selectedCourseCount", Information.selectedCourseCount);
         for (int i = 0; i < Information.selectedCourseCount; i++) {
-            editor.putString("index" + i, Information.selectedCourses.get(i).index);
-            editor.putString("name" + i, Information.selectedCourses.get(i).name);
-            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).dayOfWeek);
-            editor.putInt("startTime" + i, Information.selectedCourses.get(i).startTime);
-            editor.putInt("endTime" + i, Information.selectedCourses.get(i).endTime);
-            editor.putString("classRoom" + i, Information.selectedCourses.get(i).classRoom);
+            editor.putString("courseSelectNum" + i, Information.selectedCourses.get(i).getCourseSelectNum());
+            editor.putString("name" + i, Information.selectedCourses.get(i).getCourseName());
+            editor.putInt("dayOfWeek" + i, Information.selectedCourses.get(i).getDayOfWeek());
+            editor.putInt("startTime" + i, Information.selectedCourses.get(i).getStartTime());
+            editor.putInt("endTime" + i, Information.selectedCourses.get(i).getEndTime());
+            editor.putString("classRoom" + i, Information.selectedCourses.get(i).getClassRoom());
 //            editor.putString("classType" + i, Information.selectedCourses.get(i).classType);
-            editor.putString("teacherName" + i, Information.selectedCourses.get(i).teacherName);
-            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).startWeek);
-            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).endWeek);
-            editor.putInt("color" + i, Information.selectedCourses.get(i).color);
+            editor.putString("teacherName" + i, Information.selectedCourses.get(i).getTeacherName());
+            editor.putInt("startWeek" + i, Information.selectedCourses.get(i).getStartWeek());
+            editor.putInt("endWeek" + i, Information.selectedCourses.get(i).getEndWeek());
+            editor.putInt("color" + i, Information.selectedCourses.get(i).getColor());
         }
         for(int i = 0;i < 14;i++){
             for(int j = 0;j < 7;j++){
@@ -172,22 +172,22 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
         int courseHeight, courseWidth;
         for(int i = 0; i < Information.selectedCourseCount; i++){
             courseParent = new RelativeLayout(getActivity());
-            courseHeight = lessonHeight * (Information.selectedCourses.get(i).endTime - Information.selectedCourses.get(i).startTime + 1);
+            courseHeight = lessonHeight * (Information.selectedCourses.get(i).getEndTime() - Information.selectedCourses.get(i).getStartTime() + 1);
             courseWidth = lessonWidth;
             layoutParams = new RelativeLayout.LayoutParams(courseWidth, courseHeight);
-            layoutParams.setMargins(marginLessonPx + lessonWidth * (Information.selectedCourses.get(i).dayOfWeek - 1),
-                    ((Information.selectedCourses.get(i).startTime - 1) * (lessonHeight)), 0, 0);
+            layoutParams.setMargins(marginLessonPx + lessonWidth * (Information.selectedCourses.get(i).getDayOfWeek() - 1),
+                    ((Information.selectedCourses.get(i).getStartTime() - 1) * (lessonHeight)), 0, 0);
             courseParent.setLayoutParams(layoutParams);
             courseText = new TextView(getActivity());
             courseText.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT));
             courseText.setGravity(Gravity.CENTER);
-            courseText.setText(Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "@" + Information.selectedCourses.get(i).classRoom);
+            courseText.setText(Information.selectedCourses.get(i).getCourseName() + "（" + Information.selectedCourses.get(i).getTeacherName() + "）" + "@" + Information.selectedCourses.get(i).getClassRoom());
             courseText.setId(i);
             courseText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getActivity(),CourseModifierActivity.class);
-                    intent.putExtra("index",view.getId());
+                    intent.putExtra("courseSelectNum", view.getId());
                     startActivity(intent);
                 }
             });
@@ -204,9 +204,9 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
              * getResources().getColorStateList()和getColor()读取资源文件设置颜色过时
              * 用如下方法从资源文件设置颜色*/
             courseText.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-            if(Information.weekCount >= Information.selectedCourses.get(i).startWeek && Information.weekCount <= Information.selectedCourses.get(i).endWeek){
-                courseText.setText(Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "\n@" + Information.selectedCourses.get(i).classRoom);
-                switch (Information.selectedCourses.get(i).color % 8){
+            if (Information.weekCount >= Information.selectedCourses.get(i).getStartWeek() && Information.weekCount <= Information.selectedCourses.get(i).getEndWeek()) {
+                courseText.setText(Information.selectedCourses.get(i).getCourseName() + "（" + Information.selectedCourses.get(i).getTeacherName() + "）" + "\n@" + Information.selectedCourses.get(i).getClassRoom());
+                switch (Information.selectedCourses.get(i).getColor() % 8) {
                     case 0:
                         courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.curriculum_1));
                         break;
@@ -236,7 +236,7 @@ public class ScheduleFragment extends Fragment implements SwipeRefreshLayout.OnR
                         break;
                 }
             }else{
-                courseText.setText("[非本周]" + Information.selectedCourses.get(i).name + "（" + Information.selectedCourses.get(i).teacherName + "）" + "\n@" + Information.selectedCourses.get(i).classRoom);
+                courseText.setText("[非本周]" + Information.selectedCourses.get(i).getCourseName() + "（" + Information.selectedCourses.get(i).getTeacherName() + "）" + "\n@" + Information.selectedCourses.get(i).getClassRoom());
                 courseText.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorNotThisWeekSchedule));
             }
             /** 加入视图*/

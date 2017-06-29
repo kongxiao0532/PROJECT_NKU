@@ -55,7 +55,7 @@ public class EduLoginActivity extends AppCompatActivity implements Connector.Cal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edu_login);
         Information.selectedCourseCount = -1;
-        Information.studiedCourseCount = -1;
+        Information.lastTimeStudiedCourseCount = -1;
         Information.examCount = -1;
         Connector.tmpStudiedCourseCount = -1;
         Information.ids_major = null;

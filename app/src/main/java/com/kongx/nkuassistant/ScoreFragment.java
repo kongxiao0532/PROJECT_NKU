@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import tk.sunrisefox.httprequest.Connect;
 
 
 public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Connector.Callback{
@@ -49,11 +46,11 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View myView = inflater.inflate(R.layout.fragment_score, container, false);
-        mRefresh = (SwipeRefreshLayout) myView.findViewById(R.id.score_refresh);
+        mRefresh = myView.findViewById(R.id.score_refresh);
         mRefresh.setOnRefreshListener(this);
-        mScoreList = (ListView) myView.findViewById(R.id.score_list);
-        mCreditsAll = (TextView) myView.findViewById(R.id.score_credits);
-        mAverageAll = (TextView) myView.findViewById(R.id.score_average);
+        mScoreList = myView.findViewById(R.id.score_list);
+        mCreditsAll = myView.findViewById(R.id.score_credits);
+        mAverageAll = myView.findViewById(R.id.score_average);
 
         return myView;
     }
@@ -85,8 +82,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 Boolean tmpBool = (Boolean) result;
                 if(tmpBool){
                     if(m_activity == null) return;
-                    //TODO:DECRYPTED
-                    Information.studiedCourseCount = Information.studiedCourses.size();
+                    Information.lastTimeStudiedCourseCount = Information.studiedCourses.size();
                     if(Information.studiedCourses.size() == 0) return;
                     //记录成绩更新条目数量
                     SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
@@ -113,8 +109,6 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                     onRefresh();
                 }
                 break;
-            case EVALUATE:
-                break;
         }
     }
 
@@ -124,13 +118,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             //TODO:automatically evaluate
             new AlertDialog.Builder(m_activity).setTitle("本学期评教未完成")
                     .setMessage("本学期评教未完成，部分成绩信息未显示。请到教务网站进行评教操作。")
-                    .setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Connector.getInformation(Connector.RequestType.EVALUATE,ScoreFragment.this,null);
-                        }
-                    })
-                    .setNegativeButton("取消",null)
+                    .setPositiveButton("确认", null)
                     .show();
         }
     }
@@ -219,7 +207,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         mAverageAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Information.studiedCourseCount != -1){
+                if (Information.studiedCourses.size() != 0) {
                     showAverageMethod = (++showAverageMethod)%6;
                     switch (showAverageMethod){
                         case 0:
@@ -271,19 +259,19 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
             CourseStudied tmpCourse = scoreList.get(position);
             if(tmpCourse.isDivider){
                 //显示一个分隔符
-                convertView = mInflater.inflate(R.layout.score_list_divider,null);
-                TextView mDividerType = (TextView) convertView.findViewById(R.id.score_list_divider_type);
-                TextView mCredits = (TextView) convertView.findViewById(R.id.score_list_divider_credits);
-                TextView mAverageScore = (TextView) convertView.findViewById(R.id.score_list_divider_average);
+                convertView = mInflater.inflate(R.layout.divider_score_list, null);
+                TextView mDividerType = convertView.findViewById(R.id.score_list_divider_type);
+                TextView mCredits = convertView.findViewById(R.id.score_list_divider_credits);
+                TextView mAverageScore = convertView.findViewById(R.id.score_list_divider_average);
                 mDividerType.setText(tmpCourse.getClassType()+"类课");
                 mCredits.setText("共" + creditsSumOfEachType.get(tmpCourse.getClassType()) + "学分");
                 mAverageScore.setText("学分绩" + averageOfEachType.get(tmpCourse.getClassType()) + "分");
             }else {
                 //显示一门课程
-                convertView = mInflater.inflate(R.layout.score_list_item, null);
-                TextView mName = (TextView) convertView.findViewById(R.id.score_list_item_name);
-                TextView mTypeCredit = (TextView) convertView.findViewById(R.id.score_list_item_credit);
-                TextView mScore = (TextView) convertView.findViewById(R.id.score_list_item_score);
+                convertView = mInflater.inflate(R.layout.item_score_list, null);
+                TextView mName = convertView.findViewById(R.id.score_list_item_name);
+                TextView mTypeCredit = convertView.findViewById(R.id.score_list_item_credit);
+                TextView mScore = convertView.findViewById(R.id.score_list_item_score);
                 mName.setText(tmpCourse.getName());
                 mTypeCredit.setText(
                         tmpCourse.getClassType() + "类课  " +

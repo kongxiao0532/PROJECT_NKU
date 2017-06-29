@@ -29,7 +29,35 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import static com.kongx.nkuassistant.Information.*;
+import static com.kongx.nkuassistant.Information.COURSE_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.EXAM_PREFS_NAME;
+import static com.kongx.nkuassistant.Information.PREFS_NAME;
+import static com.kongx.nkuassistant.Information.Strings;
+import static com.kongx.nkuassistant.Information.curriculum_lastUpdate;
+import static com.kongx.nkuassistant.Information.examCount;
+import static com.kongx.nkuassistant.Information.exams;
+import static com.kongx.nkuassistant.Information.facultyName;
+import static com.kongx.nkuassistant.Information.id;
+import static com.kongx.nkuassistant.Information.ids_major;
+import static com.kongx.nkuassistant.Information.ids_minor;
+import static com.kongx.nkuassistant.Information.ifLoggedIn;
+import static com.kongx.nkuassistant.Information.ifRemPass;
+import static com.kongx.nkuassistant.Information.isDoubleMajor;
+import static com.kongx.nkuassistant.Information.isFirstOpen;
+import static com.kongx.nkuassistant.Information.lastVersion;
+import static com.kongx.nkuassistant.Information.majorName;
+import static com.kongx.nkuassistant.Information.minorName;
+import static com.kongx.nkuassistant.Information.name;
+import static com.kongx.nkuassistant.Information.newestNotice;
+import static com.kongx.nkuassistant.Information.password;
+import static com.kongx.nkuassistant.Information.scheduleTimeIsBusy;
+import static com.kongx.nkuassistant.Information.selectedCourseCount;
+import static com.kongx.nkuassistant.Information.selectedCourses;
+import static com.kongx.nkuassistant.Information.version;
+import static com.kongx.nkuassistant.Information.weekdays_tobalitai;
+import static com.kongx.nkuassistant.Information.weekdays_tojinnan;
+import static com.kongx.nkuassistant.Information.weekends_tobalitai;
+import static com.kongx.nkuassistant.Information.weekends_tojinnan;
 
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -83,7 +111,7 @@ public class WelcomeActivity extends AppCompatActivity {
         majorName = settings.getString(Strings.setting_student_major, null);
         minorName = settings.getString(Strings.setting_student_minor, null);
         isDoubleMajor = settings.getBoolean(Strings.setting_student_isDoubleMajor,false);
-        studiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
+        Information.lastTimeStudiedCourseCount = settings.getInt(Strings.setting_studied_course_count, -1);
         try {
             PackageManager manager = this.getPackageManager();
             PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
@@ -107,16 +135,16 @@ public class WelcomeActivity extends AppCompatActivity {
             CourseSelected tmpCourse;
             for (int i = 0; i < selectedCourseCount; i++) {
                 tmpCourse = new CourseSelected();
-                tmpCourse.index = settings.getString("index" + i, "null");
-                tmpCourse.name = settings.getString("name" + i, "null");
-                tmpCourse.dayOfWeek = settings.getInt("dayOfWeek" + i, -1);
-                tmpCourse.startTime = settings.getInt("startTime" + i, -1);
-                tmpCourse.endTime = settings.getInt("endTime" + i, -1);
-                tmpCourse.classRoom = settings.getString("classRoom" + i, "null");
-                tmpCourse.teacherName = settings.getString("teacherName" + i, "null");
-                tmpCourse.startWeek = settings.getInt("startWeek" + i, -1);
-                tmpCourse.endWeek = settings.getInt("endWeek" + i, -1);
-                tmpCourse.color = settings.getInt("color" + i, -1);
+                tmpCourse.setCourseSelectNum(settings.getString("courseSelectNum" + i, "null"));
+                tmpCourse.setCourseName(settings.getString("name" + i, "null"));
+                tmpCourse.setDayOfWeek(settings.getInt("dayOfWeek" + i, -1));
+                tmpCourse.setStartTime(settings.getInt("startTime" + i, -1));
+                tmpCourse.setEndTime(settings.getInt("endTime" + i, -1));
+                tmpCourse.setClassRoom(settings.getString("classRoom" + i, "null"));
+                tmpCourse.setTeacherName(settings.getString("teacherName" + i, "null"));
+                tmpCourse.setStartWeek(settings.getInt("startWeek" + i, -1));
+                tmpCourse.setEndWeek(settings.getInt("endWeek" + i, -1));
+                tmpCourse.setColor(settings.getInt("color" + i, -1));
                 selectedCourses.add(tmpCourse);
             }
             for(int i = 0;i < 14;i++){
@@ -126,19 +154,19 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
 
-        //get Exams Preferences
+        //get ExamCourse Preferences
         settings = getSharedPreferences(EXAM_PREFS_NAME, 0);
         examCount = settings.getInt(Strings.setting_exam_count, -1);
         if (examCount != -1) {
-            HashMap<String, String> map;
+            ExamCourse tmpCourse;
             for (int i = 0; i < examCount; i++) {
-                map = new HashMap<>();
-                map.put("name", settings.getString("name" + i, "null"));
-                map.put("time", settings.getString("time" + i, "null"));
-                map.put("classRoom", settings.getString("classRoom" + i, "null"));
-                map.put("seat", settings.getString("seat" + i, "null"));
-                map.put("date", settings.getString("date" + i, "null"));
-                exams.add(map);
+                tmpCourse = new ExamCourse();
+                tmpCourse.setCourseName(settings.getString("name" + i, "null"));
+                tmpCourse.setTimePeriod(settings.getString("time" + i, "null"));
+                tmpCourse.setClassRoom(settings.getString("classRoom" + i, "null"));
+                tmpCourse.setSeatNum(settings.getString("seat" + i, "null"));
+                tmpCourse.setDate(settings.getString("date" + i, "null"));
+                exams.add(tmpCourse);
             }
         }
 
