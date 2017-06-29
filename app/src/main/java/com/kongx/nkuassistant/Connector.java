@@ -327,22 +327,26 @@ public class Connector {
             String tmpId;
             if(matcher.find())  tmpId = matcher.group(1);
             else return;
-            if (Information.newestNotice != Integer.parseInt(tmpId)) {
-                Information.newestNotice = Integer.parseInt(tmpId);
-                pattern = Pattern.compile("<headline>(.+)(</headline>)");
-                matcher = pattern.matcher(retString);
-                if(matcher.find()) tmpHeadline = matcher.group(1);
-                pattern = Pattern.compile("<content>(.+)(</content>)");
-                matcher = pattern.matcher(retString);
-                if(matcher.find()) tmpContent = matcher.group(1);
-                pattern = Pattern.compile("<target>(.+)(</target>)");
-                matcher = pattern.matcher(retString);
-                if(matcher.find())  tmpTarget = matcher.group(1);
-                pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
-                matcher = pattern.matcher(retString);
-                if(matcher.find())  tmpTargetVersion = matcher.group(1);
-                String[] result = new String[]{tmpId,tmpHeadline,tmpContent,tmpTarget,tmpTargetVersion};
-                uis.onConnectorComplete(RequestType.CHECK_FOR_NOTICE,result);
+            try {
+                if (Information.newestNotice != Integer.parseInt(tmpId)) {
+                    Information.newestNotice = Integer.parseInt(tmpId);
+                    pattern = Pattern.compile("<headline>(.+)(</headline>)");
+                    matcher = pattern.matcher(retString);
+                    if (matcher.find()) tmpHeadline = matcher.group(1);
+                    pattern = Pattern.compile("<content>(.+)(</content>)");
+                    matcher = pattern.matcher(retString);
+                    if (matcher.find()) tmpContent = matcher.group(1);
+                    pattern = Pattern.compile("<target>(.+)(</target>)");
+                    matcher = pattern.matcher(retString);
+                    if (matcher.find()) tmpTarget = matcher.group(1);
+                    pattern = Pattern.compile("<targetVersion>(.+)(</targetVersion>)");
+                    matcher = pattern.matcher(retString);
+                    if (matcher.find()) tmpTargetVersion = matcher.group(1);
+                    String[] result = new String[]{tmpId, tmpHeadline, tmpContent, tmpTarget, tmpTargetVersion};
+                    uis.onConnectorComplete(RequestType.CHECK_FOR_NOTICE, result);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

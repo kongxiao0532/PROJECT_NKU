@@ -7,8 +7,8 @@ android {
         applicationId "com.kongx.nkuassistant"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 170603
-        versionName "1.5.0 beta"
+        versionCode 170629
+        versionName "1.4.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a', 'x86'

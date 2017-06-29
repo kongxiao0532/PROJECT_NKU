@@ -290,7 +290,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
         void showScheduleToday(ArrayList<CourseSelected> courseToday) {
             mScheduleList.removeAllViews();
-
+            if (courseToday == null) return;
             if (courseToday.size() == 0) {
                 mScheduleList.setVisibility(View.GONE);
                 mScheduleStatus.setVisibility(View.VISIBLE);
@@ -301,23 +301,21 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             }
             LayoutInflater mInflater = LayoutInflater.from(m_activity);
             //显示今日课程
-            if (courseToday != null) {
-                for (CourseSelected tmpCourse : courseToday) {
-                    View view = mInflater.inflate(R.layout.item_schedule_home_list, null);
-                    TextView item_name = view.findViewById(R.id.home_schedule_item_name);
-                    TextView item_classroom = view.findViewById(R.id.home_schedule_item_classroom);
-                    ImageView item_image = view.findViewById(R.id.home_schedule_item_image);
-                    item_name.setText((tmpCourse.getCourseName().length() <= 7) ? tmpCourse.getCourseName() : tmpCourse.getCourseName().substring(0, 3) + "..." + tmpCourse.getCourseName().substring(tmpCourse.getCourseName().length() - 3, tmpCourse.getCourseName().length()));
-                    item_classroom.setText(tmpCourse.getClassRoom());
-                    //Set Image
-                    if (tmpCourse.getStartTime() == 1 || tmpCourse.getStartTime() == 2)
-                        item_image.setImageResource(R.drawable.morning);
-                    else if (tmpCourse.getStartTime() > 2 && tmpCourse.getStartTime() < 11)
-                        item_image.setImageResource(R.drawable.noon);
-                    else if (tmpCourse.getStartTime() > 10)
-                        item_image.setImageResource(R.drawable.evening);
-                    mScheduleList.addView(view);
-                }
+            for (CourseSelected tmpCourse : courseToday) {
+                View view = mInflater.inflate(R.layout.item_schedule_home_list, null);
+                TextView item_name = view.findViewById(R.id.home_schedule_item_name);
+                TextView item_classroom = view.findViewById(R.id.home_schedule_item_classroom);
+                ImageView item_image = view.findViewById(R.id.home_schedule_item_image);
+                item_name.setText((tmpCourse.getCourseName().length() <= 7) ? tmpCourse.getCourseName() : tmpCourse.getCourseName().substring(0, 3) + "..." + tmpCourse.getCourseName().substring(tmpCourse.getCourseName().length() - 3, tmpCourse.getCourseName().length()));
+                item_classroom.setText(tmpCourse.getClassRoom());
+                //Set Image
+                if (tmpCourse.getStartTime() == 1 || tmpCourse.getStartTime() == 2)
+                    item_image.setImageResource(R.drawable.morning);
+                else if (tmpCourse.getStartTime() > 2 && tmpCourse.getStartTime() < 11)
+                    item_image.setImageResource(R.drawable.noon);
+                else if (tmpCourse.getStartTime() > 10)
+                    item_image.setImageResource(R.drawable.evening);
+                mScheduleList.addView(view);
             }
         }
     }
@@ -351,10 +349,10 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         private TextView mExamDetail;
 
         ExamSegment() {
-            mExamLayout = (LinearLayout) myView.findViewById(R.id.home_exam_layout);
-            mExamStatus = (TextView) myView.findViewById(R.id.home_exam_text);
-            mExamList = (LinearLayout) myView.findViewById(R.id.home_exam_list);
-            mExamDetail = (TextView) myView.findViewById(R.id.home_exam_details);
+            mExamLayout = myView.findViewById(R.id.home_exam_layout);
+            mExamStatus = myView.findViewById(R.id.home_exam_text);
+            mExamList = myView.findViewById(R.id.home_exam_list);
+            mExamDetail = myView.findViewById(R.id.home_exam_details);
             mExamDetail.setOnClickListener((View.OnClickListener) m_activity);
             ArrayList<ExamCourse> examsToBeShown = getExamsToBeShown();
             if (examsToBeShown == null || examsToBeShown.size() == 0) {
