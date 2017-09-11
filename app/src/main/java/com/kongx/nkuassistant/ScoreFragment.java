@@ -279,7 +279,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                         tmpCourse.getClassType() + "类课  " +
                                 tmpCourse.getCredit() + "学分"
                 );
-                mScore.setText((tmpCourse.getCreditCalculated() == 0) ? "通过" : (!String.valueOf(tmpCourse.getScore()).contains(".")) ? String.valueOf(tmpCourse.getScore()) : String.valueOf(tmpCourse.getScore()).replaceAll("0*$", "").replaceAll("\\.$", ""));
+                mScore.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? (Information.studiedCourses.get(position).score == -2?"重修":"通过") : (!String.valueOf(Information.studiedCourses.get(position).score).contains(".")) ? String.valueOf(Information.studiedCourses.get(position).score) : String.valueOf(Information.studiedCourses.get(position).score).replaceAll("0*$", "").replaceAll("\\.$", ""));
             }
             return convertView;
         }
