@@ -583,20 +583,17 @@ public class Connector {
             SimpleHTMLParser.parse(scoreString, new SimpleHTMLParser.Callback() {
                 boolean isReadingData;
                 int singleCourseTextCount = 0;
-                ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                 CourseStudied tmpCourse;
                 boolean TDStart = false;
                 boolean process = false;
                 @Override
                 public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
-                    tmpStudiedCourseCount = 29;
-                    if(tag.equals("td") && !TDStart){
+                    if (tag.equals("td") && !TDStart) {
                         TDStart = true;
                         process = true;
-                    }
-                    else if(!tag.equals("td") && TDStart) {
+                    } else if (!tag.equals("td") && TDStart) {
                         tmpStudiedCourseCount++;
-                        Log.e("ERROR",tmpStudiedCourseCount+"");
+                        Log.e("ERROR", tmpStudiedCourseCount + "");
                         process = false;
                         singleCourseTextCount++;
                     }
@@ -604,7 +601,7 @@ public class Connector {
 
                 @Override
                 public void onText(String text) {
-                    if(!process)return;
+                    if (!process) return;
                     if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
                         return;
                     }else{
@@ -651,7 +648,7 @@ public class Connector {
 
                 @Override
                 public void onTagEnd(HTML.Tag tag) {
-                    if(tag.equals("td"))TDStart = false;
+                    if (tag.equals("td")) TDStart = false;
                 }
             });
             Information.studiedCourses = tmpScore;
@@ -692,7 +689,7 @@ public class Connector {
                                 startPoint = matcher.end();
                                 tmpCourse.setTeacherName(matcher.group(2));
 
-                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
+                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000\"");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
                                     tmpCourse.setCourseName(matcher.group(1));
