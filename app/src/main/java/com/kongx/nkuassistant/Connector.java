@@ -29,7 +29,7 @@ public class Connector {
     ;
     final static String url_logout = "/eams/logout.action";
     final static String feedback_post_template = "appVersion=%s&userId=%s&topic=%s&content=%s&email=%s";
-    private final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=1&semester.id=%s&ids=%s";
+    private final static String currriculum_string_template = "ignoreHead=1&setting.kind=std&startWeek=&semester.id=%s&ids=%s";
     private final static String url_login = "/eams/login.action";
     private final static String url_curriculum = "/eams/courseTableForStd!courseTable.action";
     private final static String url_score = "/eams/teach/grade/course/person!historyCourseGrade.action?projectType=MAJOR";
@@ -39,8 +39,8 @@ public class Connector {
     private final static String url_student_minor_info = "/eams/stdDetail!innerIndex.action?projectId=2&_=";
     private final static String url_student_major_ids = "/eams/courseTableForStd!innerIndex.action?projectId=1&_=";
     private final static String url_student_minor_ids = "/eams/courseTableForStd!innerIndex.action?projectId=2&_=";
-    private final static String url_double_before_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=2&_=";
-    private final static String url_double_after_student_info = "/eams/stdDetail!courseSelectNum.action?projectId=1&_=";
+    private final static String url_double_before_student_info = "/eams/stdDetail!index.action?projectId=2&_=";
+    private final static String url_double_after_student_info = "/eams/stdDetail!index.action?projectId=1&_=";
     private final static String api_exam_id = "http://kongxiao0532.cn/projectnku/api/examid.php";
     private final static String url_exam_info = "/eams/stdExam!examTable.action?examBatch.id=%s&_=%s";
     private final static String url_lectures = "http://jz.nankai.edu.cn/latestshow.action";
@@ -583,20 +583,17 @@ public class Connector {
             SimpleHTMLParser.parse(scoreString, new SimpleHTMLParser.Callback() {
                 boolean isReadingData;
                 int singleCourseTextCount = 0;
-                ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                 CourseStudied tmpCourse;
                 boolean TDStart = false;
                 boolean process = false;
                 @Override
                 public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
-                    tmpStudiedCourseCount = 29;
-                    if(tag.equals("td") && !TDStart){
+                    if (tag.equals("td") && !TDStart) {
                         TDStart = true;
                         process = true;
-                    }
-                    else if(!tag.equals("td") && TDStart) {
+                    } else if (!tag.equals("td") && TDStart) {
                         tmpStudiedCourseCount++;
-                        Log.e("ERROR",tmpStudiedCourseCount+"");
+                        Log.e("ERROR", tmpStudiedCourseCount + "");
                         process = false;
                         singleCourseTextCount++;
                     }
@@ -604,7 +601,7 @@ public class Connector {
 
                 @Override
                 public void onText(String text) {
-                    if(!process)return;
+                    if (!process) return;
                     if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
                         return;
                     }else{
@@ -651,7 +648,7 @@ public class Connector {
 
                 @Override
                 public void onTagEnd(HTML.Tag tag) {
-                    if(tag.equals("td"))TDStart = false;
+                    if (tag.equals("td")) TDStart = false;
                 }
             });
             Information.studiedCourses = tmpScore;
@@ -692,7 +689,7 @@ public class Connector {
                                 startPoint = matcher.end();
                                 tmpCourse.setTeacherName(matcher.group(2));
 
-                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
+                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000\"");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
                                     tmpCourse.setCourseName(matcher.group(1));
