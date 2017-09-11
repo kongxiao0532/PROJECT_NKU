@@ -28,8 +28,11 @@ public class CourseStudied {
                 creditCalculated = credit;
                 this.score = Float.parseFloat(score);
                 calculateGPA();
-            }else{              //课程为 通过
+            }else if(this.score == -1){              //课程为 通过
                 this.score = creditCalculated = 0;
+                gpas = new float[5];
+            }else if(this.score == -2){
+                creditCalculated = 0;
                 gpas = new float[5];
             }
         }

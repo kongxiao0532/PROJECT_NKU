@@ -583,6 +583,7 @@ public class Connector {
                     });
                     if(tmpStudiedCourseCount == 0){
                         Information.studiedCourses = tmpScore;
+                        Log.e("SECOND","FIRST");
                         uis.onConnectorComplete(RequestType.SCORE,true);
                         return;
                     }
@@ -591,18 +592,31 @@ public class Connector {
                         int singleCourseTextCount = 0;
                         ArrayList<CourseStudied> tmpScore = new ArrayList<>();
                         CourseStudied tmpCourse;
-
+                        boolean TDStart = false;
+                        boolean process = false;
                         @Override
                         public void onTagStart(HTML.Tag tag, HTML.AttributeSet attributeSet) {
-
+                            tmpStudiedCourseCount = 29;
+                            if(tag.equals("td") && !TDStart){
+                                TDStart = true;
+                                process = true;
+                            }
+                            else if(!tag.equals("td") && TDStart) {
+                                tmpStudiedCourseCount++;
+                                Log.e("ERROR",tmpStudiedCourseCount+"");
+                                process = false;
+                                singleCourseTextCount++;
+                            }
                         }
 
                         @Override
                         public void onText(String text) {
+                            if(!process)return;
                             if(text.isEmpty() && !isReadingData){//在课与课之间的空白数据，忽略
                                 return;
                             }else{
                                 isReadingData = true;
+                                Log.e(text, ""+singleCourseTextCount);
                                 switch (singleCourseTextCount++){
                                     case 0:                         //get Semester
                                         tmpCourse = new CourseStudied();
@@ -618,6 +632,7 @@ public class Connector {
                                     case 5: break;
                                     case 6:                         //get course name
                                         tmpCourse.name = text;
+
                                         break;
                                     case 7: break;
                                     case 8:                         //get class type
@@ -625,14 +640,25 @@ public class Connector {
                                         break;
                                     case 9: break;
                                     case 10:                         //get credits
-                                        try{tmpCourse.credit = Float.parseFloat(text);}
-                                        catch (Exception e){e.printStackTrace();}
+                                         try{tmpCourse.credit = Float.parseFloat(text);}
+                                        catch (Exception e){e.printStackTrace(); tmpCourse.credit = -3;}
                                         break;
                                     case 11: break;
                                     case 12:                         //get grade
                                         break;
                                     case 13: break;
                                     case 14:                         //get score
+                                        switch (text) {
+                                            case "通过":
+                                                tmpCourse.score = -1;
+                                                break;
+                                            case "--":
+                                                tmpCourse.score = -2;
+                                                break;
+                                            default:
+                                                tmpCourse.score = -3;
+                                                break;
+                                        }
                                         tmpCourse.setScore(text);
                                     case 15: break;
                                     case 16:                            //get so-called gpa
@@ -644,13 +670,15 @@ public class Connector {
                             }
                             if(tmpScore.size() == tmpStudiedCourseCount){
                                 Information.studiedCourses = tmpScore;
+                                Log.e("SECOND","CALLED");
                                 uis.onConnectorComplete(RequestType.SCORE,true);
+                                tmpStudiedCourseCount=-1;
                             }
                         }
 
                         @Override
                         public void onTagEnd(HTML.Tag tag) {
-
+                            if(tag.equals("td"))TDStart = false;
                         }
                     });
 
@@ -703,8 +731,7 @@ public class Connector {
                                 tmpCourse = new CourseSelected();
                                 startPoint = matcher.end();
                                 tmpCourse.teacherName = matcher.group(2);
-
-                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)000000000000000000000000000000000000\"");
+                                pattern = Pattern.compile("\",\"(.+)\\((\\d+)\\)\",\"\\d+\",\"(.+)\",\"0(\\d+)00000000000000000000000000000000\"");
                                 matcher = pattern.matcher(returnString);
                                 if (matcher.find(startPoint)) {
                                     tmpCourse.name = matcher.group(1);

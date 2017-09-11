@@ -159,7 +159,7 @@ public class HomeFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 Information.semester = getString(R.string.summber_vacation);
             }
             if(weekOfYear > 36 && weekOfYear <= 52){
-                Information.weekCount = weekOfYear - 6;
+                Information.weekCount = weekOfYear - 36;
                 Information.semester = "2017-2018 第一学期";
                 Information.semesterId = 62;
             }

@@ -104,7 +104,7 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 if(tmpBool){
                     if(m_activity == null) return;
                     Information.studiedCourseCount = Information.studiedCourses.size();
-                    if(Information.studiedCourseCount == 0) return;
+                    Log.e("APP",Information.studiedCourseCount+"");
                     Toast.makeText(getActivity(), "已加载"+Information.studiedCourseCount+"条成绩信息", Toast.LENGTH_SHORT).show();
                     SharedPreferences settings = m_activity.getSharedPreferences(Information.PREFS_NAME,0);
                     SharedPreferences.Editor editor = settings.edit();
@@ -158,7 +158,11 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
         //        Information.average_f = (((FC==null?0:FC)+(FD==null?0:FD)) / ((cFC==null?0:cFC)+(cFD==null?0:cFD)));
                     mCreditsAll.setText(String.format(getString(R.string.credits_template),Information.credits_All));
         //        mAverageAll.setText(String.format(getString(R.string.average_template),Information.average_abcd,Information.average_abcde,Information.average_f));
-                    mAverageAll.setText("ABCDE百分制学分绩"+new BigDecimal(Information.average_abcde).setScale(3,BigDecimal.ROUND_HALF_UP)+"分");
+                    try {
+                        mAverageAll.setText("ABCDE百分制学分绩" + new BigDecimal(Information.average_abcde).setScale(3, BigDecimal.ROUND_HALF_UP) + "分");
+                    }catch (Exception e){
+
+                    }
                     mRefresh.setRefreshing(false);
                     mScoreList.setAdapter(new MyAdapter(m_activity));
                 }else {
@@ -229,9 +233,9 @@ public class ScoreFragment extends Fragment implements SwipeRefreshLayout.OnRefr
                 holder.name.setText(Information.studiedCourses.get(position).name);
                 holder.credits.setText(
                         Information.studiedCourses.get(position).semester+ "  " +
-                                Information.studiedCourses.get(position).credit+"学分"
+                                Math.abs(Information.studiedCourses.get(position).credit)+"学分"
                 );
-                holder.score.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? "通过" : (!String.valueOf(Information.studiedCourses.get(position).score).contains(".")) ? String.valueOf(Information.studiedCourses.get(position).score) : String.valueOf(Information.studiedCourses.get(position).score).replaceAll("0*$", "").replaceAll("\\.$", ""));
+                holder.score.setText((Information.studiedCourses.get(position).creditCalculated == 0) ? (Information.studiedCourses.get(position).score == -2?"重修":"通过") : (!String.valueOf(Information.studiedCourses.get(position).score).contains(".")) ? String.valueOf(Information.studiedCourses.get(position).score) : String.valueOf(Information.studiedCourses.get(position).score).replaceAll("0*$", "").replaceAll("\\.$", ""));
 //            }
             return convertView;
         }
