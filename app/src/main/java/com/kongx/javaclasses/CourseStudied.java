@@ -66,7 +66,7 @@ public class CourseStudied {
     }
 
     public void setClassType(String type) {
-        if (type.contains("任选课")) {
+        if (type.contains("任选课") || type.contains("通识选修")) {
             classType = 'E';
         } else if (type.contains("专业") && type.contains("选修")) {
             classType = 'D';
